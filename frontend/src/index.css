@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --neumo-bg: #eef2f7;
+  --neumo-panel: #ffffff;
+  --neumo-sidebar-top: #13233f;
+  --neumo-sidebar-bottom: #1b2c4b;
+  --neumo-sidebar-border: #2a3d5f;
+  --neumo-primary: #0ea5e9;
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: radial-gradient(circle at top right, #f8fbff 0%, var(--neumo-bg) 45%, #e8eef6 100%);
+  @apply text-slate-900 antialiased;
+}
