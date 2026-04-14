@@ -4,7 +4,7 @@ export function QuickActionButton({ icon, label, colorClass }) {
   return (
     <button
       type="button"
-      className={`flex h-14 items-center justify-center gap-2 rounded-2xl px-5 text-lg font-bold text-white shadow-sm transition-transform hover:-translate-y-0.5 ${colorClass}`}
+      className={`flex h-14 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold shadow-sm transition-colors ${colorClass}`}
     >
       <Icon className="h-5 w-5" />
       <span>{label}</span>

@@ -1,120 +1,150 @@
 import { useState } from 'react'
-import { Stethoscope, Mail, Lock } from 'lucide-react'
-import { Link } from 'react-router-dom';
+import { Activity, Eye, EyeOff, Stethoscope } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { loginRequest } from '../services/api'
 
-export function Login({ onLogin }) {
+export function Login() {
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Simulate authentication
-    if (email && password && typeof onLogin === 'function') {
-      onLogin()
+
+    setErrorMessage('')
+    setIsLoading(true)
+
+    try {
+      // Login real contra FastAPI
+      const data = await loginRequest({ correo: email, password })
+      localStorage.setItem('access_token', data.access_token)
+      navigate('/dashboard')
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    // En tu código JSX:
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
-      <Link to="/panel" className="text-blue-500">Ir al Panel</Link>
+    <div className="min-h-screen flex bg-slate-100">
+      <aside className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-16 bg-gradient-to-br from-slate-900 via-sky-900 to-cyan-700">
+        <div className="absolute inset-0 opacity-15">
+          {[...Array(6)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute rounded-full border border-white/30"
+              style={{
+                width: `${220 + index * 110}px`,
+                height: `${220 + index * 110}px`,
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            />
+          ))}
+        </div>
 
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
-        <div className="p-8">
-          <div className="flex flex-col items-center justify-center mb-8">
-            <div className="bg-sky-100 p-3 rounded-full mb-4">
-              <Stethoscope className="w-8 h-8 text-sky-600" />
+        <div className="relative z-10 text-center max-w-lg text-white">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm mb-8">
+            <Stethoscope className="w-10 h-10" />
+          </div>
+          <h1 className="text-4xl font-extrabold mb-4 leading-tight">
+            Pneumonia Insight
+          </h1>
+          <p className="text-lg text-white/80 leading-relaxed">
+            Sistema inteligente de apoyo clínico para diagnóstico presuntivo de neumonía
+          </p>
+          <div className="mt-12 flex items-center justify-center gap-8 text-white/70 text-sm">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              <span>Precisión clínica</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">NeumoAI</h1>
-            <p className="text-sm text-slate-500 mt-1 text-center">
-              Sistema de Diagnóstico Asistido por IA
-            </p>
+            <div className="w-px h-4 bg-white/30" />
+            <div className="flex items-center gap-2">
+              <Stethoscope className="w-4 h-4" />
+              <span>Flujo médico</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main className="flex-1 flex items-center justify-center p-6 lg:p-16">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl p-8 lg:p-10">
+          <div className="lg:hidden flex items-center gap-3 mb-10">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-600 to-cyan-500 flex items-center justify-center text-white">
+              <Stethoscope className="w-5 h-5" />
+            </div>
+            <span className="text-xl font-bold text-slate-900">Pneumonia Insight</span>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">Bienvenido</h2>
+          <p className="text-slate-500 mb-8">
+            Ingrese sus credenciales para acceder al sistema
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
                 Correo electrónico institucional
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 sm:text-sm transition-colors"
-                  placeholder="dr.apellido@hospital.com"
-                />
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="block w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
+                placeholder="dr.apellido@hospital.com"
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
                 Contraseña
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
-                </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 sm:text-sm transition-colors"
+                  className="block w-full px-4 py-3 pr-12 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
                   placeholder="••••••••"
                 />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-slate-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-slate-700"
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
-                  Recordar mi sesión
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-sky-600 hover:text-sky-500"
-                >
-                  ¿Olvidé mi contraseña?
-                </a>
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors"
-              >
-                Iniciar Sesión
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-sky-600 to-cyan-500 hover:opacity-90 disabled:opacity-70 transition"
+            >
+              {isLoading ? 'Validando...' : 'Iniciar sesión'}
+            </button>
+
+            {errorMessage && (
+              <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                {errorMessage}
+              </p>
+            )}
           </form>
-        </div>
-        <div className="bg-slate-50 px-8 py-4 border-t border-slate-100">
-          <p className="text-xs text-center text-slate-500">
-            &copy; {new Date().getFullYear()} NeumoAI. Todos los derechos
-            reservados.
+
+          <p className="mt-8 text-center text-xs text-slate-500">
+            &copy; {new Date().getFullYear()} NeumoAI. Todos los derechos reservados.
           </p>
         </div>
-      </div>
+      </main>
     </div>
-
-
   )
 }

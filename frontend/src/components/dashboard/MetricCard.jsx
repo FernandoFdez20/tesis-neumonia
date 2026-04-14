@@ -2,15 +2,15 @@ export function MetricCard({ icon, title, value, iconBg, iconColor, iconStroke =
   const Icon = icon
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+    <article className="rounded-xl bg-white px-5 py-4 shadow-sm ring-1 ring-slate-200/70">
       <div className="flex items-center gap-4">
-        <div className={`grid h-14 w-14 place-content-center rounded-full ${iconBg}`}>
-          <Icon className={`h-7 w-7 ${iconColor}`} strokeWidth={iconStroke} />
+        <div className={`grid h-12 w-12 place-content-center rounded-lg ${iconBg}`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} strokeWidth={iconStroke} />
         </div>
 
         <div>
-          <p className="text-xl font-semibold text-slate-500">{title}</p>
-          <p className="text-5xl font-extrabold leading-none text-slate-900">{value}</p>
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <p className="mt-1 text-4xl font-bold leading-none text-slate-900">{value}</p>
         </div>
       </div>
     </article>
