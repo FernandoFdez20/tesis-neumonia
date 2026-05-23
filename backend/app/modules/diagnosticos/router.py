@@ -11,13 +11,7 @@ from . import schemas, service
 router = APIRouter(prefix="/diagnosticos", tags=["Diagnosticos"])
 
 
-@router.get("/recientes", response_model=List[schemas.DiagnosticoRecienteItem])
-def listar_diagnosticos_recientes(
-    limit: int = 10,
-    authorization: str | None = Header(default=None),
-    db: Session = Depends(get_db),
-):
-    # Mantiene acceso autenticado igual que el resto de operaciones clinicas.
+def _extract_usuario_id_from_bearer(authorization: str | None) -> int:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token requerido")
 
@@ -26,7 +20,45 @@ def listar_diagnosticos_recientes(
     if not payload:
         raise HTTPException(status_code=401, detail="Token invalido o expirado")
 
+    usuario_id = payload.get("usuario_id")
+    if not usuario_id:
+        raise HTTPException(status_code=401, detail="Token invalido")
+
+    return int(usuario_id)
+
+
+def _prioridad_from_nivel_gravedad(nivel_gravedad_ia: str | None) -> str:
+    mapping = {
+        "Grave": "Alta",
+        "Moderado": "Moderada",
+        "Leve": "Baja",
+        "Normal": "Ninguna",
+    }
+    return mapping.get(nivel_gravedad_ia or "", "Ninguna")
+
+
+@router.get("/recientes", response_model=List[schemas.DiagnosticoRecienteItem])
+def listar_diagnosticos_recientes(
+    limit: int = 10,
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+):
+    # Mantiene acceso autenticado igual que el resto de operaciones clinicas.
+    _extract_usuario_id_from_bearer(authorization)
+
     return service.get_recent_diagnosticos(db=db, limit=limit)
+
+
+@router.get(
+    "/{diagnostico_id}/resultado", response_model=schemas.DiagnosticoResultadoResponse
+)
+def obtener_resultado_diagnostico(
+    diagnostico_id: int,
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+):
+    _extract_usuario_id_from_bearer(authorization)
+    return service.get_diagnostico_resultado(db=db, diagnostico_id=diagnostico_id)
 
 
 @router.post("/", response_model=schemas.DiagnosticoCreateResponse)
@@ -47,27 +79,21 @@ def crear_diagnostico(
     otros_antecedentes: str | None = Form(default=None),
     antecedentes_familiares: str | None = Form(default=None),
     enfermedades_cronicas: str | None = Form(default=None),
-    imagen_file: UploadFile = File(...),
+    imagen_files: list[UploadFile] | None = File(default=None),
+    imagen_file: UploadFile | None = File(default=None),
     authorization: str | None = Header(default=None),
     db: Session = Depends(get_db),
 ):
-    # Reutiliza el JWT existente para vincular el diagnostico al usuario autenticado.
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Token requerido")
+    usuario_id = _extract_usuario_id_from_bearer(authorization)
 
-    token = authorization.replace("Bearer ", "", 1).strip()
-    payload = decode_access_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Token invalido o expirado")
-
-    usuario_id = payload.get("usuario_id")
-    if not usuario_id:
-        raise HTTPException(status_code=401, detail="Token invalido")
+    incoming_images = list(imagen_files or [])
+    if imagen_file is not None:
+        incoming_images.append(imagen_file)
 
     diagnostico = service.create_diagnostico_desde_form(
         db=db,
         usuario_id=int(usuario_id),
-        imagen_file=imagen_file,
+        imagen_files=incoming_images,
         nombre_completo=nombre_completo,
         expediente_id=expediente_id,
         fecha_nacimiento=fecha_nacimiento,
@@ -90,5 +116,11 @@ def crear_diagnostico(
         "diagnostico_id": diagnostico.id,
         "paciente_id": diagnostico.paciente_id,
         "imagen_url": diagnostico.imagen_url,
+        "imagenes_url": [img.imagen_url for img in (diagnostico.imagenes or [])],
+        "resultado_ia": diagnostico.resultado_ia,
+        "enfermo": bool(diagnostico.enfermo),
+        "nivel_gravedad_ia": diagnostico.nivel_gravedad_ia,
+        "prioridad": _prioridad_from_nivel_gravedad(diagnostico.nivel_gravedad_ia),
+        "nivel_confianza": int(float(diagnostico.probabilidad_ia or 0) * 100),
         "mensaje": "Diagnostico registrado correctamente",
     }

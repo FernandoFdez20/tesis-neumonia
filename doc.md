@@ -4,9 +4,8 @@ cd frontend
 pnpm install
 # Instalamos axios para las peticiones HTTP al backend
 pnpm add axios
-cd ..
 
-para correrlo: pnpm dev
+pnpm run dev
 
 pnpm add lucide-react # import para el login
 pnpm add -D @tailwindcss/vite

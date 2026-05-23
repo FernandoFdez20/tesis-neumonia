@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    Boolean,
     Column,
     Date,
     DateTime,
@@ -9,6 +10,7 @@ from sqlalchemy import (
     Text,
     func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.db.session import Base
@@ -59,13 +61,37 @@ class Diagnostico(Base):
     sintomas_principales = Column(Text, nullable=True)
 
     resultado_ia = Column(String(50), nullable=True)
+    enfermo = Column(Boolean, nullable=False, server_default="false")
     nivel_gravedad_ia = Column(String(20), nullable=True)
     probabilidad_ia = Column(Numeric(5, 4), nullable=True)
+    confianza_radiografica = Column(Numeric(5, 2), nullable=True)
+    confianza_clinica = Column(Numeric(5, 2), nullable=True)
+    confianza_riesgo = Column(Numeric(5, 2), nullable=True)
+    hallazgos_json = Column(JSONB, nullable=True)
 
     estado_validacion = Column(String(20), nullable=True)
-    comentario_medico = Column(Text, nullable=True)
+    diagnostico_descripcion = Column(Text, nullable=True)
     validado_por_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     fecha_validacion = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=False, server_default=func.now())
 
     paciente = relationship("Paciente")
+    imagenes = relationship(
+        "DiagnosticoImagen",
+        back_populates="diagnostico",
+        cascade="all, delete-orphan",
+    )
+
+
+class DiagnosticoImagen(Base):
+    __tablename__ = "diagnostico_imagenes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    diagnostico_id = Column(
+        Integer, ForeignKey("diagnosticos.id", ondelete="CASCADE"), nullable=False
+    )
+    imagen_url = Column(String(255), nullable=False)
+    orden = Column(Integer, nullable=False, default=1)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+    diagnostico = relationship("Diagnostico", back_populates="imagenes")

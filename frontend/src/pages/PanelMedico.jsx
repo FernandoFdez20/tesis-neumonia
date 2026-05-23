@@ -137,7 +137,7 @@ export function PanelMedico() {
 							<Stethoscope className="h-5 w-5 text-white" />
 						</div>
 						<span className="hidden text-lg font-display font-bold text-foreground sm:block">
-							PneumoAI<span className="text-medical-teal">Dx</span>
+							Sistema deteccion neumonia
 						</span>
 					</div>
 
@@ -151,7 +151,10 @@ export function PanelMedico() {
 						>
 							Nuevo Analisis
 						</button>
-						<button className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+						<button
+							onClick={() => navigate('/historial')}
+							className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+						>
 							Historial
 						</button>
 					</div>
@@ -239,6 +242,11 @@ export function PanelMedico() {
 									filteredCases.map((item) => (
 										<button
 											key={item.diagnostico_id}
+											onClick={() =>
+												navigate(`/resultados?diagnostico_id=${item.diagnostico_id}`, {
+													state: { diagnostico_id: item.diagnostico_id },
+												})
+											}
 											className="flex w-full items-center gap-4 p-5 text-left transition-colors hover:bg-secondary/30"
 										>
 											<div
@@ -255,7 +263,7 @@ export function PanelMedico() {
 													<p className="truncate font-medium text-foreground">{item.paciente_nombre}</p>
 													<span className="rounded border px-1.5 py-0 text-[10px] font-mono">{item.expediente_id}</span>
 												</div>
-												<p className="text-sm text-muted-foreground">{item.edad ?? '-'} anos · {formatRelativeDate(item.fecha_registro)}</p>
+												<p className="text-sm text-muted-foreground">{item.edad ?? '-'} años · {formatRelativeDate(item.fecha_registro)}</p>
 											</div>
 											<div className="shrink-0 text-right">
 												<p className={`text-sm font-semibold ${item.status === 'positive' ? 'text-medical-danger' : 'text-medical-success'}`}>
@@ -287,6 +295,9 @@ export function PanelMedico() {
 											if (action.label === 'Nuevo diagnostico') {
 												navigate('/diagnostico')
 											}
+											if (action.label === 'Historial completo') {
+												navigate('/historial')
+											}
 										}}
 										className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors hover:bg-secondary/60"
 									>
@@ -298,6 +309,8 @@ export function PanelMedico() {
 							</div>
 						</div>
 
+						{/* "Estado del Modelo" */}
+						{/*
 						<div className="gradient-hero rounded-xl p-5 text-white">
 							<div className="mb-3 flex items-center gap-2">
 								<Activity className="h-4 w-4 text-medical-teal" />
@@ -310,6 +323,7 @@ export function PanelMedico() {
 								<span className="text-xs text-white/70">Modelo operativo · Sin incidencias</span>
 							</div>
 						</div>
+						*/}
 					</motion.div>
 				</div>
 			</main>

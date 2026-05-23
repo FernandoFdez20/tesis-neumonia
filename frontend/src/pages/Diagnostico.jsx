@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Activity,
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   Clock,
@@ -51,14 +52,16 @@ const primaryButtonClass =
 export function Diagnostico() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
-  const [image, setImage] = useState(null)
-  const [imageFile, setImageFile] = useState(null)
+  const [imagesPreview, setImagesPreview] = useState([])
+  const [imageFiles, setImageFiles] = useState([])
   const [dragActive, setDragActive] = useState(false)
   const [selectedDiseases, setSelectedDiseases] = useState([])
   const [enfermedadesCatalogo, setEnfermedadesCatalogo] = useState([])
   const [isLoadingEnfermedades, setIsLoadingEnfermedades] = useState(true)
   const [errorEnfermedades, setErrorEnfermedades] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [stepError, setStepError] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState('')
   const [submitError, setSubmitError] = useState('')
 
   const [formData, setFormData] = useState({
@@ -81,37 +84,183 @@ export function Diagnostico() {
 
   // Mantiene actualizaciones directas y legibles para todos los campos del formulario.
   const updateField = (field, value) => {
+    setStepError('')
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Convierte archivo de imagen a base64 para previsualizacion igual al flujo original.
-  const readImageFile = useCallback((file) => {
-    if (!file || !file.type.startsWith('image/')) return
-    setImageFile(file)
-    const reader = new FileReader()
-    reader.onload = (event) => setImage(event.target?.result || null)
-    reader.readAsDataURL(file)
-  }, [])
+  // Convierte y agrega imagenes nuevas al lote con limite de 4 para controlar el flujo clinico.
+  const readImageFiles = useCallback((files) => {
+    const selected = Array.from(files || []).filter((file) => file?.type?.startsWith('image/'))
+    if (!selected.length) return
+
+    setStepError('')
+    setSubmitError('')
+
+    const availableSlots = Math.max(0, 4 - imageFiles.length)
+    const filesToAdd = selected.slice(0, availableSlots)
+
+    if (!filesToAdd.length) {
+      setNotificationMessage('Solo se permiten hasta 4 imagenes por diagnostico.')
+      return
+    }
+
+    if (selected.length > availableSlots) {
+      setNotificationMessage('Se agregaron solo las primeras imagenes hasta completar el maximo de 4.')
+    }
+
+    setImageFiles((prevFiles) => [...prevFiles, ...filesToAdd])
+
+    filesToAdd.forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        setImagesPreview((prevPreview) => [...prevPreview, event.target?.result || null])
+      }
+      reader.readAsDataURL(file)
+    })
+  }, [imageFiles.length])
 
   const handleDrop = useCallback(
     (event) => {
       event.preventDefault()
       setDragActive(false)
-      const file = event.dataTransfer.files?.[0]
-      readImageFile(file)
+      readImageFiles(event.dataTransfer.files)
     },
-    [readImageFile],
+    [readImageFiles],
   )
 
   const handleFileSelect = (event) => {
-    const file = event.target.files?.[0]
-    readImageFile(file)
+    readImageFiles(event.target.files)
+    event.target.value = ''
+  }
+
+  const removeImageAt = (indexToRemove) => {
+    setImagesPreview((prev) => prev.filter((_, index) => index !== indexToRemove))
+    setImageFiles((prev) => prev.filter((_, index) => index !== indexToRemove))
   }
 
   const toggleDisease = (disease) => {
+    setStepError('')
     setSelectedDiseases((prev) =>
       prev.includes(disease) ? prev.filter((item) => item !== disease) : [...prev, disease],
     )
+  }
+
+  const isNonEmpty = (value) => String(value ?? '').trim().length > 0
+  const parseNumber = (value) => {
+    const normalized = String(value ?? '').trim().replace(',', '.')
+    if (!normalized) return null
+    const numeric = Number(normalized)
+    return Number.isFinite(numeric) ? numeric : null
+  }
+
+  const isInRange = (value, min, max) => value !== null && value >= min && value <= max
+  const isExactDni = (value) => /^\d{8}$/.test(String(value ?? '').trim())
+
+  // Valida datos minimos por paso para bloquear avances incompletos.
+  const validateStep = (stepId) => {
+    if (stepId === 1) {
+      if (!imageFiles.length || !imagesPreview.length) {
+        return 'Para continuar a "Datos del Paciente", primero debe subir al menos una radiografia.'
+      }
+      if (imageFiles.length > 4) {
+        return 'Solo se permiten hasta 4 imagenes por diagnostico.'
+      }
+      return null
+    }
+
+    if (stepId === 2) {
+      if (!isNonEmpty(formData.nombre_completo)) return 'Complete el nombre completo del paciente.'
+      if (!isNonEmpty(formData.expediente_id)) return 'Complete el DNI del paciente.'
+      if (!isExactDni(formData.expediente_id)) return 'DNI no valido: debe tener exactamente 8 digitos.'
+      if (!isNonEmpty(formData.fecha_nacimiento)) return 'Seleccione la fecha de nacimiento del paciente.'
+      if (!isNonEmpty(formData.sexo)) return 'Seleccione el sexo del paciente.'
+      if (calculatedAge === null) return 'La fecha de nacimiento no es valida.'
+      if (calculatedAge < 14) return 'Edad no valida: la edad minima permitida es 14 años.'
+      if (calculatedAge > 125) return 'Edad no valida: la edad maxima permitida es 125 años.'
+
+      const peso = parseNumber(formData.peso_kg)
+      if (isNonEmpty(formData.peso_kg) && !isInRange(peso, 20, 350)) {
+        return 'Peso no valido: ingrese un valor entre 20 y 350 kg.'
+      }
+
+      if (!isNonEmpty(formData.motivo_consulta)) {
+        return 'Complete el motivo de consulta del paciente.'
+      }
+      return null
+    }
+
+    if (stepId === 3) {
+      if (!isNonEmpty(formData.temperatura_c)) return 'Complete la temperatura del paciente.'
+      if (!isNonEmpty(formData.frecuencia_cardiaca)) return 'Complete la frecuencia cardiaca del paciente.'
+      if (!isNonEmpty(formData.frecuencia_respiratoria)) return 'Complete la frecuencia respiratoria del paciente.'
+      if (!isNonEmpty(formData.saturacion_o2)) return 'Complete la saturacion de O2 del paciente.'
+      if (!isNonEmpty(formData.presion_arterial)) return 'Complete la presion arterial del paciente.'
+      if (!isNonEmpty(formData.tiempo_evolucion_dias)) return 'Complete el tiempo de evolucion en dias.'
+      if (!isNonEmpty(formData.sintomas_principales)) return 'Complete los sintomas principales del paciente.'
+
+      const temperatura = parseNumber(formData.temperatura_c)
+      if (!isInRange(temperatura, 30, 45)) {
+        return 'Temperatura no valida: ingrese un valor entre 30 y 45 °C.'
+      }
+
+      const fc = parseNumber(formData.frecuencia_cardiaca)
+      if (!isInRange(fc, 30, 220)) {
+        return 'Frecuencia cardiaca no valida: ingrese un valor entre 30 y 220 lpm.'
+      }
+
+      const fr = parseNumber(formData.frecuencia_respiratoria)
+      if (!isInRange(fr, 8, 60)) {
+        return 'Frecuencia respiratoria no valida: ingrese un valor entre 8 y 60 rpm.'
+      }
+
+      const sat = parseNumber(formData.saturacion_o2)
+      if (!isInRange(sat, 70, 100)) {
+        return 'Saturacion O2 no valida: ingrese un valor entre 70 y 100%.'
+      }
+
+      const evolucion = parseNumber(formData.tiempo_evolucion_dias)
+      if (!isInRange(evolucion, 1, 3650)) {
+        return 'Tiempo de evolucion no valido: ingrese un valor entre 1 y 3650 dias.'
+      }
+
+      const pressureText = String(formData.presion_arterial ?? '').trim()
+      const pressureMatch = pressureText.match(/^(\d{2,3})\/(\d{2,3})$/)
+      if (!pressureMatch) {
+        return 'Presion arterial no valida: use formato SYS/DIA (ej. 120/80).'
+      }
+      const systolic = Number(pressureMatch[1])
+      const diastolic = Number(pressureMatch[2])
+      if (!(systolic > diastolic && isInRange(systolic, 70, 260) && isInRange(diastolic, 40, 160))) {
+        return 'Presion arterial no valida: use rangos realistas (ej. 120/80).'
+      }
+
+      return null
+    }
+
+    return null
+  }
+
+  // Bloquea saltos de pasos y redirige al primer paso incompleto.
+  const attemptStepChange = (targetStep) => {
+    if (targetStep <= currentStep) {
+      setStepError('')
+      setCurrentStep(targetStep)
+      return
+    }
+
+    for (let stepId = 1; stepId < targetStep; stepId += 1) {
+      const validationMessage = validateStep(stepId)
+      if (validationMessage) {
+        // Muestra una notificacion para explicar por que no permite avanzar.
+        setNotificationMessage(validationMessage)
+        setStepError(validationMessage)
+        setCurrentStep(stepId)
+        return
+      }
+    }
+
+    setStepError('')
+    setCurrentStep(targetStep)
   }
 
   useEffect(() => {
@@ -143,7 +292,15 @@ export function Diagnostico() {
     }
   }, [])
 
-  // Calcula edad exacta en anios a partir de fecha de nacimiento para evitar ingreso manual.
+  useEffect(() => {
+    if (!notificationMessage) return undefined
+    const timeoutId = setTimeout(() => {
+      setNotificationMessage('')
+    }, 3500)
+    return () => clearTimeout(timeoutId)
+  }, [notificationMessage])
+
+  // Calcula edad exacta en años a partir de fecha de nacimiento para evitar ingreso manual.
   const calculateAgeYears = (birthDate) => {
     if (!birthDate) return null
 
@@ -172,15 +329,21 @@ export function Diagnostico() {
       ...formData,
       edad: calculatedAge !== null ? String(calculatedAge) : '',
       enfermedades_cronicas: selectedDiseases,
-      radiografia_cargada: Boolean(image),
+      radiografia_cargada: imageFiles.length > 0,
     }),
-    [calculatedAge, formData, image, selectedDiseases],
+    [calculatedAge, formData, imageFiles.length, selectedDiseases],
   )
 
   // Envía el formulario completo al backend para persistir paciente, diagnostico y relacion de enfermedades.
   const handleSubmit = async () => {
-    if (!imageFile) {
-      setSubmitError('Debe cargar una radiografia antes de analizar')
+    if (!imageFiles.length) {
+      setSubmitError('Debe cargar al menos una radiografia antes de analizar')
+      setCurrentStep(1)
+      return
+    }
+
+    if (imageFiles.length > 4) {
+      setSubmitError('Maximo 4 imagenes por diagnostico')
       setCurrentStep(1)
       return
     }
@@ -189,6 +352,7 @@ export function Diagnostico() {
     setIsSubmitting(true)
 
     try {
+      // Mantiene la clave expediente_id por compatibilidad de API usando el DNI validado.
       const requestPayload = {
         nombre_completo: formData.nombre_completo,
         expediente_id: formData.expediente_id,
@@ -206,15 +370,14 @@ export function Diagnostico() {
         otros_antecedentes: formData.otros_antecedentes,
         antecedentes_familiares: formData.antecedentes_familiares,
         enfermedades_cronicas: JSON.stringify(selectedDiseases),
-        imagen_file: imageFile,
+        imagen_files: imageFiles,
       }
 
       const response = await createDiagnosticoRequest(requestPayload)
 
       navigate('/resultados', {
         state: {
-          diagnostico: payload,
-          registro: response,
+          diagnostico_id: response.diagnostico_id,
         },
       })
     } catch (error) {
@@ -244,11 +407,30 @@ export function Diagnostico() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
+        {notificationMessage && (
+          <div className="fixed right-4 top-4 z-50 w-full max-w-sm rounded-xl border border-medical-warning/30 bg-card p-4 shadow-card">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-medical-warning" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Validacion requerida</p>
+                <p className="mt-1 text-sm text-muted-foreground">{notificationMessage}</p>
+              </div>
+              <button
+                onClick={() => setNotificationMessage('')}
+                className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                aria-label="Cerrar notificacion"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mb-10 flex items-center justify-center gap-2">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center">
               <button
-                onClick={() => setCurrentStep(step.id)}
+                onClick={() => attemptStepChange(step.id)}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
                   currentStep === step.id
                     ? 'gradient-primary text-white shadow-glow'
@@ -267,62 +449,82 @@ export function Diagnostico() {
           ))}
         </div>
 
+        {stepError && (
+          <div className="mx-auto mb-6 max-w-2xl rounded-xl border border-medical-warning/30 bg-medical-warning/10 px-4 py-3 text-sm text-medical-warning">
+            {stepError}
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           {currentStep === 1 && (
             <motion.section key="step1" {...fadeSlide} className="mx-auto max-w-2xl">
               <div className="mb-8 text-center">
                 <h2 className="text-2xl font-display font-bold text-foreground">Cargar Radiografia de Torax</h2>
-                <p className="mt-2 text-muted-foreground">Suba la imagen de rayos X del paciente para el analisis</p>
+                <p className="mt-2 text-muted-foreground">Suba entre 1 y 4 imagenes de rayos X del paciente</p>
               </div>
 
-              {!image ? (
-                <div
-                  onDragOver={(event) => {
-                    event.preventDefault()
-                    setDragActive(true)
-                  }}
-                  onDragLeave={() => setDragActive(false)}
-                  onDrop={handleDrop}
-                  className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-16 text-center transition-all ${
-                    dragActive
-                      ? 'border-medical-blue bg-medical-blue/5'
-                      : 'border-border hover:border-medical-blue/50 hover:bg-secondary/30'
-                  }`}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="absolute inset-0 cursor-pointer opacity-0"
-                  />
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-medical-blue/10">
-                      <Upload className="h-8 w-8 text-medical-blue" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold text-foreground">Arrastre y suelte la radiografia aqui</p>
-                      <p className="mt-1 text-sm text-muted-foreground">o haga clic para seleccionar un archivo</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">PNG, JPG o DICOM · Maximo 25MB</p>
+              <div
+                onDragOver={(event) => {
+                  event.preventDefault()
+                  setDragActive(true)
+                }}
+                onDragLeave={() => setDragActive(false)}
+                onDrop={handleDrop}
+                className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-10 text-center transition-all ${
+                  dragActive
+                    ? 'border-medical-blue bg-medical-blue/5'
+                    : 'border-border hover:border-medical-blue/50 hover:bg-secondary/30'
+                }`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="absolute inset-0 cursor-pointer opacity-0"
+                />
+                <div className="flex flex-col items-center gap-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-medical-blue/10">
+                    <Upload className="h-8 w-8 text-medical-blue" />
                   </div>
+                  <div>
+                    <p className="text-lg font-semibold text-foreground">Arrastre y suelte radiografias aqui</p>
+                    <p className="mt-1 text-sm text-muted-foreground">o haga clic para seleccionar hasta 4 archivos</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">PNG, JPG o DICOM · Maximo 4 imagenes</p>
                 </div>
-              ) : (
-                <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card">
-                  <div className="relative">
-                    <img src={image} alt="Radiografia" className="h-96 w-full bg-black/5 object-contain" />
+              </div>
+
+              {imagesPreview.length > 0 && (
+                <div className="mt-6 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card">
+                  <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
+                    {imagesPreview.map((preview, index) => (
+                      <div key={`preview-${index}`} className="relative overflow-hidden rounded-xl border border-border/50 bg-black/5">
+                        <img src={preview} alt={`Radiografia ${index + 1}`} className="h-48 w-full object-contain" />
+                        <button
+                          onClick={() => removeImageAt(index)}
+                          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-card/90 shadow-sm transition-colors hover:bg-medical-danger hover:text-white"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between gap-2 border-t border-border/50 p-4">
+                    <div className="flex items-center gap-2 text-medical-success">
+                      <ImageIcon className="h-4 w-4" />
+                      <span className="text-sm font-medium">{imagesPreview.length} imagen(es) cargada(s)</span>
+                    </div>
                     <button
                       onClick={() => {
-                        setImage(null)
-                        setImageFile(null)
+                        setImagesPreview([])
+                        setImageFiles([])
+                        setStepError('')
                       }}
-                      className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg bg-card/90 shadow-sm transition-colors hover:bg-medical-danger hover:text-white"
+                      className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      <X className="h-4 w-4" />
+                      Limpiar todas
                     </button>
-                  </div>
-                  <div className="flex items-center gap-2 border-t border-border/50 p-4 text-medical-success">
-                    <ImageIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Imagen cargada correctamente</span>
                   </div>
                 </div>
               )}
@@ -348,11 +550,13 @@ export function Diagnostico() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">ID / Expediente</label>
+                    <label className="text-sm font-medium text-foreground">DNI</label>
                     <input
                       value={formData.expediente_id}
-                      onChange={(event) => updateField('expediente_id', event.target.value)}
-                      placeholder="Ej: PX-0000"
+                      onChange={(event) => updateField('expediente_id', event.target.value.replace(/\D/g, '').slice(0, 8))}
+                      inputMode="numeric"
+                      maxLength={8}
+                      placeholder="Ej: 12345678"
                       className={`${inputBaseClass} h-11 bg-secondary/30`}
                     />
                   </div>
@@ -368,7 +572,7 @@ export function Diagnostico() {
                       className={`${inputBaseClass} h-11 bg-secondary/30`}
                     />
                     <p className="text-xs text-muted-foreground">
-                      {calculatedAge !== null ? `Edad calculada: ${calculatedAge} anios` : 'Edad calculada: -'}
+                      {calculatedAge !== null ? `Edad calculada: ${calculatedAge} años` : 'Edad calculada: -'}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -384,7 +588,7 @@ export function Diagnostico() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Peso (kg)</label>
+                    <label className="text-sm font-medium text-foreground">Peso (kg) (20-350)</label>
                     <input
                       type="number"
                       value={formData.peso_kg}
@@ -418,12 +622,12 @@ export function Diagnostico() {
               <div className="rounded-2xl border border-border/50 bg-card p-8 shadow-card">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {[
-                    { key: 'temperatura_c', label: 'Temperatura (°C)', icon: Thermometer, placeholder: '36.5' },
-                    { key: 'frecuencia_cardiaca', label: 'Frecuencia Cardiaca (lpm)', icon: HeartPulse, placeholder: '72' },
-                    { key: 'frecuencia_respiratoria', label: 'Frecuencia Respiratoria (rpm)', icon: Wind, placeholder: '18' },
-                    { key: 'saturacion_o2', label: 'Saturacion O2 (%)', icon: Droplets, placeholder: '98' },
-                    { key: 'presion_arterial', label: 'Presion Arterial (mmHg)', icon: Activity, placeholder: '120/80' },
-                    { key: 'tiempo_evolucion_dias', label: 'Tiempo de evolucion (dias)', icon: Clock, placeholder: '3' },
+                    { key: 'temperatura_c', label: 'Temperatura (°C) (30-45)', icon: Thermometer, placeholder: '36.5' },
+                    { key: 'frecuencia_cardiaca', label: 'Frecuencia Cardiaca (lpm) (30-220)', icon: HeartPulse, placeholder: '72' },
+                    { key: 'frecuencia_respiratoria', label: 'Frecuencia Respiratoria (rpm) (8-60)', icon: Wind, placeholder: '18' },
+                    { key: 'saturacion_o2', label: 'Saturacion O2 (%) (70-100)', icon: Droplets, placeholder: '98' },
+                    { key: 'presion_arterial', label: 'Presion Arterial (mmHg) (SYS/DIA)', icon: Activity, placeholder: '120/80' },
+                    { key: 'tiempo_evolucion_dias', label: 'Tiempo de evolucion (dias) (1-3650)', icon: Clock, placeholder: '3' },
                   ].map((vital) => (
                     <div key={vital.key} className="space-y-2">
                       <label className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -540,7 +744,7 @@ export function Diagnostico() {
 
           {currentStep < 4 ? (
             <button
-              onClick={() => setCurrentStep((step) => Math.min(4, step + 1))}
+              onClick={() => attemptStepChange(Math.min(4, currentStep + 1))}
               className={`${primaryButtonClass} gradient-primary shadow-glow h-11 gap-2 font-semibold hover:opacity-90`}
             >
               Siguiente

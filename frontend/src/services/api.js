@@ -67,6 +67,10 @@ export async function createDiagnosticoRequest(payload) {
 	const formData = new FormData()
 	Object.entries(payload).forEach(([key, value]) => {
 		if (value === undefined || value === null) return
+		if (Array.isArray(value)) {
+			value.forEach((item) => formData.append(key, item))
+			return
+		}
 		formData.append(key, value)
 	})
 
@@ -104,6 +108,28 @@ export async function getRecentDiagnosticosRequest(limit = 10) {
 
 	if (!response.ok) {
 		throw new Error(data.detail || 'No se pudo obtener casos recientes')
+	}
+
+	return data
+}
+
+export async function getDiagnosticoResultadoRequest(diagnosticoId) {
+	const token = getStoredToken()
+
+	if (!token) {
+		throw new Error('No hay sesion activa')
+	}
+
+	const response = await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}/resultado`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+
+	const data = await response.json()
+
+	if (!response.ok) {
+		throw new Error(data.detail || 'No se pudo obtener resultado del diagnostico')
 	}
 
 	return data

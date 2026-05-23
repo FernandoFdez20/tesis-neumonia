@@ -42,7 +42,7 @@ export function Sidebar({ usuario }) {
       <div className="border-b border-slate-700 px-6 py-5">
         <div className="flex items-center gap-2.5">
           <Activity className="h-6 w-6 text-cyan-300" strokeWidth={2.2} />
-          <h1 className="text-2xl font-bold tracking-tight text-white">NeumoAI</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Sistema deteccion neumonia</h1>
         </div>
       </div>
 

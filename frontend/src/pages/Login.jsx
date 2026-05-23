@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Activity, Eye, EyeOff, Stethoscope } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { loginRequest } from '../services/api'
 
@@ -31,56 +31,8 @@ export function Login() {
 
   return (
     <div className="min-h-screen flex bg-slate-100">
-      <aside className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-16 bg-gradient-to-br from-slate-900 via-sky-900 to-cyan-700">
-        <div className="absolute inset-0 opacity-15">
-          {[...Array(6)].map((_, index) => (
-            <div
-              key={index}
-              className="absolute rounded-full border border-white/30"
-              style={{
-                width: `${220 + index * 110}px`,
-                height: `${220 + index * 110}px`,
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="relative z-10 text-center max-w-lg text-white">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm mb-8">
-            <Stethoscope className="w-10 h-10" />
-          </div>
-          <h1 className="text-4xl font-extrabold mb-4 leading-tight">
-            Pneumonia Insight
-          </h1>
-          <p className="text-lg text-white/80 leading-relaxed">
-            Sistema inteligente de apoyo clínico para diagnóstico presuntivo de neumonía
-          </p>
-          <div className="mt-12 flex items-center justify-center gap-8 text-white/70 text-sm">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              <span>Precisión clínica</span>
-            </div>
-            <div className="w-px h-4 bg-white/30" />
-            <div className="flex items-center gap-2">
-              <Stethoscope className="w-4 h-4" />
-              <span>Flujo médico</span>
-            </div>
-          </div>
-        </div>
-      </aside>
-
       <main className="flex-1 flex items-center justify-center p-6 lg:p-16">
         <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl p-8 lg:p-10">
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-600 to-cyan-500 flex items-center justify-center text-white">
-              <Stethoscope className="w-5 h-5" />
-            </div>
-            <span className="text-xl font-bold text-slate-900">Pneumonia Insight</span>
-          </div>
-
           <h2 className="text-3xl font-bold text-slate-900 mb-2">Bienvenido</h2>
           <p className="text-slate-500 mb-8">
             Ingrese sus credenciales para acceder al sistema
@@ -128,7 +80,7 @@ export function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-sky-600 to-cyan-500 hover:opacity-90 disabled:opacity-70 transition"
+              className="w-full py-3 rounded-xl text-white font-semibold bg-linear-to-r from-sky-600 to-cyan-500 hover:opacity-90 disabled:opacity-70 transition"
             >
               {isLoading ? 'Validando...' : 'Iniciar sesión'}
             </button>
@@ -141,7 +93,7 @@ export function Login() {
           </form>
 
           <p className="mt-8 text-center text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} NeumoAI. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Sistema deteccion neumonia. Todos los derechos reservados.
           </p>
         </div>
       </main>
