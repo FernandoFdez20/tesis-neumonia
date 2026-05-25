@@ -85,6 +85,114 @@ La interfaz web estará disponible en `http://localhost:5173`.
 * *(Próximamente)* `POST /diagnosticar/` : Endpoint para procesar radiografías.
 
 ---
+## frontend:
 
+src/
+├── app/
+├── components/
+│   ├── ui/
+│   ├── layout/
+│   └── shared/
+├── pages/
+│   ├── auth/
+│   ├── nurse/
+│   ├── doctor/
+│   └── technician/
+├── routes/
+├── services/
+├── hooks/
+├── lib/
+├── types/
+├── store/
+└── main.tsx
+
+## backend
+backend/
+├── app/
+│
+├── main.py
+│
+├── api/
+│   ├── deps.py
+│   ├── router.py
+│   └── middleware/
+│
+├── core/
+│   ├── config.py
+│   ├── security.py
+│   ├── database.py
+│   ├── exceptions.py
+│   ├── logger.py
+│   └── constants.py
+│
+├── modules/
+│   │
+│   ├── auth/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── repository.py
+│   │   ├── schemas.py
+│   │   ├── models.py
+│   │   ├── dependencies.py
+│   │   └── utils.py
+│   │
+│   ├── users/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── repository.py
+│   │   ├── schemas.py
+│   │   └── models.py
+│   │
+│   ├── patients/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── repository.py
+│   │   ├── schemas.py
+│   │   └── models.py
+│   │
+│   ├── xrays/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── repository.py
+│   │   ├── schemas.py
+│   │   └── models.py
+│   │
+│   ├── diagnosis/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── repository.py
+│   │   ├── schemas.py
+│   │   ├── models.py
+│   │   └── inference.py
+│   │
+│   ├── reports/
+│   │   ├── routes.py
+│   │   ├── service.py
+│   │   ├── pdf_generator.py
+│   │   └── schemas.py
+│   │
+│   └── notifications/
+│       ├── websocket.py
+│       ├── service.py
+│       └── schemas.py
+│
+├── ml/
+│   ├── models/
+│   ├── preprocessing/
+│   ├── inference/
+│   ├── explainability/
+│   └── prioritization/
+│
+├── shared/
+│   ├── utils/
+│   ├── enums/
+│   ├── types/
+│   └── validators/
+│
+├── tests/
+│
+├── requirements.txt
+│
+└── .env
 ## 👨‍💻 Autor
 **Fernando Fernandez** *Desarrollado como proyecto de tesis en ingeniería de tecnologías de la información.*
