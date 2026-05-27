@@ -1,71 +1,88 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import {
-	Field,
-	FieldDescription,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export function LoginForm({
-	className,
-	...props
+  className,
+  ...props
 }: React.ComponentProps<"div">) {
-	return (
-		<div className={cn("flex flex-col gap-6", className)} {...props}>
-			<Card>
-				<CardHeader className="flex flex-col items-center gap-1 text-center">
-					<CardTitle className="text-2xl font-bold my-3">
-						Iniciar sesión
-					</CardTitle>
-					<CardDescription className="text-sm text-balance text-muted-foreground">
-						Inicia sesión con tu cuenta para continuar.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<form>
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor="usuario">Usuario</FieldLabel>
-								<Input
-									id="usuario"
-									type="text"
-									placeholder="Nombre de usuario"
-									required
-								/>
-							</Field>
-							<Field>
-								<div className="flex items-center">
-									<FieldLabel htmlFor="password">Contraseña</FieldLabel>
-									<a
-										href="#"
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-									>
-										¿Olvidaste tu contraseña?
-									</a>
-								</div>
-								<Input id="password" type="password" required />
-							</Field>
-							<Field>
-								<Button variant="default" size="lg" type="submit">
-									Iniciar sesión
-								</Button>
-								<FieldDescription className="text-center">
-									¿No tienes una cuenta? <a href="#">Regístrate</a>
-								</FieldDescription>
-							</Field>
-						</FieldGroup>
-					</form>
-				</CardContent>
-			</Card>
-		</div>
-	);
+  return (
+    <div className={cn("flex flex-col gap-5", className)} {...props}>
+      {/* Encabezado del formulario */}
+      <div className="space-y-1">
+        <h2 className="text-xl font-bold text-foreground tracking-tight">
+          Iniciar sesión
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Ingresa tus credenciales institucionales para acceder al sistema.
+        </p>
+      </div>
+
+      <Card className="shadow-none border-border/80">
+        <CardHeader className="pb-2 pt-5 px-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">
+            Acceso clínico
+          </p>
+        </CardHeader>
+        <CardContent className="px-5 pb-5">
+          <form className="space-y-4">
+            {/* Campo usuario */}
+            <div className="space-y-1.5">
+              <Label htmlFor="usuario" className="text-sm font-medium text-foreground">
+                Usuario
+              </Label>
+              <Input
+                id="usuario"
+                type="text"
+                placeholder="Nombre de usuario"
+                autoComplete="username"
+                required
+                className="h-10"
+              />
+            </div>
+
+            {/* Campo contraseña */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-sm font-medium text-foreground">
+                  Contraseña
+                </Label>
+                <a
+                  href="#"
+                  className="text-xs text-primary hover:underline underline-offset-4 transition-colors"
+                >
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="h-10"
+              />
+            </div>
+
+            {/* Botón de acceso */}
+            <div className="pt-1">
+              <Button type="submit" size="lg" className="w-full h-10 font-semibold">
+                Ingresar al sistema
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Pie del formulario */}
+      <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5">
+        <span className="mt-0.5 size-1.5 shrink-0 rounded-full bg-amber-400" />
+        <p className="text-xs text-amber-700 leading-relaxed">
+          Herramienta de apoyo presuntivo.{" "}
+          <span className="font-semibold">Validación médica siempre requerida.</span>
+        </p>
+      </div>
+    </div>
+  )
 }

@@ -5,20 +5,12 @@ export const PATHS = {
     LOGIN: "/login",
     FORGOT_PASSWORD: "/forgot-password",
 
-    // Dashboard
+    // App
+    APP: "/app",
     DASHBOARD: "/dashboard",
 
-    // Patients
-    PATIENTS: "/patients",
-    NEW_PATIENT: "/patients/new",
-
-    // Diagnosis
-    DIAGNOSIS: "/diagnosis",
-    UPLOAD_XRAY: "/diagnosis/upload",
-
-    // Reports
-    REPORTS: "/reports",
-
-    // Settings
-    SETTINGS: "/settings",
+    // Pacientes
+    PATIENTS: "/pacientes",
+    REGISTER_PATIENT: "/pacientes/registrar",
+    NEW_ATTENTION: "/pacientes/nueva-atencion",
 } as const;
