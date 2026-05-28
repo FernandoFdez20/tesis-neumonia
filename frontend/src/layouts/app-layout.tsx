@@ -1,8 +1,9 @@
 import { Bell } from "lucide-react"
 import { Outlet } from "react-router-dom"
 
+import { RegistroAtencionProvider } from "@/components/atenciones/registro-atencion-provider"
 import { AppSidebar } from "@/components/app-sidebar"
-import { PatientRegistrationProvider } from "@/components/patients/patient-registration-provider"
+import { RegistroPacienteProvider } from "@/components/pacientes/registro-paciente-provider"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -15,10 +16,11 @@ import { CommandPalette, CommandPaletteTrigger } from "@/components/shared/comma
 
 export function AppLayout() {
   return (
-    <PatientRegistrationProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
+    <RegistroAtencionProvider>
+      <RegistroPacienteProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
           {/* ── Header ──────────────────────────────────────────── */}
           <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border/40 bg-background/90 px-5 md:px-6 backdrop-blur-xl transition-all duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
             <SidebarTrigger className="-ml-1 size-8 text-muted-foreground/80 hover:text-foreground hover:bg-accent/80 transition-all duration-200 rounded-lg cursor-pointer" />
@@ -30,7 +32,7 @@ export function AppLayout() {
               <p className="text-sm font-bold text-foreground/90 leading-none tracking-tight truncate">
                 Sistema clínico de neumonía
               </p>
-              <p className="text-[11px] text-muted-foreground/65 leading-none font-medium mt-1.5">
+              <p className="text-xs text-muted-foreground/70 leading-none font-medium mt-1.5">
                 Evaluación presuntiva · Adultos
               </p>
             </div>
@@ -70,8 +72,8 @@ export function AppLayout() {
             {/* Usuario con Dropdown */}
             <div className="flex items-center gap-2.5 pl-1">
               <div className="hidden sm:flex flex-col items-end leading-none gap-1">
-                <span className="text-xs font-bold text-foreground/85">Dr. Fernández</span>
-                <span className="text-[10px] text-muted-foreground/60 font-semibold">Médico residente</span>
+                <span className="text-md font-bold text-foreground/85">Dr. Fernández</span>
+                <span className="text-xs text-muted-foreground/65 font-semibold">Médico residente</span>
               </div>
               <UserNav />
             </div>
@@ -81,8 +83,9 @@ export function AppLayout() {
           <main className="flex-1 p-4 md:p-6 lg:p-8">
             <Outlet />
           </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </PatientRegistrationProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </RegistroPacienteProvider>
+    </RegistroAtencionProvider>
   )
 }

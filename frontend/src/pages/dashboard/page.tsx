@@ -48,7 +48,7 @@ export default function DashboardPage() {
       {/* Header del dashboard con stagger */}
       <StaggerContainer className="space-y-2 pb-1" delay={80}>
         <StaggerItem index={0}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary/70 leading-none">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary/70 leading-none">
             Panel principal
           </p>
         </StaggerItem>
@@ -58,7 +58,7 @@ export default function DashboardPage() {
           </h1>
         </StaggerItem>
         <StaggerItem index={2}>
-          <p className="max-w-3xl text-sm text-muted-foreground/70 leading-relaxed font-medium">
+          <p className="max-w-3xl text-base text-muted-foreground/70 leading-relaxed font-medium">
             Evaluación presuntiva de neumonía en adultos, priorización dinámica y
             seguimiento de atenciones pendientes de validación médica.
           </p>

@@ -35,8 +35,8 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-semibold text-foreground/90">Dr. Fernández</p>
-            <p className="text-xs text-muted-foreground/60">Médico residente</p>
+            <p className="text-base font-semibold text-foreground/90">Dr. Fernández</p>
+            <p className="text-sm text-muted-foreground/65">Médico residente</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

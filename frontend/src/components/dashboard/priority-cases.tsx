@@ -47,13 +47,13 @@ export function PriorityCases() {
             <CardTitle className="text-base font-bold text-foreground/90 tracking-tight">
               Casos prioritarios
             </CardTitle>
-            <CardDescription className="mt-1.5 text-xs text-muted-foreground/65 font-medium">
+            <CardDescription className="mt-1.5 text-sm text-muted-foreground/70 font-medium">
               Priorización clínica referencial, no concluyente.
             </CardDescription>
           </div>
           <Link
             to="#"
-            className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
+            className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
           >
             Ver todas
             <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
@@ -77,18 +77,18 @@ export function PriorityCases() {
                   <p className="text-sm font-bold text-foreground/90 tracking-tight">
                     {caseItem.patient}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60 font-bold font-mono tracking-wider mt-0.5">
+                  <p className="text-xs text-muted-foreground/65 font-bold font-mono tracking-wider mt-0.5">
                     {caseItem.id}
                   </p>
                 </div>
                 <Badge
                   variant={caseItem.badgeVariant}
-                  className="text-[10px] px-2.5 py-0.5 rounded-full font-bold"
+                  className="text-xs px-2.5 py-0.5 rounded-full font-bold"
                 >
                   {caseItem.severity}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground/80 leading-relaxed font-medium">
+              <p className="text-sm text-muted-foreground/80 leading-relaxed font-medium">
                 {caseItem.detail}
               </p>
             </div>

@@ -1,7 +1,8 @@
 import { Activity, ClipboardPlus, Home, LogOut, UserRoundPlus, UsersRound } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { usePatientRegistration } from "@/components/patients/use-patient-registration"
+import { useRegistroAtencion } from "@/components/atenciones/use-registro-atencion"
+import { useRegistroPaciente } from "@/components/pacientes/use-registro-paciente"
 import { PATHS } from "@/routes/paths"
 import {
   Sidebar,
@@ -21,21 +22,27 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const patientRoutes: string[] = [PATHS.NEW_ATTENTION]
+const rutasPacientes: string[] = [PATHS.NEW_ATTENTION]
 
 export function AppSidebar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { setOpenMobile } = useSidebar()
-  const { openNewPatientDialog } = usePatientRegistration()
-  const isPatientRoute = patientRoutes.includes(pathname)
+  const { abrirDialogoNuevaAtencion } = useRegistroAtencion()
+  const { abrirDialogoNuevoPaciente } = useRegistroPaciente()
+  const esRutaPaciente = rutasPacientes.includes(pathname)
 
-  function handleLogout() {
+  function handleCerrarSesion() {
     navigate(PATHS.LOGIN)
   }
 
-  function handleRegisterPatient() {
-    openNewPatientDialog()
+  function handleRegistrarPaciente() {
+    abrirDialogoNuevoPaciente()
+    setOpenMobile(false)
+  }
+
+  function handleNuevaAtencion() {
+    abrirDialogoNuevaAtencion()
     setOpenMobile(false)
   }
 
@@ -86,7 +93,7 @@ export function AppSidebar() {
               {/* Pacientes */}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  isActive={isPatientRoute}
+                  isActive={esRutaPaciente}
                   tooltip="Pacientes"
                   className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
                 >
@@ -100,7 +107,7 @@ export function AppSidebar() {
                       isActive={false}
                       className="h-9 px-3 rounded-lg transition-all duration-200 hover:bg-accent/60"
                     >
-                      <button type="button" onClick={handleRegisterPatient}>
+                      <button type="button" onClick={handleRegistrarPaciente}>
                         <UserRoundPlus className="size-4" strokeWidth={2} />
                         <span className="font-medium">Registrar paciente</span>
                       </button>
@@ -109,13 +116,13 @@ export function AppSidebar() {
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton
                       asChild
-                      isActive={pathname === PATHS.NEW_ATTENTION}
+                      isActive={false}
                       className="h-9 px-3 rounded-lg transition-all duration-200 hover:bg-accent/60 data-active:bg-primary/8 data-active:text-primary"
                     >
-                      <Link to={PATHS.NEW_ATTENTION}>
+                      <button type="button" onClick={handleNuevaAtencion}>
                         <ClipboardPlus className="size-4" strokeWidth={2} />
                         <span className="font-medium">Nueva atención</span>
-                      </Link>
+                      </button>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>
@@ -147,7 +154,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Salir del sistema"
-              onClick={handleLogout}
+              onClick={handleCerrarSesion}
               className="h-10 px-3 rounded-xl text-muted-foreground/80 hover:bg-red-500/5 hover:text-red-600 hover:border-red-500/10 border border-transparent transition-all duration-200 [&_svg]:text-muted-foreground/60 hover:[&_svg]:text-red-500"
             >
               <LogOut className="size-[18px]" strokeWidth={2} />

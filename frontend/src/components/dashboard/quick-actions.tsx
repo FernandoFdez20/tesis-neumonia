@@ -1,7 +1,7 @@
 import { ClipboardPlus, UserRoundPlus } from "lucide-react"
-import { Link } from "react-router-dom"
 
-import { usePatientRegistration } from "@/components/patients/use-patient-registration"
+import { useRegistroAtencion } from "@/components/atenciones/use-registro-atencion"
+import { useRegistroPaciente } from "@/components/pacientes/use-registro-paciente"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,19 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { PATHS } from "@/routes/paths"
 
 export function QuickActions() {
-  const { openNewPatientDialog } = usePatientRegistration()
+  const { abrirDialogoNuevaAtencion } = useRegistroAtencion()
+  const { abrirDialogoNuevoPaciente } = useRegistroPaciente()
 
   return (
     <Card className="hover:shadow-md transition-all duration-300">
       <CardHeader className="pb-3 md:pb-4 flex flex-row items-center justify-between gap-4">
         <div>
-          <CardTitle className="text-[11px] font-bold text-muted-foreground/50 uppercase tracking-[0.12em] leading-none">
+          <CardTitle className="text-xs font-bold text-muted-foreground/55 uppercase tracking-[0.12em] leading-none">
             Accesos rápidos
           </CardTitle>
-          <CardDescription className="mt-2 text-xs text-muted-foreground/70 leading-relaxed font-medium">
+          <CardDescription className="mt-2 text-sm text-muted-foreground/75 leading-relaxed font-medium">
             Flujos principales para el registro clínico inicial en el sistema.
           </CardDescription>
         </div>
@@ -32,21 +32,20 @@ export function QuickActions() {
           type="button"
           size="lg"
           className="h-11 justify-center sm:justify-start gap-2.5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer font-semibold rounded-xl bg-primary hover:bg-primary/90 px-5 flex-1 sm:flex-initial hover:scale-[1.02] active:scale-[0.98]"
-          onClick={openNewPatientDialog}
+          onClick={abrirDialogoNuevoPaciente}
         >
           <UserRoundPlus className="size-[18px] shrink-0 text-white/95" strokeWidth={2} />
           <span>Registrar paciente</span>
         </Button>
         <Button
-          asChild
+          type="button"
           variant="outline"
           size="lg"
           className="justify-center sm:justify-start gap-2.5 h-11 hover:bg-accent/60 hover:text-accent-foreground hover:border-border/60 transition-all duration-300 cursor-pointer font-semibold rounded-xl shadow-sm px-5 flex-1 sm:flex-initial hover:scale-[1.02] active:scale-[0.98]"
+          onClick={abrirDialogoNuevaAtencion}
         >
-          <Link to={PATHS.NEW_ATTENTION}>
-            <ClipboardPlus className="size-[18px] shrink-0 text-muted-foreground/70 group-hover:text-foreground/90" strokeWidth={2} />
-            <span>Nueva atención</span>
-          </Link>
+          <ClipboardPlus className="size-[18px] shrink-0 text-muted-foreground/70 group-hover:text-foreground/90" strokeWidth={2} />
+          <span>Crear Nueva Atención</span>
         </Button>
       </CardContent>
     </Card>

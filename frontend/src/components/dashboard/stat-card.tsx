@@ -63,7 +63,7 @@ export function StatCard({
       size="sm"
     >
       <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
-        <CardTitle className="text-[11px] font-bold text-muted-foreground/50 uppercase tracking-[0.12em] leading-none">
+        <CardTitle className="text-xs font-bold text-muted-foreground/55 uppercase tracking-[0.12em] leading-none">
           {title}
         </CardTitle>
         <CardAction className="m-0 col-start-auto row-span-auto row-start-auto">
@@ -86,7 +86,7 @@ export function StatCard({
         >
           {value}
         </p>
-        <p className="mt-1.5 text-[11px] font-medium text-muted-foreground/70 leading-normal">
+        <p className="mt-1.5 text-sm font-medium text-muted-foreground/75 leading-normal">
           {description}
         </p>
       </CardContent>

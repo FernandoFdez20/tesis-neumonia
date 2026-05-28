@@ -93,13 +93,13 @@ export function RecentAttentionsTable() {
             <CardTitle className="text-base font-bold text-foreground/90 tracking-tight">
               Atenciones recientes
             </CardTitle>
-            <CardDescription className="mt-1.5 text-xs text-muted-foreground/65 font-medium">
+            <CardDescription className="mt-1.5 text-sm text-muted-foreground/70 font-medium">
               Registros de hoy · {allAttentions.length} atenciones
             </CardDescription>
           </div>
           <Link
             to="#"
-            className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
+            className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
           >
             Ver todas
             <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
@@ -154,7 +154,7 @@ export function RecentAttentionsTable() {
         {/* Paginación */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 px-1">
-            <p className="text-xs text-muted-foreground/60 font-medium">
+            <p className="text-sm text-muted-foreground/65 font-medium">
               Página {currentPage} de {totalPages}
             </p>
             <div className="flex items-center gap-1.5">
