@@ -18,7 +18,7 @@ const priorityCases = [
     severity: "Grave",
     detail: "Saturación baja y compromiso respiratorio referido",
     badgeVariant: "grave" as const,
-    borderColor: "border-l-red-500/80 hover:border-l-red-500 hover:bg-red-500/[0.015]",
+    borderColor: "border-l-red-500/70 hover:border-l-red-500 hover:bg-red-500/[0.02]",
   },
   {
     id: "CP-220",
@@ -26,7 +26,7 @@ const priorityCases = [
     severity: "Moderada",
     detail: "Fiebre persistente y factores de riesgo en adulto mayor",
     badgeVariant: "moderado" as const,
-    borderColor: "border-l-amber-500/80 hover:border-l-amber-500 hover:bg-amber-500/[0.015]",
+    borderColor: "border-l-amber-500/70 hover:border-l-amber-500 hover:bg-amber-500/[0.02]",
   },
   {
     id: "CP-219",
@@ -34,37 +34,39 @@ const priorityCases = [
     severity: "Alta prioridad",
     detail: "Pendiente de validación médica por criterios clínicos",
     badgeVariant: "pendiente" as const,
-    borderColor: "border-l-sky-500/80 hover:border-l-sky-500 hover:bg-sky-500/[0.015]",
+    borderColor: "border-l-sky-500/70 hover:border-l-sky-500 hover:bg-sky-500/[0.02]",
   },
 ]
 
 export function PriorityCases() {
   return (
-    <Card>
+    <Card className="transition-all duration-300 hover:shadow-md">
       <CardHeader className="pb-3 md:pb-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle>Casos prioritarios</CardTitle>
-            <CardDescription className="mt-1">
+            <CardTitle className="text-base font-bold text-foreground/90 tracking-tight">
+              Casos prioritarios
+            </CardTitle>
+            <CardDescription className="mt-1.5 text-xs text-muted-foreground/65 font-medium">
               Priorización clínica referencial, no concluyente.
             </CardDescription>
           </div>
           <Link
             to="#"
-            className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors mt-0.5 tracking-tight"
+            className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
           >
             Ver todas
-            <ArrowRight className="size-3" strokeWidth={2.2} />
+            <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 pt-0">
+      <CardContent className="space-y-2.5 pt-0">
         {priorityCases.map((caseItem) => (
           <Link
             key={caseItem.id}
             to={`/casos/${caseItem.id}`}
             className={cn(
-              "group flex items-start justify-between gap-2.5 rounded-xl border border-border/40 bg-background/30 p-3.5 border-l-[3px] transition-all duration-200 hover:border-l-[4px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 shadow-xs hover:shadow-sm",
+              "group flex items-start justify-between gap-3 rounded-xl border border-border/30 bg-background/40 p-4 border-l-[3px] transition-all duration-300 hover:border-l-[4px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 shadow-xs hover:shadow-md hover:bg-background/60 hover:-translate-y-px",
               caseItem.borderColor
             )}
             aria-label={`Ver detalle del caso ${caseItem.id} — ${caseItem.patient}`}
@@ -72,18 +74,25 @@ export function PriorityCases() {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
-                  <p className="text-sm font-bold text-foreground/95 tracking-tight">{caseItem.patient}</p>
-                  <p className="text-[10px] text-muted-foreground/70 font-bold font-mono tracking-wider mt-0.5">{caseItem.id}</p>
+                  <p className="text-sm font-bold text-foreground/90 tracking-tight">
+                    {caseItem.patient}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/60 font-bold font-mono tracking-wider mt-0.5">
+                    {caseItem.id}
+                  </p>
                 </div>
-                <Badge variant={caseItem.badgeVariant} className="text-[10px] px-2 py-0.5 rounded-full font-bold">
+                <Badge
+                  variant={caseItem.badgeVariant}
+                  className="text-[10px] px-2.5 py-0.5 rounded-full font-bold"
+                >
                   {caseItem.severity}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
+              <p className="text-xs text-muted-foreground/80 leading-relaxed font-medium">
                 {caseItem.detail}
               </p>
             </div>
-            <ChevronRight className="size-4 shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors duration-200 mt-1" />
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60 group-hover:translate-x-0.5 transition-all duration-200 mt-1" />
           </Link>
         ))}
       </CardContent>

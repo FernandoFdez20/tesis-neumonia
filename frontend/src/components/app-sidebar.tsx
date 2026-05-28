@@ -44,11 +44,9 @@ export function AppSidebar() {
       {/* ── Brand ──────────────────────────────────────────── */}
       <SidebarHeader className="px-4 py-5">
         <div className="flex items-center gap-3">
-          {/* Logotipo: cuadrado con icono clínico */}
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105">
             <Activity className="size-4.5" strokeWidth={2.4} />
           </div>
-          {/* Nombre y subtítulo */}
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <p className="truncate text-[15px] font-extrabold tracking-tight text-foreground leading-tight">
               NeumoCare
@@ -60,46 +58,51 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      {/* Divisor con margen horizontal */}
-      <div className="mx-4 h-px bg-sidebar-border/60 group-data-[collapsible=icon]:mx-2" />
+      <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent group-data-[collapsible=icon]:mx-2" />
 
       {/* ── Navegación ─────────────────────────────────────── */}
-      <SidebarContent className="px-2 pt-3">
+      <SidebarContent className="px-3 pt-4">
         <SidebarGroup className="p-0">
-          <SidebarGroupLabel className="px-2.5 mb-1.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
+          <SidebarGroupLabel className="px-2.5 mb-2 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/50">
             Navegación
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-1.5">
               {/* Dashboard */}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === PATHS.DASHBOARD || pathname === PATHS.APP}
                   tooltip="Página principal"
+                  className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
                 >
                   <Link to={PATHS.DASHBOARD}>
-                    <Home />
-                    <span>Página principal</span>
+                    <Home className="size-[18px]" strokeWidth={2} />
+                    <span className="font-medium">Página principal</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Pacientes */}
               <SidebarMenuItem>
-                <SidebarMenuButton isActive={isPatientRoute} tooltip="Pacientes">
-                  <UsersRound />
-                  <span>Pacientes</span>
+                <SidebarMenuButton
+                  isActive={isPatientRoute}
+                  tooltip="Pacientes"
+                  className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
+                >
+                  <UsersRound className="size-[18px]" strokeWidth={2} />
+                  <span className="font-medium">Pacientes</span>
                 </SidebarMenuButton>
-                <SidebarMenuSub className="ml-3.5 pl-3 border-l border-sidebar-border/50 gap-1.5 py-1">
+                <SidebarMenuSub className="ml-3.5 pl-3 border-l border-border/50 gap-1 py-1.5">
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton
                       asChild
                       isActive={false}
+                      className="h-9 px-3 rounded-lg transition-all duration-200 hover:bg-accent/60"
                     >
                       <button type="button" onClick={handleRegisterPatient}>
-                        <UserRoundPlus />
-                        <span>Registrar paciente</span>
+                        <UserRoundPlus className="size-4" strokeWidth={2} />
+                        <span className="font-medium">Registrar paciente</span>
                       </button>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
@@ -107,10 +110,11 @@ export function AppSidebar() {
                     <SidebarMenuSubButton
                       asChild
                       isActive={pathname === PATHS.NEW_ATTENTION}
+                      className="h-9 px-3 rounded-lg transition-all duration-200 hover:bg-accent/60 data-active:bg-primary/8 data-active:text-primary"
                     >
                       <Link to={PATHS.NEW_ATTENTION}>
-                        <ClipboardPlus />
-                        <span>Nueva atención</span>
+                        <ClipboardPlus className="size-4" strokeWidth={2} />
+                        <span className="font-medium">Nueva atención</span>
                       </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
@@ -122,22 +126,21 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* ── Footer ─────────────────────────────────────────── */}
-      <SidebarFooter className="px-2 pb-4 pt-2 gap-3">
+      <SidebarFooter className="px-3 pb-4 pt-2 gap-3">
         {/* Aviso clínico */}
-        <div className="mx-1.5 rounded-xl bg-accent/40 border border-accent-foreground/5 p-3 group-data-[collapsible=icon]:hidden transition-all duration-200">
+        <div className="mx-1 rounded-xl bg-gradient-to-br from-primary/5 to-primary/[0.02] border border-primary/10 p-3.5 group-data-[collapsible=icon]:hidden transition-all duration-200 hover:border-primary/15">
           <div className="flex items-start gap-2.5">
-            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/60" />
+            <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary/60 animate-pulse" />
             <p className="text-[11px] leading-relaxed text-muted-foreground/80 font-medium">
               Apoyo presuntivo.{" "}
-              <span className="font-semibold text-foreground/75">
+              <span className="font-semibold text-foreground/70">
                 Validación médica siempre requerida.
               </span>
             </p>
           </div>
         </div>
 
-        {/* Divisor */}
-        <div className="mx-2 h-px bg-sidebar-border/60 group-data-[collapsible=icon]:hidden" />
+        <div className="mx-2 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent group-data-[collapsible=icon]:hidden" />
 
         {/* Salir del sistema */}
         <SidebarMenu>
@@ -145,10 +148,10 @@ export function AppSidebar() {
             <SidebarMenuButton
               tooltip="Salir del sistema"
               onClick={handleLogout}
-              className="group/logout text-muted-foreground/80 hover:bg-red-500/5 hover:text-red-600 hover:border-red-500/10 border border-transparent transition-all duration-200 [&_svg]:text-muted-foreground/60 hover:[&_svg]:text-red-500"
+              className="h-10 px-3 rounded-xl text-muted-foreground/80 hover:bg-red-500/5 hover:text-red-600 hover:border-red-500/10 border border-transparent transition-all duration-200 [&_svg]:text-muted-foreground/60 hover:[&_svg]:text-red-500"
             >
-              <LogOut />
-              <span>Salir del sistema</span>
+              <LogOut className="size-[18px]" strokeWidth={2} />
+              <span className="font-medium">Salir del sistema</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
