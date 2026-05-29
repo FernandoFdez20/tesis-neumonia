@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuth } from "@/context/auth-context"
 import { login } from "@/services/auth.service"
 import { PATHS } from "@/routes/paths"
 
@@ -16,7 +15,6 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
-  const { guardarSesion } = useAuth()
 
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -28,7 +26,11 @@ export function LoginForm({
 
     try {
       const { access_token, usuario } = await login(username, password)
-      guardarSesion(access_token, usuario)
+
+      // Guardamos el token y el usuario para usarlos en el resto de la app
+      localStorage.setItem("token", access_token)
+      localStorage.setItem("usuario", JSON.stringify(usuario))
+
       navigate(PATHS.DASHBOARD, { replace: true })
     } catch {
       toast.error("Usuario o contraseña incorrectos")

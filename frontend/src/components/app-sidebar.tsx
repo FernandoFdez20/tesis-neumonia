@@ -2,7 +2,6 @@ import { Activity, ClipboardPlus, Home, LogOut, UserRoundPlus, UsersRound } from
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import { PATHS } from "@/routes/paths"
-import { useAuth } from "@/context/auth-context"
 import {
   Sidebar,
   SidebarContent,
@@ -32,11 +31,12 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { setOpenMobile } = useSidebar()
-  const { cerrarSesion } = useAuth()
   const esRutaPaciente = rutasPacientes.includes(pathname)
 
   function handleCerrarSesion() {
-    cerrarSesion()
+    // Limpiamos la sesión del navegador y redirigimos al login
+    localStorage.removeItem("token")
+    localStorage.removeItem("usuario")
     navigate(PATHS.LOGIN, { replace: true })
   }
 
