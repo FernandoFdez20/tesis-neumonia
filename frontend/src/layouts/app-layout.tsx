@@ -1,9 +1,12 @@
+import { useEffect } from "react"
 import { Bell } from "lucide-react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 
-import { RegistroAtencionProvider } from "@/components/atenciones/registro-atencion-provider"
+import { DialogNuevaAtencion } from "@/components/atenciones/nueva-atencion-dialog"
+import { useAtenciones } from "@/components/atenciones/use-atenciones"
 import { AppSidebar } from "@/components/app-sidebar"
-import { RegistroPacienteProvider } from "@/components/pacientes/registro-paciente-provider"
+import { DialogNuevoPaciente } from "@/components/pacientes/nuevo-paciente-dialog"
+import { usePacientes } from "@/components/pacientes/use-pacientes"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -13,14 +16,50 @@ import {
 } from "@/components/ui/sidebar"
 import { UserNav } from "@/components/shared/user-nav"
 import { CommandPalette, CommandPaletteTrigger } from "@/components/shared/command-palette"
+import { PATHS } from "@/routes/paths"
 
 export function AppLayout() {
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const {
+    dialogNuevoPacienteAbierto,
+    setDialogNuevoPacienteAbierto,
+    abrirDialogoNuevoPaciente,
+    pacientesRegistrados,
+    agregarPacienteRegistrado,
+  } = usePacientes()
+  const {
+    dialogNuevaAtencionAbierto,
+    setDialogNuevaAtencionAbierto,
+    abrirDialogoNuevaAtencion,
+  } = useAtenciones()
+
+  useEffect(() => {
+    if (pathname === PATHS.REGISTER_PATIENT) {
+      abrirDialogoNuevoPaciente()
+      navigate(PATHS.DASHBOARD, { replace: true })
+      return
+    }
+
+    if (pathname === PATHS.NEW_ATTENTION) {
+      abrirDialogoNuevaAtencion()
+      navigate(PATHS.DASHBOARD, { replace: true })
+    }
+  }, [pathname, navigate, abrirDialogoNuevoPaciente, abrirDialogoNuevaAtencion])
+
+  function abrirRegistroPacienteDesdeAtencion() {
+    setDialogNuevaAtencionAbierto(false)
+    abrirDialogoNuevoPaciente()
+  }
+
   return (
-    <RegistroAtencionProvider>
-      <RegistroPacienteProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
+    <>
+      <SidebarProvider>
+        <AppSidebar
+          onRegistrarPaciente={abrirDialogoNuevoPaciente}
+          onNuevaAtencion={abrirDialogoNuevaAtencion}
+        />
+        <SidebarInset>
           {/* ── Header ──────────────────────────────────────────── */}
           <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border/40 bg-background/90 px-5 md:px-6 backdrop-blur-xl transition-all duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
             <SidebarTrigger className="-ml-1 size-8 text-muted-foreground/80 hover:text-foreground hover:bg-accent/80 transition-all duration-200 rounded-lg cursor-pointer" />
@@ -83,9 +122,20 @@ export function AppLayout() {
           <main className="flex-1 p-4 md:p-6 lg:p-8">
             <Outlet />
           </main>
-          </SidebarInset>
-        </SidebarProvider>
-      </RegistroPacienteProvider>
-    </RegistroAtencionProvider>
+        </SidebarInset>
+      </SidebarProvider>
+      <DialogNuevaAtencion
+        abierto={dialogNuevaAtencionAbierto}
+        onCambioAbierto={setDialogNuevaAtencionAbierto}
+        onRegistrarPaciente={abrirRegistroPacienteDesdeAtencion}
+      />
+      <DialogNuevoPaciente
+        abierto={dialogNuevoPacienteAbierto}
+        onCambioAbierto={setDialogNuevoPacienteAbierto}
+        onRegistrarCita={abrirDialogoNuevaAtencion}
+        pacientesRegistrados={pacientesRegistrados}
+        agregarPacienteRegistrado={agregarPacienteRegistrado}
+      />
+    </>
   )
 }

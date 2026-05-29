@@ -1,7 +1,5 @@
 import { ClipboardPlus, UserRoundPlus } from "lucide-react"
 
-import { useRegistroAtencion } from "@/components/atenciones/use-registro-atencion"
-import { useRegistroPaciente } from "@/components/pacientes/use-registro-paciente"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,11 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  solicitarAbrirRegistroAtencion,
+  solicitarAbrirRegistroPaciente,
+} from "@/lib/registro-clinico-events"
 
 export function QuickActions() {
-  const { abrirDialogoNuevaAtencion } = useRegistroAtencion()
-  const { abrirDialogoNuevoPaciente } = useRegistroPaciente()
-
   return (
     <Card className="hover:shadow-md transition-all duration-300">
       <CardHeader className="pb-3 md:pb-4 flex flex-row items-center justify-between gap-4">
@@ -32,7 +31,7 @@ export function QuickActions() {
           type="button"
           size="lg"
           className="h-11 justify-center sm:justify-start gap-2.5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer font-semibold rounded-xl bg-primary hover:bg-primary/90 px-5 flex-1 sm:flex-initial hover:scale-[1.02] active:scale-[0.98]"
-          onClick={abrirDialogoNuevoPaciente}
+          onClick={solicitarAbrirRegistroPaciente}
         >
           <UserRoundPlus className="size-[18px] shrink-0 text-white/95" strokeWidth={2} />
           <span>Registrar paciente</span>
@@ -42,7 +41,7 @@ export function QuickActions() {
           variant="outline"
           size="lg"
           className="justify-center sm:justify-start gap-2.5 h-11 hover:bg-accent/60 hover:text-accent-foreground hover:border-border/60 transition-all duration-300 cursor-pointer font-semibold rounded-xl shadow-sm px-5 flex-1 sm:flex-initial hover:scale-[1.02] active:scale-[0.98]"
-          onClick={abrirDialogoNuevaAtencion}
+          onClick={solicitarAbrirRegistroAtencion}
         >
           <ClipboardPlus className="size-[18px] shrink-0 text-muted-foreground/70 group-hover:text-foreground/90" strokeWidth={2} />
           <span>Crear Nueva Atención</span>

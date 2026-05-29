@@ -24,13 +24,14 @@ import {
 } from "@/components/ui/select"
 import { buscarPacientePorDni } from "@/components/pacientes/datos-pacientes"
 import type { PacienteDisponible } from "@/components/pacientes/datos-pacientes"
-import { useRegistroPaciente } from "@/components/pacientes/use-registro-paciente"
-import type { RegistroPaciente } from "@/components/pacientes/registro-paciente-context"
+import type { RegistroPaciente } from "@/components/pacientes/use-pacientes"
 
 type DialogNuevoPacienteProps = {
   abierto: boolean
   onCambioAbierto: (abierto: boolean) => void
   onRegistrarCita: () => void
+  pacientesRegistrados: RegistroPaciente[]
+  agregarPacienteRegistrado: (paciente: RegistroPaciente) => RegistroPaciente
 }
 
 type FormularioPaciente = {
@@ -51,9 +52,10 @@ export function DialogNuevoPaciente({
   abierto,
   onCambioAbierto,
   onRegistrarCita,
+  pacientesRegistrados,
+  agregarPacienteRegistrado,
 }: DialogNuevoPacienteProps) {
   const formId = useId()
-  const { pacientesRegistrados, agregarPacienteRegistrado } = useRegistroPaciente()
   const [formulario, setFormulario] = useState<FormularioPaciente>(formularioInicial)
   const [camposHabilitados, setCamposHabilitados] = useState(false)
   const [pacienteAConfirmar, setPacienteAConfirmar] = useState<PacienteDisponible | null>(null)

@@ -1,8 +1,6 @@
 import { Activity, ClipboardPlus, Home, LogOut, UserRoundPlus, UsersRound } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { useRegistroAtencion } from "@/components/atenciones/use-registro-atencion"
-import { useRegistroPaciente } from "@/components/pacientes/use-registro-paciente"
 import { PATHS } from "@/routes/paths"
 import {
   Sidebar,
@@ -24,12 +22,15 @@ import {
 
 const rutasPacientes: string[] = [PATHS.NEW_ATTENTION]
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  onRegistrarPaciente: () => void
+  onNuevaAtencion: () => void
+}
+
+export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { setOpenMobile } = useSidebar()
-  const { abrirDialogoNuevaAtencion } = useRegistroAtencion()
-  const { abrirDialogoNuevoPaciente } = useRegistroPaciente()
   const esRutaPaciente = rutasPacientes.includes(pathname)
 
   function handleCerrarSesion() {
@@ -37,12 +38,12 @@ export function AppSidebar() {
   }
 
   function handleRegistrarPaciente() {
-    abrirDialogoNuevoPaciente()
+    onRegistrarPaciente()
     setOpenMobile(false)
   }
 
   function handleNuevaAtencion() {
-    abrirDialogoNuevaAtencion()
+    onNuevaAtencion()
     setOpenMobile(false)
   }
 
