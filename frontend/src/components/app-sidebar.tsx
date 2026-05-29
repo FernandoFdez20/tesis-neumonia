@@ -20,7 +20,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const rutasPacientes: string[] = [PATHS.NEW_ATTENTION]
+const rutasPacientes: string[] = [PATHS.PATIENTS, PATHS.NEW_ATTENTION]
 
 type AppSidebarProps = {
   onRegistrarPaciente: () => void
@@ -94,12 +94,15 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
               {/* Pacientes */}
               <SidebarMenuItem>
                 <SidebarMenuButton
+                  asChild
                   isActive={esRutaPaciente}
                   tooltip="Pacientes"
                   className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
                 >
-                  <UsersRound className="size-[18px]" strokeWidth={2} />
-                  <span className="font-medium">Pacientes</span>
+                  <Link to={PATHS.PATIENTS}>
+                    <UsersRound className="size-[18px]" strokeWidth={2} />
+                    <span className="font-medium">Pacientes</span>
+                  </Link>
                 </SidebarMenuButton>
                 <SidebarMenuSub className="ml-3.5 pl-3 border-l border-border/50 gap-1 py-1.5">
                   <SidebarMenuSubItem>
