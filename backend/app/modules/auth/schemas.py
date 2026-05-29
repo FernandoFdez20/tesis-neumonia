@@ -28,7 +28,8 @@ class UsuarioResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    usuario: UsuarioResponse
 
 
 class TokenPayload(BaseModel):
-    sub: Optional[str] = None
+    sub: Optional[int] = None

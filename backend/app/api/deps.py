@@ -1,14 +1,14 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-import jwt
+from jose import JWTError, jwt
 from pydantic import ValidationError
 from app.core.config import settings
 from app.core.database import get_db
 from app.modules.auth.models import Usuario
 from app.modules.auth.schemas import TokenPayload
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def get_usuario_actual(
@@ -19,7 +19,12 @@ def get_usuario_actual(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         token_data = TokenPayload(**payload)
-    except (jwt.PyJWTError, ValidationError):
+        if token_data.sub is None:
+            raise HTTPException(
+                status_code=403,
+                detail="No se pudieron validar las credenciales",
+            )
+    except (JWTError, ValidationError):
         raise HTTPException(
             status_code=403,
             detail="No se pudieron validar las credenciales",
