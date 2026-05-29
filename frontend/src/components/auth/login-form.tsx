@@ -1,13 +1,42 @@
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/context/auth-context"
+import { login } from "@/services/auth.service"
+import { PATHS } from "@/routes/paths"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate()
+  const { guardarSesion } = useAuth()
+
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [cargando, setCargando] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setCargando(true)
+
+    try {
+      const { access_token, usuario } = await login(username, password)
+      guardarSesion(access_token, usuario)
+      navigate(PATHS.DASHBOARD, { replace: true })
+    } catch {
+      toast.error("Usuario o contraseña incorrectos")
+    } finally {
+      setCargando(false)
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-5", className)} {...props}>
       {/* Encabezado del formulario */}
@@ -27,7 +56,7 @@ export function LoginForm({
           </p>
         </CardHeader>
         <CardContent className="px-5 pb-5">
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Campo usuario */}
             <div className="space-y-1.5">
               <Label htmlFor="usuario" className="text-sm font-medium text-foreground">
@@ -40,6 +69,8 @@ export function LoginForm({
                 autoComplete="username"
                 required
                 className="h-10"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
@@ -62,13 +93,20 @@ export function LoginForm({
                 autoComplete="current-password"
                 required
                 className="h-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
             {/* Botón de acceso */}
             <div className="pt-1">
-              <Button type="submit" size="lg" className="w-full h-10 font-semibold">
-                Ingresar al sistema
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full h-10 font-semibold"
+                disabled={cargando}
+              >
+                {cargando ? "Verificando..." : "Ingresar al sistema"}
               </Button>
             </div>
           </form>

@@ -2,6 +2,7 @@ import { Activity, ClipboardPlus, Home, LogOut, UserRoundPlus, UsersRound } from
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import { PATHS } from "@/routes/paths"
+import { useAuth } from "@/context/auth-context"
 import {
   Sidebar,
   SidebarContent,
@@ -31,10 +32,12 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { setOpenMobile } = useSidebar()
+  const { cerrarSesion } = useAuth()
   const esRutaPaciente = rutasPacientes.includes(pathname)
 
   function handleCerrarSesion() {
-    navigate(PATHS.LOGIN)
+    cerrarSesion()
+    navigate(PATHS.LOGIN, { replace: true })
   }
 
   function handleRegistrarPaciente() {
