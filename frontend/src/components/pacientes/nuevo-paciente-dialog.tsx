@@ -1,8 +1,9 @@
 import type { FormEvent } from "react"
 import { useId, useMemo, useState } from "react"
-import { Search } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import { toast } from "sonner"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,6 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -37,16 +44,43 @@ type DialogNuevoPacienteProps = {
 type FormularioPaciente = {
   nombreCompleto: string
   dni: string
-  edad: string
+  fechaNacimiento: string
   sexo: string
+  antecedentesFamiliares: string[]
+  antecedentesPersonales: string[]
 }
 
 const formularioInicial: FormularioPaciente = {
   nombreCompleto: "",
   dni: "",
-  edad: "",
+  fechaNacimiento: "",
   sexo: "",
+  antecedentesFamiliares: [],
+  antecedentesPersonales: [],
 }
+
+type OpcionAntecedente = {
+  value: string
+  label: string
+}
+
+const antecedentesFamiliaresOpciones: OpcionAntecedente[] = [
+  { value: "asma", label: "Asma" },
+  { value: "epoc", label: "EPOC" },
+  { value: "diabetes", label: "Diabetes mellitus" },
+  { value: "hipertension", label: "Hipertensión arterial" },
+  { value: "tuberculosis", label: "Tuberculosis" },
+  { value: "neumonia-recurrente", label: "Neumonía recurrente" },
+]
+
+const antecedentesPersonalesOpciones: OpcionAntecedente[] = [
+  { value: "asma", label: "Asma" },
+  { value: "epoc", label: "EPOC" },
+  { value: "diabetes", label: "Diabetes mellitus" },
+  { value: "hipertension", label: "Hipertensión arterial" },
+  { value: "tabaquismo", label: "Tabaquismo" },
+  { value: "inmunosupresion", label: "Inmunosupresión" },
+]
 
 export function DialogNuevoPaciente({
   abierto,
@@ -66,7 +100,7 @@ export function DialogNuevoPaciente({
       camposHabilitados &&
       formulario.nombreCompleto.trim().length > 0 &&
       formulario.dni.trim().length > 0 &&
-      formulario.edad.trim().length > 0 &&
+      formulario.fechaNacimiento.trim().length > 0 &&
       formulario.sexo.length > 0,
     [formulario, camposHabilitados]
   )
@@ -82,6 +116,23 @@ export function DialogNuevoPaciente({
     })
     setCamposHabilitados(false)
     setPacienteAConfirmar(null)
+  }
+
+  function alternarAntecedente(
+    campo: "antecedentesFamiliares" | "antecedentesPersonales",
+    valor: string
+  ) {
+    setFormulario((actual) => {
+      const valoresActuales = actual[campo]
+      const siguienteValores = valoresActuales.includes(valor)
+        ? valoresActuales.filter((antecedente) => antecedente !== valor)
+        : [...valoresActuales, valor]
+
+      return {
+        ...actual,
+        [campo]: siguienteValores,
+      }
+    })
   }
 
   function reiniciarEstadoDialogo() {
@@ -114,8 +165,10 @@ export function DialogNuevoPaciente({
       console.log("[Búsqueda de Paciente] ✓ Paciente encontrado", {
         nombre: paciente.nombreCompleto,
         dni: paciente.dni,
-        edad: paciente.edad,
+        fechaNacimiento: paciente.fechaNacimiento,
         sexo: paciente.sexo,
+        antecedentesFamiliares: paciente.antecedentesFamiliares,
+        antecedentesPersonales: paciente.antecedentesPersonales,
         registradoEn: (paciente as RegistroPaciente).registradoEn,
       })
       setFormulario(paciente)
@@ -155,8 +208,10 @@ export function DialogNuevoPaciente({
     console.log("Datos del formulario:", {
       nombreCompleto: formulario.nombreCompleto,
       dni: formulario.dni,
-      edad: formulario.edad,
+      fechaNacimiento: formulario.fechaNacimiento,
       sexo: formulario.sexo,
+      antecedentesFamiliares: formulario.antecedentesFamiliares,
+      antecedentesPersonales: formulario.antecedentesPersonales,
     })
     
     try {
@@ -183,7 +238,7 @@ export function DialogNuevoPaciente({
   return (
     <>
       <Dialog open={abierto} onOpenChange={handleCambioAbierto}>
-        <DialogContent className="max-w-[440px]">
+        <DialogContent className="max-w-[680px]">
           <DialogHeader className="px-5 pt-5 pb-1">
             <DialogTitle>Nuevo registro de paciente</DialogTitle>
             <DialogDescription className="mt-1">
@@ -240,17 +295,14 @@ export function DialogNuevoPaciente({
 
             <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
               <div className="grid gap-2">
-                <Label htmlFor={`${formId}-age`} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5">
-                  Edad (Años)
+                <Label htmlFor={`${formId}-birth-date`} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5">
+                  Fecha de nacimiento
                 </Label>
                 <Input
-                  id={`${formId}-age`}
-                  value={formulario.edad}
-                  onChange={(event) => actualizarCampo("edad", event.target.value)}
-                  placeholder="45"
-                  type="number"
-                  min={18}
-                  max={120}
+                  id={`${formId}-birth-date`}
+                  value={formulario.fechaNacimiento}
+                  onChange={(event) => actualizarCampo("fechaNacimiento", event.target.value)}
+                  type="date"
                   disabled={camposDesabilitados}
                   className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums disabled:bg-muted/40 disabled:text-muted-foreground/70"
                   required
@@ -277,6 +329,28 @@ export function DialogNuevoPaciente({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <MultiComboboxAntecedentes
+                id={`${formId}-antecedentes-familiares`}
+                label="Antecedentes familiares"
+                placeholder="Selecciona antecedentes familiares"
+                opciones={antecedentesFamiliaresOpciones}
+                valores={formulario.antecedentesFamiliares}
+                disabled={camposDesabilitados}
+                onToggle={(valor) => alternarAntecedente("antecedentesFamiliares", valor)}
+              />
+
+              <MultiComboboxAntecedentes
+                id={`${formId}-antecedentes-personales`}
+                label="Antecedentes personales"
+                placeholder="Selecciona antecedentes personales"
+                opciones={antecedentesPersonalesOpciones}
+                valores={formulario.antecedentesPersonales}
+                disabled={camposDesabilitados}
+                onToggle={(valor) => alternarAntecedente("antecedentesPersonales", valor)}
+              />
             </div>
           </form>
 
@@ -322,5 +396,78 @@ export function DialogNuevoPaciente({
         </DialogContent>
       </Dialog>
     </>
+  )
+}
+
+type MultiComboboxAntecedentesProps = {
+  id: string
+  label: string
+  placeholder: string
+  opciones: OpcionAntecedente[]
+  valores: string[]
+  disabled: boolean
+  onToggle: (valor: string) => void
+}
+
+function MultiComboboxAntecedentes({
+  id,
+  label,
+  placeholder,
+  opciones,
+  valores,
+  disabled,
+  onToggle,
+}: MultiComboboxAntecedentesProps) {
+  const opcionesSeleccionadas = opciones.filter((opcion) =>
+    valores.includes(opcion.value)
+  )
+
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor={id} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5">
+        {label}
+      </Label>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild disabled={disabled}>
+          <Button
+            id={id}
+            type="button"
+            variant="outline"
+            disabled={disabled}
+            className="h-auto min-h-10 justify-between rounded-xl border-border/60 bg-background/50 px-3.5 py-2 text-left font-medium text-foreground/80 hover:bg-background disabled:bg-muted/40 disabled:text-muted-foreground/70"
+          >
+            <span className="line-clamp-1 text-sm">
+              {opcionesSeleccionadas.length > 0
+                ? `${opcionesSeleccionadas.length} seleccionado(s)`
+                : placeholder}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground/60" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] rounded-xl p-1.5">
+          {opciones.map((opcion) => (
+            <DropdownMenuCheckboxItem
+              key={opcion.value}
+              checked={valores.includes(opcion.value)}
+              onCheckedChange={() => onToggle(opcion.value)}
+              onSelect={(event) => event.preventDefault()}
+              className="cursor-pointer rounded-lg py-2"
+            >
+              {opcion.label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {opcionesSeleccionadas.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {opcionesSeleccionadas.map((opcion) => (
+            <Badge key={opcion.value} variant="outline" className="h-6 rounded-lg bg-background/60">
+              {opcion.label}
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

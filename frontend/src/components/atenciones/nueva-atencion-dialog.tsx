@@ -1,7 +1,4 @@
-import type { FormEvent } from "react"
-import { useId, useMemo, useState } from "react"
 import { Search } from "lucide-react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +12,15 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { buscarPacientePorDni } from "@/components/pacientes/datos-pacientes"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { useNuevaAtencionForm } from "@/components/atenciones/use-nueva-atencion-form"
 
 type DialogNuevaAtencionProps = {
   abierto: boolean
@@ -23,144 +28,39 @@ type DialogNuevaAtencionProps = {
   onRegistrarPaciente: () => void
 }
 
-type FormularioAtencion = {
-  documentoPaciente: string
-  nombrePaciente: string
-  presionArterial: string
-  frecuenciaCardiaca: string
-  temperatura: string
-  saturacionOxigeno: string
-}
-
-const formularioInicial: FormularioAtencion = {
-  documentoPaciente: "",
-  nombrePaciente: "",
-  presionArterial: "",
-  frecuenciaCardiaca: "",
-  temperatura: "",
-  saturacionOxigeno: "",
-}
-
 export function DialogNuevaAtencion({
   abierto,
   onCambioAbierto,
   onRegistrarPaciente,
 }: DialogNuevaAtencionProps) {
-  const formId = useId()
-  const [formulario, setFormulario] = useState<FormularioAtencion>(formularioInicial)
-  const [guardando, setGuardando] = useState(false)
-  const [confirmarRegistroPaciente, setConfirmarRegistroPaciente] = useState(false)
-
-  const puedeGuardar = useMemo(
-    () =>
-      formulario.documentoPaciente.trim().length > 0 &&
-      formulario.nombrePaciente.trim().length > 0 &&
-      formulario.presionArterial.trim().length > 0 &&
-      formulario.frecuenciaCardiaca.trim().length > 0 &&
-      formulario.temperatura.trim().length > 0 &&
-      formulario.saturacionOxigeno.trim().length > 0 &&
-      !guardando,
-    [formulario, guardando]
-  )
-
-  function actualizarCampo(campo: keyof FormularioAtencion, valor: string) {
-    setFormulario((actual) => ({ ...actual, [campo]: valor }))
-  }
-
-  function actualizarDocumentoPaciente(valor: string) {
-    setFormulario((actual) => ({
-      ...actual,
-      documentoPaciente: valor,
-      nombrePaciente: "",
-    }))
-  }
-
-  function reiniciarFormulario() {
-    setFormulario(formularioInicial)
-    setConfirmarRegistroPaciente(false)
-  }
-
-  function handleCambioAbierto(siguienteAbierto: boolean) {
-    if (guardando) {
-      return
-    }
-
-    onCambioAbierto(siguienteAbierto)
-
-    if (!siguienteAbierto) {
-      reiniciarFormulario()
-    }
-  }
-
-  function buscarPaciente() {
-    const paciente = buscarPacientePorDni(formulario.documentoPaciente)
-
-    if (paciente) {
-      setFormulario((actual) => ({
-        ...actual,
-        documentoPaciente: paciente.dni,
-        nombrePaciente: paciente.nombreCompleto,
-      }))
-      return
-    }
-
-    setFormulario((actual) => ({
-      ...actual,
-      nombrePaciente: "",
-    }))
-    setConfirmarRegistroPaciente(true)
-  }
-
-  function confirmarRegistroNuevoPaciente() {
-    setConfirmarRegistroPaciente(false)
-    handleCambioAbierto(false)
-    onRegistrarPaciente()
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (!puedeGuardar) {
-      return
-    }
-
-    setGuardando(true)
-
-    try {
-      console.info("Atención registrada temporalmente", formulario)
-
-      await Promise.resolve()
-
-      toast.success("Atención guardada correctamente", {
-        description:
-          "Los signos vitales fueron registrados y quedarán listos para la evaluación clínica.",
-      })
-
-      handleCambioAbierto(false)
-    } catch (error) {
-      console.error("No se pudo guardar la atención", error)
-
-      toast.error("No se pudo guardar la atención", {
-        description:
-          "Verifica la información ingresada o intenta nuevamente cuando el servicio esté disponible.",
-      })
-    } finally {
-      setGuardando(false)
-    }
-  }
+  const {
+    formId,
+    formulario,
+    guardando,
+    puedeGuardar,
+    confirmarRegistroPaciente,
+    actualizarCampo,
+    actualizarEstadoAtencion,
+    actualizarDocumentoPaciente,
+    handleCambioAbierto,
+    handleCambioConfirmacionPaciente,
+    buscarPaciente,
+    confirmarRegistroNuevoPaciente,
+    handleSubmit,
+  } = useNuevaAtencionForm({ onCambioAbierto, onRegistrarPaciente })
 
   return (
     <Dialog open={abierto} onOpenChange={handleCambioAbierto}>
-      <DialogContent className="max-w-[460px]">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-[760px]">
         <DialogHeader className="px-5 pt-5 pb-1">
           <DialogTitle>Nueva Atención</DialogTitle>
           <DialogDescription className="mt-1">
-            Registra la toma inicial de signos vitales para la atención clínica respiratoria.
+            Registra los datos de la atención médica respiratoria antes de la evaluación clínica.
           </DialogDescription>
         </DialogHeader>
 
         <form id={formId} onSubmit={handleSubmit} className="grid gap-4.5 px-5 pb-5">
-          <div className="grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
             <div className="grid gap-2">
               <Label
                 htmlFor={`${formId}-documento-paciente`}
@@ -212,25 +112,105 @@ export function DialogNuevaAtencion({
             </div>
           </div>
 
+          <div className="grid gap-4 sm:grid-cols-[1fr_1fr_1.2fr]">
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-fecha-atencion`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Fecha de atención
+              </Label>
+              <Input
+                id={`${formId}-fecha-atencion`}
+                value={formulario.fechaAtencion}
+                onChange={(event) => actualizarCampo("fechaAtencion", event.target.value)}
+                type="date"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-hora-atencion`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Hora
+              </Label>
+              <Input
+                id={`${formId}-hora-atencion`}
+                value={formulario.horaAtencion}
+                onChange={(event) => actualizarCampo("horaAtencion", event.target.value)}
+                type="time"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-estado-atencion`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Estado
+              </Label>
+              <Select
+                value={formulario.estadoAtencion}
+                onValueChange={actualizarEstadoAtencion}
+                required
+              >
+                <SelectTrigger
+                  id={`${formId}-estado-atencion`}
+                  className="rounded-xl border-border/60 bg-background/50"
+                >
+                  <SelectValue placeholder="Selecciona estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pendiente-evaluacion">Pendiente de evaluación</SelectItem>
+                  <SelectItem value="pendiente-validacion">Pendiente de validación</SelectItem>
+                  <SelectItem value="atencion-registrada">Atención registrada</SelectItem>
+                  <SelectItem value="caso-priorizado">Caso priorizado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="grid gap-2">
             <Label
-              htmlFor={`${formId}-presion-arterial`}
+              htmlFor={`${formId}-motivo-consulta`}
               className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
             >
-              Presión arterial
+              Motivo de consulta
             </Label>
-            <Input
-              id={`${formId}-presion-arterial`}
-              value={formulario.presionArterial}
-              onChange={(event) => actualizarCampo("presionArterial", event.target.value)}
-              placeholder="Ej. 120/80 mmHg"
-              autoComplete="off"
-              className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+            <Textarea
+              id={`${formId}-motivo-consulta`}
+              value={formulario.motivoConsulta}
+              onChange={(event) => actualizarCampo("motivoConsulta", event.target.value)}
+              placeholder="Ej. Tos productiva, fiebre y dificultad respiratoria."
+              className="min-h-20 rounded-xl border-border/60 bg-background/50 px-3.5 py-2.5 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45"
               required
             />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-presion-arterial`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Presión arterial
+              </Label>
+              <Input
+                id={`${formId}-presion-arterial`}
+                value={formulario.presionArterial}
+                onChange={(event) => actualizarCampo("presionArterial", event.target.value)}
+                placeholder="Ej. 120/80"
+                autoComplete="off"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
+
             <div className="grid gap-2">
               <Label
                 htmlFor={`${formId}-frecuencia-cardiaca`}
@@ -251,7 +231,9 @@ export function DialogNuevaAtencion({
                 required
               />
             </div>
+          </div>
 
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="grid gap-2">
               <Label
                 htmlFor={`${formId}-temperatura`}
@@ -273,27 +255,124 @@ export function DialogNuevaAtencion({
                 required
               />
             </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-frecuencia-respiratoria`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Frecuencia respiratoria
+              </Label>
+              <Input
+                id={`${formId}-frecuencia-respiratoria`}
+                value={formulario.frecuenciaRespiratoria}
+                onChange={(event) => actualizarCampo("frecuenciaRespiratoria", event.target.value)}
+                placeholder="Ej. 18 rpm"
+                type="number"
+                min={5}
+                max={80}
+                inputMode="numeric"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-saturacion-oxigeno`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Saturación O2
+              </Label>
+              <Input
+                id={`${formId}-saturacion-oxigeno`}
+                value={formulario.saturacionOxigeno}
+                onChange={(event) => actualizarCampo("saturacionOxigeno", event.target.value)}
+                placeholder="Ej. 96 %"
+                type="number"
+                min={50}
+                max={100}
+                inputMode="numeric"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
           </div>
 
-          <div className="grid gap-2">
-            <Label
-              htmlFor={`${formId}-saturacion-oxigeno`}
-              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
-            >
-              Saturación de oxígeno
-            </Label>
-            <Input
-              id={`${formId}-saturacion-oxigeno`}
-              value={formulario.saturacionOxigeno}
-              onChange={(event) => actualizarCampo("saturacionOxigeno", event.target.value)}
-              placeholder="Ej. 96 %"
-              type="number"
-              min={50}
-              max={100}
-              inputMode="numeric"
-              className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
-              required
-            />
+          <div className="grid gap-4 sm:grid-cols-[0.8fr_1.2fr]">
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-tiempo-evolucion`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Tiempo de evolución
+              </Label>
+              <Input
+                id={`${formId}-tiempo-evolucion`}
+                value={formulario.tiempoEvolucionDias}
+                onChange={(event) => actualizarCampo("tiempoEvolucionDias", event.target.value)}
+                placeholder="Ej. 3 días"
+                type="number"
+                min={0}
+                max={90}
+                inputMode="numeric"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-evaluacion-presuntiva`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Evaluación presuntiva
+              </Label>
+              <Input
+                id={`${formId}-evaluacion-presuntiva`}
+                value={formulario.evaluacionPresuntiva}
+                onChange={(event) => actualizarCampo("evaluacionPresuntiva", event.target.value)}
+                placeholder="Ej. Sospecha clínica respiratoria"
+                autoComplete="off"
+                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-sintomas-principales`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Síntomas principales
+              </Label>
+              <Textarea
+                id={`${formId}-sintomas-principales`}
+                value={formulario.sintomasPrincipales}
+                onChange={(event) => actualizarCampo("sintomasPrincipales", event.target.value)}
+                placeholder="Ej. Tos, fiebre, disnea, dolor torácico."
+                className="min-h-24 rounded-xl border-border/60 bg-background/50 px-3.5 py-2.5 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label
+                htmlFor={`${formId}-observaciones`}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
+              >
+                Observaciones
+              </Label>
+              <Textarea
+                id={`${formId}-observaciones`}
+                value={formulario.observaciones}
+                onChange={(event) => actualizarCampo("observaciones", event.target.value)}
+                placeholder="Notas clínicas adicionales si corresponde."
+                className="min-h-24 rounded-xl border-border/60 bg-background/50 px-3.5 py-2.5 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45"
+              />
+            </div>
           </div>
         </form>
 
@@ -320,11 +399,7 @@ export function DialogNuevaAtencion({
       </DialogContent>
       <Dialog
         open={confirmarRegistroPaciente}
-        onOpenChange={(siguienteAbierto) => {
-          if (!siguienteAbierto) {
-            setConfirmarRegistroPaciente(false)
-          }
-        }}
+        onOpenChange={handleCambioConfirmacionPaciente}
       >
         <DialogContent className="max-w-[400px]">
           <DialogHeader className="px-5 pt-5 pb-1">
