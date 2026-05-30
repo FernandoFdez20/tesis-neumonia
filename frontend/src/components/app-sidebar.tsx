@@ -1,4 +1,12 @@
-import { Activity, ClipboardPlus, Home, LogOut, UserRoundPlus, UsersRound } from "lucide-react"
+import {
+  Activity,
+  ClipboardList,
+  ClipboardPlus,
+  Home,
+  LogOut,
+  UserRoundPlus,
+  UsersRound,
+} from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import { PATHS } from "@/routes/paths"
@@ -90,6 +98,21 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
                   <Link to={PATHS.DASHBOARD}>
                     <Home className="size-[18px]" strokeWidth={2} />
                     <span className="font-medium">Página principal</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Atenciones */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === PATHS.ATTENTIONS}
+                  tooltip="Atenciones médicas"
+                  className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
+                >
+                  <Link to={PATHS.ATTENTIONS}>
+                    <ClipboardList className="size-[18px]" strokeWidth={2} />
+                    <span className="font-medium">Atenciones médicas</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

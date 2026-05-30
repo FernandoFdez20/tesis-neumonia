@@ -13,4 +13,7 @@ export const PATHS = {
     PATIENTS: "/pacientes",
     REGISTER_PATIENT: "/pacientes/registrar",
     NEW_ATTENTION: "/pacientes/nueva-atencion",
+
+    // Atenciones
+    ATTENTIONS: "/atenciones",
 } as const;

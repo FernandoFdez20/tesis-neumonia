@@ -1,0 +1,102 @@
+import {
+  Activity,
+  ClipboardList,
+  HeartPulse,
+  Stethoscope,
+} from "lucide-react"
+
+import { AtencionesList } from "@/components/atenciones/atenciones-list"
+import { atencionesMedicasMock } from "@/components/atenciones/datos-atenciones"
+import { StatCard } from "@/components/dashboard/stat-card"
+import { StaggerContainer, StaggerItem } from "@/components/shared/stagger-animation"
+
+const totalAtenciones = atencionesMedicasMock.length
+const atencionesEnProceso = atencionesMedicasMock.filter(
+  (atencion) => atencion.estado === "En proceso"
+).length
+const atencionesFinalizadas = atencionesMedicasMock.filter(
+  (atencion) => atencion.estado === "Finalizada"
+).length
+const atencionesSaturacionBaja = atencionesMedicasMock.filter(
+  (atencion) => atencion.saturacionO2 < 94
+).length
+
+const atencionesStats = [
+  {
+    title: "Atenciones registradas",
+    value: totalAtenciones.toString(),
+    description: "Registros clínicos en plantilla",
+    icon: ClipboardList,
+    accent: "blue" as const,
+  },
+  {
+    title: "En proceso",
+    value: atencionesEnProceso.toString(),
+    description: "Pendientes de diagnóstico",
+    icon: Stethoscope,
+    accent: "amber" as const,
+  },
+  {
+    title: "Finalizadas",
+    value: atencionesFinalizadas.toString(),
+    description: "Atenciones cerradas",
+    icon: HeartPulse,
+    accent: "green" as const,
+  },
+  {
+    title: "Sat. O2 baja",
+    value: atencionesSaturacionBaja.toString(),
+    description: "Menor a 94%",
+    icon: Activity,
+    accent: "red" as const,
+  },
+]
+
+export default function AtencionesPage() {
+  return (
+    <div className="space-y-8">
+      <StaggerContainer className="space-y-2 pb-1" delay={80}>
+        <StaggerItem index={0}>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary/70 leading-none">
+            Gestión clínica
+          </p>
+        </StaggerItem>
+        <StaggerItem index={1}>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground/90 leading-tight">
+            Atenciones Médicas
+          </h1>
+        </StaggerItem>
+        <StaggerItem index={2}>
+          <p className="max-w-3xl text-base text-muted-foreground/70 leading-relaxed font-medium">
+            Consulta el registro inicial de atenciones, signos vitales y estado del
+            flujo clínico previo al diagnóstico.
+          </p>
+        </StaggerItem>
+      </StaggerContainer>
+
+      <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" delay={80}>
+        {atencionesStats.map((stat, index) => (
+          <StaggerItem key={stat.title} index={index}>
+            <StatCard {...stat} />
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
+
+      <StaggerContainer className="space-y-4" delay={100}>
+        <StaggerItem index={0}>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">
+              Listado de atenciones
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Seguimiento operativo de los registros clínicos capturados por el personal.
+            </p>
+          </div>
+        </StaggerItem>
+        <StaggerItem index={1}>
+          <AtencionesList />
+        </StaggerItem>
+      </StaggerContainer>
+    </div>
+  )
+}
