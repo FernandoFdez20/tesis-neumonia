@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "@/pages/auth/LoginPage";
 import AtencionesPage from "@/pages/atenciones/page";
 import DashboardPage from "@/pages/dashboard/page";
+import DiagnosticoPage from "@/pages/diagnostico/page";
 import PacientesPage from "@/pages/pacientes/page";
 import { AppLayout } from "@/layouts/app-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +23,7 @@ export default function AppRoutes() {
                         <Route path={PATHS.DASHBOARD} element={<DashboardPage />} />
                         <Route path={PATHS.PATIENTS} element={<PacientesPage />} />
                         <Route path={PATHS.ATTENTIONS} element={<AtencionesPage />} />
+                        <Route path={PATHS.DIAGNOSIS_DETAIL} element={<DiagnosticoPage />} />
                         <Route path={PATHS.REGISTER_PATIENT} element={null} />
                         <Route path={PATHS.NEW_ATTENTION} element={null} />
                     </Route>

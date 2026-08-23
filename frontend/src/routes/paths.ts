@@ -16,4 +16,8 @@ export const PATHS = {
 
     // Atenciones
     ATTENTIONS: "/atenciones",
+
+    // Diagnóstico
+    DIAGNOSIS: "/diagnostico",
+    DIAGNOSIS_DETAIL: "/diagnostico/:codigoAtencion",
 } as const;

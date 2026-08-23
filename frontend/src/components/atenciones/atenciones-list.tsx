@@ -9,6 +9,7 @@ import {
   Thermometer,
   Wind,
 } from "lucide-react"
+import { Link } from "react-router-dom"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,7 @@ import {
 import { cn } from "@/lib/utils"
 import { atencionesMedicasMock } from "@/components/atenciones/datos-atenciones"
 import type { AtencionMedica } from "@/components/atenciones/datos-atenciones"
+import { PATHS } from "@/routes/paths"
 
 const ITEMS_PER_PAGE = 6
 
@@ -164,9 +166,11 @@ function AtencionCard({ atencion }: { atencion: AtencionMedica }) {
 
       {esEnProceso && (
         <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
-          <Button className="w-full gap-2 rounded-xl font-bold">
-            <Stethoscope className="size-4" />
-            Atender
+          <Button asChild className="w-full gap-2 rounded-xl font-bold">
+            <Link to={`${PATHS.DIAGNOSIS}/${atencion.codigo}`}>
+              <Stethoscope className="size-4" />
+              Atender
+            </Link>
           </Button>
         </CardFooter>
       )}
