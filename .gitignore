@@ -70,3 +70,9 @@ bd.sql
 pneumonia-insight-main
 archive.zip
 archive
+
+# --- Memoria local privada (no versionar) ---
+.ai/memory.local.md
+.ai/*.local.md
+MEMORY.local.md
+.ai/memory.md
