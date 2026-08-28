@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, Outlet } from "react-router-dom";
 
 import LoginPage from "@/pages/auth/LoginPage";
 import AtencionesPage from "@/pages/atenciones/page";
@@ -10,6 +10,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { PATHS } from "@/routes/paths";
 
+function ProtectedRoute() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        return <Navigate to={PATHS.LOGIN} replace />;
+    }
+    return <Outlet />;
+}
+
 export default function AppRoutes() {
     return (
         <TooltipProvider>
@@ -18,14 +26,16 @@ export default function AppRoutes() {
                     <Route path="/" element={<LoginPage />} />
                     <Route path={PATHS.LOGIN} element={<LoginPage />} />
 
-                    <Route element={<AppLayout />}>
-                        <Route path={PATHS.APP} element={<Navigate to={PATHS.DASHBOARD} replace />} />
-                        <Route path={PATHS.DASHBOARD} element={<DashboardPage />} />
-                        <Route path={PATHS.PATIENTS} element={<PacientesPage />} />
-                        <Route path={PATHS.ATTENTIONS} element={<AtencionesPage />} />
-                        <Route path={PATHS.DIAGNOSIS_DETAIL} element={<DiagnosticoPage />} />
-                        <Route path={PATHS.REGISTER_PATIENT} element={null} />
-                        <Route path={PATHS.NEW_ATTENTION} element={null} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={<AppLayout />}>
+                            <Route path={PATHS.APP} element={<Navigate to={PATHS.DASHBOARD} replace />} />
+                            <Route path={PATHS.DASHBOARD} element={<DashboardPage />} />
+                            <Route path={PATHS.PATIENTS} element={<PacientesPage />} />
+                            <Route path={PATHS.ATTENTIONS} element={<AtencionesPage />} />
+                            <Route path={PATHS.DIAGNOSIS_DETAIL} element={<DiagnosticoPage />} />
+                            <Route path={PATHS.REGISTER_PATIENT} element={null} />
+                            <Route path={PATHS.NEW_ATTENTION} element={null} />
+                        </Route>
                     </Route>
                 </Routes>
             </BrowserRouter>

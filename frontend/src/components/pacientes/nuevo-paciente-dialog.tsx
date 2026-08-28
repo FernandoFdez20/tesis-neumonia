@@ -32,6 +32,7 @@ import {
 import { buscarPacientePorDni } from "@/components/pacientes/datos-pacientes"
 import type { PacienteDisponible } from "@/components/pacientes/datos-pacientes"
 import type { RegistroPaciente } from "@/components/pacientes/use-pacientes"
+import { registrarPaciente } from "@/services/pacientes.service"
 
 type DialogNuevoPacienteProps = {
   abierto: boolean
@@ -196,7 +197,7 @@ export function DialogNuevoPaciente({
     onRegistrarCita()
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!puedeGuardar) {
@@ -204,33 +205,28 @@ export function DialogNuevoPaciente({
       return
     }
 
-    console.group("📋 Registro de Paciente")
-    console.log("Datos del formulario:", {
-      nombreCompleto: formulario.nombreCompleto,
-      dni: formulario.dni,
-      fechaNacimiento: formulario.fechaNacimiento,
-      sexo: formulario.sexo,
-      antecedentesFamiliares: formulario.antecedentesFamiliares,
-      antecedentesPersonales: formulario.antecedentesPersonales,
-    })
-    
     try {
-      const nuevoPaciente = agregarPacienteRegistrado(formulario)
-      console.log("✓ Paciente registrado exitosamente en el sistema:", nuevoPaciente)
-      console.log(`Total de pacientes registrados: ${pacientesRegistrados.length + 1}`)
-      console.groupEnd()
+      await registrarPaciente({
+        dni: formulario.dni,
+        nombres_apellidos: formulario.nombreCompleto,
+        sexo: formulario.sexo,
+        fecha_nacimiento: formulario.fechaNacimiento,
+        antecedentes_familiares: formulario.antecedentesFamiliares.join(", "),
+        otros_antecedentes: formulario.antecedentesPersonales.join(", "),
+      })
+
+      // Actualizar el estado visual del frontend
+      agregarPacienteRegistrado(formulario)
 
       toast.success("Paciente registrado correctamente", {
-        description: `${formulario.nombreCompleto} (DNI ${formulario.dni}) ha sido añadido al registro temporal.`,
+        description: `${formulario.nombreCompleto} ha sido guardado en la base de datos.`,
       })
 
       handleCambioAbierto(false)
     } catch (error) {
       console.error("✗ Error al registrar paciente:", error)
-      console.groupEnd()
-      
       toast.error("Error al registrar paciente", {
-        description: "Hubo un problema al guardar los datos. Intenta nuevamente.",
+        description: "Hubo un problema al guardar en la BD. Revisa la conexión.",
       })
     }
   }

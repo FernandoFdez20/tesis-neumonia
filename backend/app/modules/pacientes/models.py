@@ -19,10 +19,10 @@ from app.core.database import Base
 
 
 class EstadoClinico(str, enum.Enum):
-    SinAtencionPendiente = "Sin antención pendiente"
-    Estable = "Estable"
-    Critico = "Critico"
-    Pendiente = "Pendiente"
+    SinAtencionPendiente = "Sin atención pendiente"
+    DiagnosticoPendiente = "Diagnostico pendiente"
+    PendienteDeValidacion = "Pendiente de validación"
+    Validado = "Validado"
 
 
 tipo_estado_clinico = SQLAlchemyEnum(
@@ -58,13 +58,12 @@ class Paciente(Base):
     nombres_apellidos = Column(String(150), nullable=False)
     sexo = Column(String(20), nullable=False)
     fecha_nacimiento = Column(Date, nullable=False)
-    peso_kg = Column(Numeric(5, 2), nullable=True)
     otros_antecedentes = Column(Text, nullable=True)
     antecedentes_familiares = Column(Text, nullable=True)
     ultima_atencion = Column(DateTime, nullable=True)
     estado_clinico = Column(
         tipo_estado_clinico,
-        default=EstadoClinico.Pendiente,
+        default=EstadoClinico.SinAtencionPendiente,
         nullable=False,
     )
     created_at = Column(DateTime, default=func.now())

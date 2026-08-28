@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Search, SlidersHorizontal, User } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -18,41 +18,58 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
-// Mock data
-const MOCK_PACIENTES = Array.from({ length: 45 }).map((_, i) => ({
-  id: `P-${(i + 1).toString().padStart(4, "0")}`,
-  nombre: `Paciente de prueba ${i + 1}`,
-  dni: `${10000000 + i * 12345}`,
-  edad: 20 + (i % 60),
-  sexo: i % 2 === 0 ? "Masculino" : "Femenino",
-  fechaRegistro: `2024-${String((i % 12) + 1).padStart(2, "0")}-15`,
-  atenciones: (i % 5) + 1,
-  ultimaAtencion: `2024-${String((i % 12) + 1).padStart(2, "0")}-20`,
-  estado: i % 3 === 0 ? "Crítico" : i % 2 === 0 ? "Estable" : "En evaluación",
-}))
-
-const ITEMS_PER_PAGE = 6
+import { listarPacientes, type PacienteResponse } from "@/services/pacientes.service"
 
 export function PacientesList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [generoFilter, setGeneroFilter] = useState("todos")
   const [estadoFilter, setEstadoFilter] = useState("todos")
+  
+  const [pacientes, setPacientes] = useState<PacienteResponse[]>([])
+  const [cargando, setCargando] = useState(true)
+
+  // Función sencilla para calcular edad
+  const calcularEdad = (fechaNacimiento: string) => {
+    const hoy = new Date()
+    const fechaNac = new Date(fechaNacimiento)
+    let edad = hoy.getFullYear() - fechaNac.getFullYear()
+    const m = hoy.getMonth() - fechaNac.getMonth()
+    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+      edad--
+    }
+    return edad
+  }
+
+  useEffect(() => {
+    async function cargarPacientes() {
+      try {
+        setCargando(true)
+        const response = await listarPacientes({ page: 1, page_size: 100 })
+        setPacientes(response.items)
+      } catch (error) {
+        console.error("Error cargando pacientes:", error)
+      } finally {
+        setCargando(false)
+      }
+    }
+    cargarPacientes()
+  }, [])
+
+  const filteredPacientes = pacientes.filter((p) => {
+    const matchSearch =
+      p.nombres_apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.dni.includes(searchTerm)
+    const matchGenero = generoFilter === "todos" || p.sexo.toLowerCase() === generoFilter.toLowerCase()
+    const matchEstado =
+      estadoFilter === "todos" ||
+      p.estado_clinico.toLowerCase().replace(/ /g, "-") === estadoFilter.toLowerCase()
+    return matchSearch && matchGenero && matchEstado
+  })
+
+  const ITEMS_PER_PAGE = 6
   const [currentPage, setCurrentPage] = useState(1)
 
-  const filteredPacientes = useMemo(() => {
-    return MOCK_PACIENTES.filter((p) => {
-      const matchSearch =
-        p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.dni.includes(searchTerm)
-      const matchGenero = generoFilter === "todos" || p.sexo.toLowerCase() === generoFilter
-      const matchEstado =
-        estadoFilter === "todos" ||
-        p.estado.toLowerCase().replace(" ", "-") === estadoFilter
-      return matchSearch && matchGenero && matchEstado
-    })
-  }, [searchTerm, generoFilter, estadoFilter])
-
-  const totalPages = Math.ceil(filteredPacientes.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredPacientes.length / ITEMS_PER_PAGE) || 1
   const paginatedPacientes = filteredPacientes.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -113,7 +130,9 @@ export function PacientesList() {
         </div>
       </div>
 
-      {paginatedPacientes.length === 0 ? (
+      {cargando ? (
+        <div className="py-12 text-center text-muted-foreground">Cargando pacientes...</div>
+      ) : paginatedPacientes.length === 0 ? (
         <div className="py-12 text-center text-muted-foreground">
           No se encontraron pacientes con los filtros seleccionados.
         </div>
@@ -124,7 +143,7 @@ export function PacientesList() {
               <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
                 <div className="space-y-1">
                   <CardTitle className="text-base font-bold line-clamp-1">
-                    {paciente.nombre}
+                    {paciente.nombres_apellidos}
                   </CardTitle>
                   <div className="text-sm text-muted-foreground">
                     DNI: {paciente.dni}
@@ -137,42 +156,34 @@ export function PacientesList() {
               <CardContent className="pt-2">
                 <div className="grid grid-cols-2 gap-y-2 text-sm">
                   <div className="text-muted-foreground">Edad</div>
-                  <div className="font-medium text-right">{paciente.edad} años</div>
+                  <div className="font-medium text-right">{calcularEdad(paciente.fecha_nacimiento)} años</div>
                   
                   <div className="text-muted-foreground">Sexo</div>
                   <div className="font-medium text-right">{paciente.sexo}</div>
                   
                   <div className="text-muted-foreground">Registro</div>
-                  <div className="font-medium text-right">{paciente.fechaRegistro}</div>
+                  <div className="font-medium text-right">{new Date(paciente.created_at).toLocaleDateString()}</div>
                   
                   <div className="text-muted-foreground">Atenciones</div>
-                  <div className="font-medium text-right">{paciente.atenciones}</div>
-                  
-                  <div className="text-muted-foreground">Última</div>
-                  <div className="font-medium text-right">{paciente.ultimaAtencion}</div>
+                  <div className="font-medium text-right">{"-"}</div>
                 </div>
-                <div className="mt-4 pt-4 border-t flex justify-between items-center">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Estado
-                  </span>
+
+                <div className="mt-4 pt-4 border-t border-border/40 flex justify-between items-center">
                   <Badge
                     variant={
-                      paciente.estado === "Crítico"
-                        ? "destructive"
-                        : paciente.estado === "Estable"
+                      paciente.estado_clinico === "Sin atención pendiente"
                         ? "default"
-                        : "secondary"
+                        : paciente.estado_clinico === "Pendiente de validación"
+                        ? "secondary"
+                        : "destructive"
                     }
-                    className={
-                      paciente.estado === "Estable"
-                        ? "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:text-emerald-400"
-                        : paciente.estado === "En evaluación"
-                        ? "bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:text-amber-400"
-                        : ""
-                    }
+                    className="font-medium"
                   >
-                    {paciente.estado}
+                    {paciente.estado_clinico}
                   </Badge>
+                  <Button variant="ghost" size="sm" className="h-8 px-2 text-primary">
+                    Ver perfil
+                  </Button>
                 </div>
               </CardContent>
             </Card>

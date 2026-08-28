@@ -19,10 +19,9 @@ class PacienteBase(BaseModel):
     nombres_apellidos: str = Field(min_length=3, max_length=150)
     sexo: str = Field(min_length=1, max_length=20)
     fecha_nacimiento: date
-    peso_kg: Optional[float] = Field(default=None, ge=0, le=300)
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
-    estado_clinico: EstadoClinico = EstadoClinico.Pendiente
+    estado_clinico: EstadoClinico = EstadoClinico.SinAtencionPendiente
     enfermedad_ids: list[int] = Field(default_factory=list)
 
     @field_validator("dni", mode="before")
@@ -82,7 +81,6 @@ class PacienteUpdate(BaseModel):
     nombres_apellidos: Optional[str] = Field(default=None, min_length=3, max_length=150)
     sexo: Optional[str] = Field(default=None, min_length=1, max_length=20)
     fecha_nacimiento: Optional[date] = None
-    peso_kg: Optional[float] = Field(default=None, ge=0, le=300)
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
     estado_clinico: Optional[EstadoClinico] = None
@@ -142,7 +140,6 @@ class PacienteResponse(BaseModel):
     nombres_apellidos: str
     sexo: str
     fecha_nacimiento: date
-    peso_kg: Optional[float] = None
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
     ultima_atencion: Optional[datetime] = None

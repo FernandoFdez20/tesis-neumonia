@@ -17,7 +17,9 @@ export function UserNav() {
   const navigate = useNavigate()
 
   function handleLogout() {
-    navigate(PATHS.LOGIN)
+    localStorage.removeItem("token")
+    localStorage.removeItem("usuario")
+    navigate(PATHS.LOGIN, { replace: true })
   }
 
   return (

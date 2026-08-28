@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -20,70 +20,32 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const allAttentions = [
-  {
-    id: "AT-1042",
-    patient: "Mariana Rojas",
-    age: 62,
-    time: "08:20",
-    presumptive: "Neumonía adquirida en comunidad",
-    status: "Pendiente de validación",
-    statusVariant: "pendiente" as const,
-  },
-  {
-    id: "AT-1041",
-    patient: "Carlos Medina",
-    age: 71,
-    time: "09:05",
-    presumptive: "Evaluación presuntiva en curso",
-    status: "Atención registrada",
-    statusVariant: "leve" as const,
-  },
-  {
-    id: "AT-1040",
-    patient: "Elena Torres",
-    age: 54,
-    time: "10:10",
-    presumptive: "Sospecha clínica respiratoria",
-    status: "Pendiente de evaluación",
-    statusVariant: "pendiente" as const,
-  },
-  {
-    id: "AT-1039",
-    patient: "Jorge Salinas",
-    age: 68,
-    time: "11:15",
-    presumptive: "Neumonía probable",
-    status: "Caso priorizado",
-    statusVariant: "grave" as const,
-  },
-  {
-    id: "AT-1038",
-    patient: "Ana Gutiérrez",
-    age: 45,
-    time: "11:45",
-    presumptive: "Bronquitis aguda",
-    status: "Atención registrada",
-    statusVariant: "leve" as const,
-  },
-  {
-    id: "AT-1037",
-    patient: "Roberto Díaz",
-    age: 58,
-    time: "12:30",
-    presumptive: "Neumonía aspirativa",
-    status: "Pendiente de validación",
-    statusVariant: "pendiente" as const,
-  },
-]
+import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
 
 const ITEMS_PER_PAGE = 4
 
 export function RecentAttentionsTable() {
   const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(allAttentions.length / ITEMS_PER_PAGE)
+  const [attentions, setAttentions] = useState<AtencionResponse[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await listarAtenciones()
+        setAttentions(data)
+      } catch (error) {
+        console.error("Error al cargar atenciones:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  const totalPages = Math.ceil(attentions.length / ITEMS_PER_PAGE) || 1
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const currentItems = allAttentions.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const currentItems = attentions.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
   return (
     <Card className="transition-all duration-300 hover:shadow-md">
@@ -94,7 +56,7 @@ export function RecentAttentionsTable() {
               Atenciones recientes
             </CardTitle>
             <CardDescription className="mt-1.5 text-sm text-muted-foreground/70 font-medium">
-              Registros de hoy · {allAttentions.length} atenciones
+              Registros de hoy · {attentions.length} atenciones
             </CardDescription>
           </div>
           <Link
@@ -120,29 +82,41 @@ export function RecentAttentionsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentItems.map((attention) => (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    Cargando atenciones...
+                  </TableCell>
+                </TableRow>
+              ) : currentItems.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No hay atenciones registradas.
+                  </TableCell>
+                </TableRow>
+              ) : currentItems.map((attention) => (
                 <TableRow
                   key={attention.id}
                   className="cursor-pointer hover:bg-accent/30 transition-colors duration-150"
                 >
                   <TableCell className="font-mono text-xs font-semibold text-muted-foreground">
-                    {attention.id}
+                    AT-{String(attention.id).padStart(4, '0')}
                   </TableCell>
                   <TableCell className="font-semibold text-foreground/85">
-                    {attention.patient}
+                    {attention.paciente_nombre || `Paciente ${attention.paciente_id}`}
                   </TableCell>
                   <TableCell className="text-muted-foreground/70">
-                    {attention.age} a.
+                    {attention.paciente_edad} a.
                   </TableCell>
                   <TableCell className="tabular-nums text-muted-foreground/70">
-                    {attention.time}
+                    {new Date(attention.fecha_registro).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell max-w-[220px] truncate text-muted-foreground/70">
-                    {attention.presumptive}
+                    {attention.sintomas_principales || attention.examen_fisico || "Sin evaluación"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={attention.statusVariant}>
-                      {attention.status}
+                    <Badge variant={attention.estado === "Finalizada" ? "default" : "secondary"}>
+                      {attention.estado}
                     </Badge>
                   </TableCell>
                 </TableRow>

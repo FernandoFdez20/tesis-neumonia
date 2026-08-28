@@ -12,16 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useNuevaAtencionForm } from "@/components/atenciones/use-nueva-atencion-form"
-
 type DialogNuevaAtencionProps = {
   abierto: boolean
   onCambioAbierto: (abierto: boolean) => void
@@ -40,7 +32,6 @@ export function DialogNuevaAtencion({
     puedeGuardar,
     confirmarRegistroPaciente,
     actualizarCampo,
-    actualizarEstadoAtencion,
     actualizarDocumentoPaciente,
     handleCambioAbierto,
     handleCambioConfirmacionPaciente,
@@ -112,7 +103,7 @@ export function DialogNuevaAtencion({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-[1fr_1fr_1.2fr]">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label
                 htmlFor={`${formId}-fecha-atencion`}
@@ -147,32 +138,6 @@ export function DialogNuevaAtencion({
               />
             </div>
 
-            <div className="grid gap-2">
-              <Label
-                htmlFor={`${formId}-estado-atencion`}
-                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
-              >
-                Estado
-              </Label>
-              <Select
-                value={formulario.estadoAtencion}
-                onValueChange={actualizarEstadoAtencion}
-                required
-              >
-                <SelectTrigger
-                  id={`${formId}-estado-atencion`}
-                  className="rounded-xl border-border/60 bg-background/50"
-                >
-                  <SelectValue placeholder="Selecciona estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pendiente-evaluacion">Pendiente de evaluación</SelectItem>
-                  <SelectItem value="pendiente-validacion">Pendiente de validación</SelectItem>
-                  <SelectItem value="atencion-registrada">Atención registrada</SelectItem>
-                  <SelectItem value="caso-priorizado">Caso priorizado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="grid gap-2">

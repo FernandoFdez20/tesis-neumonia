@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import {
   Activity,
   CalendarClock,
@@ -29,8 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { atencionesMedicasMock } from "@/components/atenciones/datos-atenciones"
-import type { AtencionMedica } from "@/components/atenciones/datos-atenciones"
+import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
 import { PATHS } from "@/routes/paths"
 
 const ITEMS_PER_PAGE = 6
@@ -41,18 +40,13 @@ function formatearFecha(fechaRegistro: string) {
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(fechaRegistro.replace(" ", "T")))
+  }).format(new Date(fechaRegistro))
 }
 
-function obtenerClaseSaturacion(saturacionO2: number) {
-  if (saturacionO2 < 90) {
-    return "text-red-600"
-  }
-
-  if (saturacionO2 < 94) {
-    return "text-amber-600"
-  }
-
+function obtenerClaseSaturacion(saturacionO2: number | null | undefined) {
+  if (!saturacionO2) return "text-foreground"
+  if (saturacionO2 < 90) return "text-red-600"
+  if (saturacionO2 < 94) return "text-amber-600"
   return "text-emerald-600"
 }
 
@@ -80,7 +74,7 @@ function SignoVital({
   )
 }
 
-function AtencionCard({ atencion }: { atencion: AtencionMedica }) {
+function AtencionCard({ atencion }: { atencion: AtencionResponse }) {
   const esEnProceso = atencion.estado === "En proceso"
 
   return (
@@ -90,7 +84,7 @@ function AtencionCard({ atencion }: { atencion: AtencionMedica }) {
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-xs font-bold text-muted-foreground">
-                {atencion.codigo}
+                AT-{String(atencion.id).padStart(4, '0')}
               </span>
               <Badge
                 variant={esEnProceso ? "secondary" : "outline"}
@@ -103,71 +97,62 @@ function AtencionCard({ atencion }: { atencion: AtencionMedica }) {
                 {atencion.estado}
               </Badge>
             </div>
-            <CardTitle className="line-clamp-1 text-base font-bold">
-              {atencion.paciente}
+            <CardTitle className="text-base font-bold text-foreground/90 leading-tight">
+              {atencion.paciente_nombre || `Paciente ${atencion.paciente_id}`}
             </CardTitle>
-            <p className="text-sm font-medium text-muted-foreground/75">
-              DNI {atencion.dni} · Paciente #{atencion.pacienteId}
-            </p>
-          </div>
-          <div className="rounded-xl border border-primary/15 bg-primary/8 p-2 text-primary">
-            <Stethoscope className="size-4.5" />
           </div>
         </div>
       </CardHeader>
-
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground/75">
+      
+      <CardContent className="space-y-4 pb-3">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground/80">
           <CalendarClock className="size-4" />
-          <span className="font-medium">{formatearFecha(atencion.fechaRegistro)}</span>
-          <span className="text-muted-foreground/35">·</span>
-          <span>{atencion.responsable}</span>
+          {formatearFecha(atencion.fecha_registro)}
         </div>
 
-        <p className="line-clamp-2 min-h-10 text-sm leading-relaxed text-foreground/80">
-          {atencion.sintomasPrincipales}
-        </p>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <SignoVital
+              icon={Activity}
+              label="Sat. O2"
+              value={atencion.saturacion_o2 ? `${atencion.saturacion_o2}%` : "--"}
+              className={obtenerClaseSaturacion(atencion.saturacion_o2)}
+            />
+            <SignoVital
+              icon={Thermometer}
+              label="Temp."
+              value={atencion.temperatura ? `${atencion.temperatura}°C` : "--"}
+            />
+          </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <SignoVital
-            icon={Thermometer}
-            label="Temp."
-            value={`${atencion.temperatura.toFixed(1)} °C`}
-          />
-          <SignoVital
-            icon={HeartPulse}
-            label="FC"
-            value={`${atencion.frecuenciaCardiaca} lpm`}
-          />
-          <SignoVital
-            icon={Wind}
-            label="FR"
-            value={`${atencion.frecuenciaRespiratoria} rpm`}
-          />
-          <SignoVital
-            icon={Activity}
-            label="Sat. O2"
-            value={`${atencion.saturacionO2} %`}
-            className={obtenerClaseSaturacion(atencion.saturacionO2)}
-          />
+          <div className="grid grid-cols-2 gap-2">
+            <SignoVital
+              icon={HeartPulse}
+              label="FC"
+              value={atencion.frecuencia_cardiaca ? `${atencion.frecuencia_cardiaca} lpm` : "--"}
+            />
+            <SignoVital
+              icon={Wind}
+              label="FR"
+              value={atencion.frecuencia_respiratoria ? `${atencion.frecuencia_respiratoria} rpm` : "--"}
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-y-2 border-t border-border/50 pt-3 text-sm">
-          <span className="text-muted-foreground">Presión arterial</span>
-          <span className="text-right font-semibold tabular-nums">
-            {atencion.presionArterial}
-          </span>
-          <span className="text-muted-foreground">Evolución</span>
-          <span className="text-right font-semibold">
-            {atencion.tiempoEvolucionDias} días
-          </span>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">
+            Motivo de consulta
+          </div>
+          <p className="text-sm font-medium text-foreground/80 line-clamp-2">
+            {atencion.sintomas_principales || "Sin registrar"}
+          </p>
         </div>
       </CardContent>
 
       {esEnProceso && (
         <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
           <Button asChild className="w-full gap-2 rounded-xl font-bold">
-            <Link to={`${PATHS.DIAGNOSIS}/${atencion.codigo}`}>
+            <Link to={`${PATHS.DIAGNOSIS}?paciente=${atencion.paciente_id}&atencion=${atencion.id}`}>
               <Stethoscope className="size-4" />
               Atender
             </Link>
@@ -184,26 +169,42 @@ export function AtencionesList() {
   const [saturacionFiltro, setSaturacionFiltro] = useState("todos")
   const [paginaActual, setPaginaActual] = useState(1)
 
+  const [atenciones, setAtenciones] = useState<AtencionResponse[]>([])
+  const [cargando, setCargando] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await listarAtenciones()
+        setAtenciones(data)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setCargando(false)
+      }
+    }
+    load()
+  }, [])
+
   const atencionesFiltradas = useMemo(() => {
-    return atencionesMedicasMock.filter((atencion) => {
+    return atenciones.filter((atencion) => {
       const textoBusqueda = busqueda.toLowerCase()
       const coincideBusqueda =
-        atencion.paciente.toLowerCase().includes(textoBusqueda) ||
-        atencion.dni.includes(busqueda) ||
-        atencion.codigo.toLowerCase().includes(textoBusqueda) ||
-        atencion.sintomasPrincipales.toLowerCase().includes(textoBusqueda)
+        (atencion.paciente_nombre || "").toLowerCase().includes(textoBusqueda) ||
+        String(atencion.id).includes(busqueda) ||
+        (atencion.sintomas_principales || "").toLowerCase().includes(textoBusqueda)
       const coincideEstado =
         estadoFiltro === "todos" || atencion.estado === estadoFiltro
       const coincideSaturacion =
         saturacionFiltro === "todos" ||
-        (saturacionFiltro === "baja" && atencion.saturacionO2 < 94) ||
-        (saturacionFiltro === "normal" && atencion.saturacionO2 >= 94)
+        (saturacionFiltro === "baja" && atencion.saturacion_o2 && atencion.saturacion_o2 < 94) ||
+        (saturacionFiltro === "normal" && atencion.saturacion_o2 && atencion.saturacion_o2 >= 94)
 
       return coincideBusqueda && coincideEstado && coincideSaturacion
     })
-  }, [busqueda, estadoFiltro, saturacionFiltro])
+  }, [atenciones, busqueda, estadoFiltro, saturacionFiltro])
 
-  const totalPaginas = Math.ceil(atencionesFiltradas.length / ITEMS_PER_PAGE)
+  const totalPaginas = Math.ceil(atencionesFiltradas.length / ITEMS_PER_PAGE) || 1
   const atencionesPaginadas = atencionesFiltradas.slice(
     (paginaActual - 1) * ITEMS_PER_PAGE,
     paginaActual * ITEMS_PER_PAGE
@@ -215,7 +216,7 @@ export function AtencionesList() {
         <div className="relative w-full lg:max-w-md">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar por paciente, DNI, código o síntomas..."
+            placeholder="Buscar por paciente, código o síntomas..."
             value={busqueda}
             onChange={(event) => {
               setBusqueda(event.target.value)
@@ -224,7 +225,7 @@ export function AtencionesList() {
             className="pl-9"
           />
         </div>
-
+        
         <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
           <Select
             value={estadoFiltro}
@@ -233,7 +234,7 @@ export function AtencionesList() {
               setPaginaActual(1)
             }}
           >
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
@@ -250,28 +251,32 @@ export function AtencionesList() {
               setPaginaActual(1)
             }}
           >
-            <SelectTrigger className="w-full sm:w-[170px]">
-              <SelectValue placeholder="Saturación" />
+            <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectValue placeholder="Sat. O2" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Toda saturación</SelectItem>
-              <SelectItem value="baja">Menor a 94%</SelectItem>
-              <SelectItem value="normal">94% o más</SelectItem>
+              <SelectItem value="todos">Cualquier Sat. O2</SelectItem>
+              <SelectItem value="normal">Normal (≥94%)</SelectItem>
+              <SelectItem value="baja">Baja (&lt;94%)</SelectItem>
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="icon" title="Filtros">
+          <Button variant="outline" size="icon" className="hidden shrink-0 sm:flex" title="Más filtros">
             <SlidersHorizontal className="size-4" />
           </Button>
         </div>
       </div>
 
-      {atencionesPaginadas.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border/60 py-12 text-center text-sm font-medium text-muted-foreground">
-          No se encontraron atenciones médicas con los filtros seleccionados.
+      {cargando ? (
+        <div className="py-12 text-center text-sm font-medium text-muted-foreground/80">
+          Cargando atenciones...
+        </div>
+      ) : atencionesPaginadas.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border/60 bg-muted/5 py-12 text-center text-sm font-medium text-muted-foreground/80">
+          No se encontraron atenciones con los filtros actuales.
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {atencionesPaginadas.map((atencion) => (
             <AtencionCard key={atencion.id} atencion={atencion} />
           ))}
@@ -279,28 +284,30 @@ export function AtencionesList() {
       )}
 
       {totalPaginas > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPaginaActual((pagina) => Math.max(1, pagina - 1))}
-            disabled={paginaActual === 1}
-          >
-            Anterior
-          </Button>
-          <span className="mx-2 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center justify-between border-t border-border/40 pt-4">
+          <p className="text-sm font-medium text-muted-foreground/80">
             Página {paginaActual} de {totalPaginas}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              setPaginaActual((pagina) => Math.min(totalPaginas, pagina + 1))
-            }
-            disabled={paginaActual === totalPaginas}
-          >
-            Siguiente
-          </Button>
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPaginaActual((p) => Math.max(1, p - 1))}
+              disabled={paginaActual === 1}
+              className="rounded-lg font-bold"
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPaginaActual((p) => Math.min(totalPaginas, p + 1))}
+              disabled={paginaActual === totalPaginas}
+              className="rounded-lg font-bold"
+            >
+              Siguiente
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   Activity,
   ClipboardList,
@@ -6,53 +7,53 @@ import {
 } from "lucide-react"
 
 import { AtencionesList } from "@/components/atenciones/atenciones-list"
-import { atencionesMedicasMock } from "@/components/atenciones/datos-atenciones"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { StaggerContainer, StaggerItem } from "@/components/shared/stagger-animation"
-
-const totalAtenciones = atencionesMedicasMock.length
-const atencionesEnProceso = atencionesMedicasMock.filter(
-  (atencion) => atencion.estado === "En proceso"
-).length
-const atencionesFinalizadas = atencionesMedicasMock.filter(
-  (atencion) => atencion.estado === "Finalizada"
-).length
-const atencionesSaturacionBaja = atencionesMedicasMock.filter(
-  (atencion) => atencion.saturacionO2 < 94
-).length
-
-const atencionesStats = [
-  {
-    title: "Atenciones registradas",
-    value: totalAtenciones.toString(),
-    description: "Registros clínicos en plantilla",
-    icon: ClipboardList,
-    accent: "blue" as const,
-  },
-  {
-    title: "En proceso",
-    value: atencionesEnProceso.toString(),
-    description: "Pendientes de diagnóstico",
-    icon: Stethoscope,
-    accent: "amber" as const,
-  },
-  {
-    title: "Finalizadas",
-    value: atencionesFinalizadas.toString(),
-    description: "Atenciones cerradas",
-    icon: HeartPulse,
-    accent: "green" as const,
-  },
-  {
-    title: "Sat. O2 baja",
-    value: atencionesSaturacionBaja.toString(),
-    description: "Menor a 94%",
-    icon: Activity,
-    accent: "red" as const,
-  },
-]
+import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
 
 export default function AtencionesPage() {
+  const [atenciones, setAtenciones] = useState<AtencionResponse[]>([])
+  
+  useEffect(() => {
+    listarAtenciones().then(setAtenciones).catch(console.error)
+  }, [])
+
+  const totalAtenciones = atenciones.length
+  const atencionesEnProceso = atenciones.filter((a) => a.estado === "En proceso").length
+  const atencionesFinalizadas = atenciones.filter((a) => a.estado === "Finalizada").length
+  const atencionesSaturacionBaja = atenciones.filter((a) => a.saturacion_o2 && a.saturacion_o2 < 94).length
+
+  const atencionesStats = [
+    {
+      title: "Atenciones registradas",
+      value: totalAtenciones.toString(),
+      description: "Registros clínicos en plantilla",
+      icon: ClipboardList,
+      accent: "blue" as const,
+    },
+    {
+      title: "En proceso",
+      value: atencionesEnProceso.toString(),
+      description: "Pendientes de diagnóstico",
+      icon: Stethoscope,
+      accent: "amber" as const,
+    },
+    {
+      title: "Finalizadas",
+      value: atencionesFinalizadas.toString(),
+      description: "Atenciones cerradas",
+      icon: HeartPulse,
+      accent: "green" as const,
+    },
+    {
+      title: "Sat. O2 baja",
+      value: atencionesSaturacionBaja.toString(),
+      description: "Menor a 94%",
+      icon: Activity,
+      accent: "red" as const,
+    },
+  ]
+
   return (
     <div className="space-y-8">
       <StaggerContainer className="space-y-2 pb-1" delay={80}>

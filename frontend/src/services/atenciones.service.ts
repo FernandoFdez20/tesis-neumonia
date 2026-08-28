@@ -1,3 +1,5 @@
+import api from "@/lib/api"
+
 export type EstadoAtencion =
   | "pendiente-evaluacion"
   | "pendiente-validacion"
@@ -22,21 +24,53 @@ export type CrearAtencionRequest = {
   observaciones: string | null
 }
 
-export type AtencionResponse = CrearAtencionRequest & {
+export type AtencionResponse = {
   id: number
-  codigo: string
+  paciente_id: number
+  paciente_nombre?: string
+  paciente_edad?: number
+  usuario_id: number
+  fecha_registro: string
+  temperatura?: number | null
+  frecuencia_cardiaca?: number | null
+  frecuencia_respiratoria?: number | null
+  saturacion_o2?: number | null
+  presion_arterial?: string | null
+  tiempo_evolucion_dias?: number | null
+  sintomas_principales?: string | null
+  examen_fisico?: string | null
+  estado: string
 }
 
 export async function registrarAtencion(
   atencion: CrearAtencionRequest
 ): Promise<AtencionResponse> {
-  console.info("Atención médica registrada temporalmente", atencion)
+  console.info("Registrando atención médica en DB", atencion)
 
-  await Promise.resolve()
+  // 1. Obtener paciente por DNI para sacar el paciente_id
+  const pacienteRes = await api.get(`/pacientes/dni/${atencion.documento_paciente}`)
+  const pacienteId = pacienteRes.data.id
 
-  return {
-    ...atencion,
-    id: Date.now(),
-    codigo: `AT-${Date.now().toString().slice(-4)}`,
+  // 2. Mapear al schema del backend (AtencionMedicaCreate)
+  const payload = {
+    paciente_id: pacienteId,
+    temperatura: parseFloat(atencion.temperatura),
+    frecuencia_cardiaca: parseInt(atencion.frecuencia_cardiaca),
+    frecuencia_respiratoria: parseInt(atencion.frecuencia_respiratoria),
+    saturacion_o2: parseInt(atencion.saturacion_o2),
+    presion_arterial: atencion.presion_arterial,
+    tiempo_evolucion_dias: parseInt(atencion.tiempo_evolucion_dias),
+    sintomas_principales: atencion.sintomas_principales + (atencion.observaciones ? ` | Obs: ${atencion.observaciones}` : ""),
+    examen_fisico: atencion.evaluacion_presuntiva,
+    estado: "En proceso" // o mapear desde atencion.estado_atencion si lo requieres
   }
+
+  // 3. Crear atención
+  const response = await api.post<AtencionResponse>("/atenciones/", payload)
+  return response.data
+}
+
+export async function listarAtenciones(): Promise<AtencionResponse[]> {
+  const response = await api.get<AtencionResponse[]>("/atenciones/")
+  return response.data
 }
