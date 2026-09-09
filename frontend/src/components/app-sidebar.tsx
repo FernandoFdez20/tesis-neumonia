@@ -67,12 +67,14 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
             <Activity className="size-4.5" strokeWidth={2.4} />
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="truncate text-[15px] font-extrabold tracking-tight text-foreground leading-tight">
-              NeumoCare
-            </p>
-            <p className="truncate text-[11px] text-muted-foreground font-medium leading-tight mt-1">
-              Soporte clínico · Adultos
-            </p>
+            <div className="flex flex-col gap-0.5 leading-none">
+              <span className="font-bold text-base text-foreground tracking-tight">
+                Plataforma Clínica
+              </span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                Soporte clínico · Adultos
+              </span>
+            </div>
           </div>
         </div>
       </SidebarHeader>
@@ -113,6 +115,21 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
                   <Link to={PATHS.ATTENTIONS}>
                     <ClipboardList className="size-[18px]" strokeWidth={2} />
                     <span className="font-medium">Atenciones médicas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Radiografías */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === PATHS.RADIOGRAPHY}
+                  tooltip="Radiografías"
+                  className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
+                >
+                  <Link to={PATHS.RADIOGRAPHY}>
+                    <Activity className="size-[18px]" strokeWidth={2} />
+                    <span className="font-medium">Radiografías</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -33,7 +33,6 @@ Actualizar esta sección cada vez que el título/objetivos cambien en conversaci
 
 **Frontend:** React + TypeScript + Vite + Tailwind CSS + shadcn/ui + React Router + Axios/fetch + pnpm + framer-motion
 **Backend:** FastAPI + Python 3.10+ + Uvicorn + SQLModel/SQLAlchemy + PostgreSQL + Pydantic + JWT (HS256, nativo)
-**IA/ML:** PyTorch (separado de la lógica API en `backend/app/ml/`), entrada: radiografía tórax, salida: diagnóstico presuntivo + confianza + gravedad + prioridad
 **Infra posible:** Docker, Cloud Run
 
 No cambiar stack sin acuerdo explícito. Ver detalle en `.ai/stack.md`.

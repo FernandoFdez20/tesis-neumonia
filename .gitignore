@@ -76,3 +76,5 @@ archive
 .ai/*.local.md
 MEMORY.local.md
 .ai/memory.md
+
+uploads/

@@ -10,7 +10,7 @@ export default function Page() {
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Activity className="size-4" />
           </div>
-          <span className="text-xl font-bold text-foreground">NeumoCare</span>
+          <span className="text-xl font-bold text-foreground">Plataforma Web</span>
         </div>
 
         <LoginForm />
