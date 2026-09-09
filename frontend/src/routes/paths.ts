@@ -16,6 +16,8 @@ export const PATHS = {
 
     // Atenciones
     ATTENTIONS: "/atenciones",
+    RADIOGRAPHY: "/radiografias",
+    UPLOAD_RADIOGRAPHY: "/radiografias/cargar/:atencionId",
 
     // Diagnóstico
     DIAGNOSIS: "/diagnostico",

@@ -29,6 +29,7 @@ export type AtencionResponse = {
   paciente_id: number
   paciente_nombre?: string
   paciente_edad?: number
+  paciente_estado_clinico?: string
   usuario_id: number
   fecha_registro: string
   temperatura?: number | null
@@ -72,5 +73,22 @@ export async function registrarAtencion(
 
 export async function listarAtenciones(): Promise<AtencionResponse[]> {
   const response = await api.get<AtencionResponse[]>("/atenciones/")
+  return response.data
+}
+
+export async function evaluarAtencion(
+  atencionId: number,
+  examenFisico: string,
+  accion: "guardar_progreso" | "derivar_radiografia"
+): Promise<AtencionResponse> {
+  const response = await api.patch<AtencionResponse>(`/atenciones/${atencionId}/evaluar`, {
+    examen_fisico: examenFisico,
+    accion,
+  })
+  return response.data
+}
+
+export async function getAtencionPorId(atencionId: number): Promise<AtencionResponse> {
+  const response = await api.get<AtencionResponse>(`/atenciones/${atencionId}`)
   return response.data
 }
