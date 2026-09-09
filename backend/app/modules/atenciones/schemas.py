@@ -33,4 +33,12 @@ class AtencionMedicaResponse(AtencionMedicaBase):
 class AtencionMedicaConPacienteResponse(AtencionMedicaResponse):
     paciente_nombre: str = Field(default="Desconocido")
     paciente_edad: int = Field(default=0)
+    paciente_dni: str = Field(default="")
+    paciente_sexo: str = Field(default="")
+    paciente_estado_clinico: str = Field(default="")
+
+class AtencionMedicaEvaluar(BaseModel):
+    examen_fisico: str = Field(..., description="Notas del examen físico")
+    accion: str = Field(..., description="'guardar_progreso' o 'derivar_radiografia'")
+
 

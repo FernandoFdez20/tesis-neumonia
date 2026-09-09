@@ -20,6 +20,8 @@ from app.core.database import Base
 
 class EstadoClinico(str, enum.Enum):
     SinAtencionPendiente = "Sin atención pendiente"
+    PendienteDeEvaluacion = "Pendiente de evaluación"
+    DerivadoARadiografia = "Derivado a radiografía"
     DiagnosticoPendiente = "Diagnostico pendiente"
     PendienteDeValidacion = "Pendiente de validación"
     Validado = "Validado"

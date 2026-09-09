@@ -9,7 +9,6 @@ import {
   Thermometer,
   Wind,
 } from "lucide-react"
-import { Link } from "react-router-dom"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,7 +29,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
-import { PATHS } from "@/routes/paths"
+import { EvaluacionMedicaDialog } from "./evaluacion-medica-dialog"
 
 const ITEMS_PER_PAGE = 6
 
@@ -74,7 +73,7 @@ function SignoVital({
   )
 }
 
-function AtencionCard({ atencion }: { atencion: AtencionResponse }) {
+function AtencionCard({ atencion, onAtender }: { atencion: AtencionResponse, onAtender: (a: AtencionResponse) => void }) {
   const esEnProceso = atencion.estado === "En proceso"
 
   return (
@@ -87,14 +86,14 @@ function AtencionCard({ atencion }: { atencion: AtencionResponse }) {
                 AT-{String(atencion.id).padStart(4, '0')}
               </span>
               <Badge
-                variant={esEnProceso ? "secondary" : "outline"}
+                variant={atencion.paciente_estado_clinico === "Pendiente de evaluación" ? "secondary" : "outline"}
                 className={
-                  esEnProceso
+                  atencion.paciente_estado_clinico === "Pendiente de evaluación"
                     ? "bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:text-amber-400"
                     : "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400"
                 }
               >
-                {atencion.estado}
+                {atencion.paciente_estado_clinico || atencion.estado}
               </Badge>
             </div>
             <CardTitle className="text-base font-bold text-foreground/90 leading-tight">
@@ -151,11 +150,12 @@ function AtencionCard({ atencion }: { atencion: AtencionResponse }) {
 
       {esEnProceso && (
         <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
-          <Button asChild className="w-full gap-2 rounded-xl font-bold">
-            <Link to={`${PATHS.DIAGNOSIS}?paciente=${atencion.paciente_id}&atencion=${atencion.id}`}>
-              <Stethoscope className="size-4" />
-              Atender
-            </Link>
+          <Button 
+            className="w-full gap-2 rounded-xl font-bold"
+            onClick={() => onAtender(atencion)}
+          >
+            <Stethoscope className="size-4" />
+            Atender
           </Button>
         </CardFooter>
       )}
@@ -172,17 +172,21 @@ export function AtencionesList() {
   const [atenciones, setAtenciones] = useState<AtencionResponse[]>([])
   const [cargando, setCargando] = useState(true)
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await listarAtenciones()
-        setAtenciones(data)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setCargando(false)
-      }
+  // Estado para el modal de evaluación
+  const [atencionEvaluando, setAtencionEvaluando] = useState<AtencionResponse | null>(null)
+
+  const load = async () => {
+    try {
+      const data = await listarAtenciones()
+      setAtenciones(data)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setCargando(false)
     }
+  }
+
+  useEffect(() => {
     load()
   }, [])
 
@@ -278,7 +282,11 @@ export function AtencionesList() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {atencionesPaginadas.map((atencion) => (
-            <AtencionCard key={atencion.id} atencion={atencion} />
+            <AtencionCard 
+              key={atencion.id} 
+              atencion={atencion} 
+              onAtender={setAtencionEvaluando}
+            />
           ))}
         </div>
       )}
@@ -310,6 +318,15 @@ export function AtencionesList() {
           </div>
         </div>
       )}
+
+      <EvaluacionMedicaDialog 
+        abierto={!!atencionEvaluando}
+        atencion={atencionEvaluando}
+        onCambioAbierto={(open) => !open && setAtencionEvaluando(null)}
+        onEvaluacionCompletada={() => {
+          load()
+        }}
+      />
     </div>
   )
 }

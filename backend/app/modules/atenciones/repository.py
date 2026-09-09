@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.modules.atenciones.models import AtencionMedica
+from typing import Optional, List
 from app.modules.atenciones.schemas import AtencionMedicaCreate
 
 
@@ -48,6 +49,9 @@ class AtencionMedicaRepository:
             atencion_dict = atencion.__dict__.copy()
             atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
             atencion_dict["paciente_edad"] = edad
+            atencion_dict["paciente_dni"] = paciente.dni
+            atencion_dict["paciente_sexo"] = paciente.sexo
+            atencion_dict["paciente_estado_clinico"] = paciente.estado_clinico
             atenciones_extendidas.append(atencion_dict)
             
         return atenciones_extendidas
@@ -60,9 +64,38 @@ class AtencionMedicaRepository:
             .all()
         )
 
-    def get_atencion_por_id(self, atencion_id: int) -> AtencionMedica | None:
-        return (
-            self.db.query(AtencionMedica)
+    def get_atencion_por_id(self, atencion_id: int) -> Optional[dict]:
+        from app.modules.pacientes.models import Paciente
+        from datetime import date
+
+        resultado = (
+            self.db.query(AtencionMedica, Paciente)
+            .join(Paciente, AtencionMedica.paciente_id == Paciente.id)
             .filter(AtencionMedica.id == atencion_id)
             .first()
         )
+        if not resultado:
+            return None
+            
+        atencion, paciente = resultado
+        
+        # Calcular edad
+        hoy = date.today()
+        nacimiento = paciente.fecha_nacimiento
+        edad = hoy.year - nacimiento.year - ((hoy.month, hoy.day) < (nacimiento.month, nacimiento.day))
+
+        atencion_dict = atencion.__dict__.copy()
+        atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
+        atencion_dict["paciente_edad"] = edad
+        atencion_dict["paciente_dni"] = paciente.dni
+        atencion_dict["paciente_sexo"] = paciente.sexo
+        atencion_dict["paciente_estado_clinico"] = paciente.estado_clinico.value if paciente.estado_clinico else ""
+        return atencion_dict
+
+    def update_atencion_evaluacion(self, atencion: AtencionMedica, examen_fisico: str, estado_final: str = None) -> AtencionMedica:
+        atencion.examen_fisico = examen_fisico
+        if estado_final:
+            atencion.estado = estado_final
+        self.db.commit()
+        self.db.refresh(atencion)
+        return atencion

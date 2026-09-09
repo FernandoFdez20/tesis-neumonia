@@ -115,8 +115,8 @@ export function RecentAttentionsTable() {
                     {attention.sintomas_principales || attention.examen_fisico || "Sin evaluación"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={attention.estado === "Finalizada" ? "default" : "secondary"}>
-                      {attention.estado}
+                    <Badge variant={attention.paciente_estado_clinico === "Pendiente de evaluación" ? "secondary" : "default"}>
+                      {attention.paciente_estado_clinico || attention.estado}
                     </Badge>
                   </TableCell>
                 </TableRow>

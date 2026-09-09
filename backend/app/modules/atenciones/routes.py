@@ -8,6 +8,7 @@ from app.modules.atenciones.schemas import (
     AtencionMedicaCreate,
     AtencionMedicaResponse,
     AtencionMedicaConPacienteResponse,
+    AtencionMedicaEvaluar,
 )
 from app.modules.atenciones.service import AtencionMedicaService
 
@@ -45,10 +46,20 @@ def get_atenciones_por_paciente(
     return service.get_atenciones_por_paciente(paciente_id)
 
 
-@router.get("/{atencion_id}", response_model=AtencionMedicaResponse)
+@router.get("/{atencion_id}", response_model=AtencionMedicaConPacienteResponse)
 def get_atencion(
     atencion_id: int,
     db: Session = Depends(get_db),
 ):
     service = AtencionMedicaService(db)
     return service.get_atencion_por_id(atencion_id)
+
+@router.patch("/{atencion_id}/evaluar", response_model=AtencionMedicaConPacienteResponse)
+def evaluar_atencion(
+    atencion_id: int,
+    evaluacion: AtencionMedicaEvaluar,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_usuario_actual),
+):
+    service = AtencionMedicaService(db)
+    return service.evaluar_atencion(atencion_id, evaluacion.examen_fisico, evaluacion.accion)

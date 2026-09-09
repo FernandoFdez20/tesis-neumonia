@@ -106,3 +106,9 @@ class PacienteRepository:
         self.db.commit()
         self.db.refresh(paciente)
         return paciente
+
+    def update_estado_clinico(self, paciente: Paciente, estado: EstadoClinico) -> Paciente:
+        paciente.estado_clinico = estado
+        self.db.commit()
+        self.db.refresh(paciente)
+        return paciente
