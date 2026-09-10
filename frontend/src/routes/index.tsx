@@ -7,6 +7,7 @@ import DiagnosticoPage from "@/pages/diagnostico/page";
 import PacientesPage from "@/pages/pacientes/page";
 import RadiografiasPage from "@/pages/radiografias/page";
 import CargarRadiografiaPage from "@/pages/radiografias/cargar/page";
+import ResultadoPage from "@/pages/resultado/page";
 import { AppLayout } from "@/layouts/app-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -37,6 +38,7 @@ export default function AppRoutes() {
                             <Route path={PATHS.RADIOGRAPHY} element={<RadiografiasPage />} />
                             <Route path={PATHS.UPLOAD_RADIOGRAPHY} element={<CargarRadiografiaPage />} />
                             <Route path={PATHS.DIAGNOSIS_DETAIL} element={<DiagnosticoPage />} />
+                            <Route path={PATHS.RESULTS} element={<ResultadoPage />} />
                             <Route path={PATHS.REGISTER_PATIENT} element={null} />
                             <Route path={PATHS.NEW_ATTENTION} element={null} />
                         </Route>

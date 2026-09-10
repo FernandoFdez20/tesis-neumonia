@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PATHS } from "@/routes/paths"
 import { getAtencionPorId, type AtencionResponse } from "@/services/atenciones.service"
-import { cargarRadiografias } from "@/services/diagnosticos.service"
+import { cargarRadiografias, getDiagnosticoPorAtencion } from "@/services/diagnosticos.service"
 
 // We will assume that `getAtencionPorId` is added in the service.
 // Let's create the component first, and then we will check the service.
@@ -35,8 +35,38 @@ export default function CargarRadiografiaPage() {
     async function load() {
       try {
         if (!atencionId) return
-        const data = await getAtencionPorId(Number(atencionId))
-        setAtencion(data)
+        const atencionData = await getAtencionPorId(Number(atencionId))
+        setAtencion(atencionData)
+
+        // Intentar cargar imágenes existentes
+        try {
+          const diag = await getDiagnosticoPorAtencion(Number(atencionId))
+          if (diag && diag.imagenes) {
+            const imgAP = diag.imagenes.find(img => img.tipo_vista === "AP")
+            const imgPA = diag.imagenes.find(img => img.tipo_vista === "PA")
+            
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"
+            const baseUrl = apiUrl.replace("/api/v1", "")
+
+            const fetchFile = async (url: string, nombre: string) => {
+              const res = await fetch(`${baseUrl}${url}`)
+              const blob = await res.blob()
+              return new File([blob], nombre, { type: blob.type })
+            }
+
+            if (imgAP) {
+              const file = await fetchFile(imgAP.imagen_url, "vista_AP.dcm")
+              setArchivoAP(file)
+              // No seteamos previewAP porque es DICOM y no se previsualiza
+            }
+            if (imgPA) {
+              const file = await fetchFile(imgPA.imagen_url, "vista_PA.dcm")
+              setArchivoPA(file)
+            }
+          }
+        } catch (e) {
+          // Si da 404, significa que aún no tiene diagnóstico
+        }
       } catch (error) {
         toast.error("Error al cargar datos del paciente.")
         navigate(PATHS.RADIOGRAPHY)
@@ -67,11 +97,11 @@ export default function CargarRadiografiaPage() {
       const previewUrl = isDicom ? null : URL.createObjectURL(file)
 
       if (tipo === "AP") {
-        if (previewAP) URL.revokeObjectURL(previewAP)
+        if (previewAP && previewAP.startsWith("blob:")) URL.revokeObjectURL(previewAP)
         setArchivoAP(file)
         setPreviewAP(previewUrl)
       } else {
-        if (previewPA) URL.revokeObjectURL(previewPA)
+        if (previewPA && previewPA.startsWith("blob:")) URL.revokeObjectURL(previewPA)
         setArchivoPA(file)
         setPreviewPA(previewUrl)
       }
@@ -80,12 +110,12 @@ export default function CargarRadiografiaPage() {
 
   const removeFile = (tipo: TipoVista) => {
     if (tipo === "AP") {
-      if (previewAP) URL.revokeObjectURL(previewAP)
+      if (previewAP && previewAP.startsWith("blob:")) URL.revokeObjectURL(previewAP)
       setArchivoAP(null)
       setPreviewAP(null)
       if (inputRefAP.current) inputRefAP.current.value = ""
     } else {
-      if (previewPA) URL.revokeObjectURL(previewPA)
+      if (previewPA && previewPA.startsWith("blob:")) URL.revokeObjectURL(previewPA)
       setArchivoPA(null)
       setPreviewPA(null)
       if (inputRefPA.current) inputRefPA.current.value = ""

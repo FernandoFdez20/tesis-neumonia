@@ -22,4 +22,5 @@ export const PATHS = {
     // Diagnóstico
     DIAGNOSIS: "/diagnostico",
     DIAGNOSIS_DETAIL: "/diagnostico/:codigoAtencion",
+    RESULTS: "/resultado",
 } as const;
