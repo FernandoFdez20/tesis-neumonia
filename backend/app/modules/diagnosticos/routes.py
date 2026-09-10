@@ -6,8 +6,43 @@ from app.api.deps import get_usuario_actual
 from app.core.database import get_db
 from app.modules.diagnosticos.service import DiagnosticoService
 from app.modules.diagnosticos.schemas import DiagnosticoResponse
+from app.modules.diagnosticos.crb65_service import CRB65Request, CRB65Response, calcular_crb65
+from app.modules.atenciones.models import AtencionMedica
+from fastapi import HTTPException
+from datetime import date
+from app.modules.pacientes.models import Paciente
 
 router = APIRouter(dependencies=[Depends(get_usuario_actual)])
+
+
+@router.post(
+    "/atenciones/{atencion_medica_id}/crb65",
+    response_model=CRB65Response,
+    summary="Calcular escala de gravedad CRB-65",
+)
+def evaluar_crb65(
+    atencion_medica_id: int,
+    datos: CRB65Request,
+    db: Session = Depends(get_db)
+):
+    # Buscar atención
+    atencion = db.query(AtencionMedica).filter_by(id=atencion_medica_id).first()
+    if not atencion:
+        raise HTTPException(status_code=404, detail="Atención no encontrada")
+    
+    # Buscar paciente para calcular edad
+    paciente = db.query(Paciente).filter_by(id=atencion.paciente_id).first()
+    edad_paciente = None
+    if paciente and paciente.fecha_nacimiento:
+        today = date.today()
+        nac = paciente.fecha_nacimiento
+        edad_paciente = today.year - nac.year - ((today.month, today.day) < (nac.month, nac.day))
+    
+    try:
+        resultado = calcular_crb65(datos, edad_paciente)
+        return resultado
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post(

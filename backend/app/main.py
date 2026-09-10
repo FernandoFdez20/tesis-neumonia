@@ -1,13 +1,23 @@
 from pathlib import Path
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api.router import api_router
+from app.ml.modelo_manager import inicializar_modelo
 
 UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Tesis Neumonia API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Carga el modelo al arrancar; libera recursos al apagar."""
+    inicializar_modelo()
+    yield
+
+
+app = FastAPI(title="Tesis Neumonia API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
