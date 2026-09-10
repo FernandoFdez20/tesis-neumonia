@@ -18,6 +18,46 @@ class AtencionMedicaService:
         if not paciente:
             raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
+        # Parsear presion_arterial desde string a ints
+        if getattr(atencion_in, 'presion_arterial', None):
+            partes = atencion_in.presion_arterial.split('/')
+            if len(partes) == 2:
+                try:
+                    atencion_in.presion_sistolica = int(partes[0].strip())
+                    atencion_in.presion_diastolica = int(partes[1].strip())
+                except ValueError:
+                    pass
+
+        # Calcular CRB-65 si tenemos los datos necesarios
+        if (atencion_in.frecuencia_respiratoria is not None and 
+            atencion_in.presion_sistolica is not None and 
+            atencion_in.presion_diastolica is not None):
+            
+            from datetime import date
+            from app.modules.diagnosticos.crb65_service import CRB65Request, calcular_crb65
+            
+            edad_paciente = None
+            if paciente.fecha_nacimiento:
+                today = date.today()
+                nac = paciente.fecha_nacimiento
+                edad_paciente = today.year - nac.year - ((today.month, today.day) < (nac.month, nac.day))
+            
+            req = CRB65Request(
+                confusion=atencion_in.confusion or False,
+                frecuencia_respiratoria=atencion_in.frecuencia_respiratoria,
+                presion_sistolica=atencion_in.presion_sistolica,
+                presion_diastolica=atencion_in.presion_diastolica,
+                edad=edad_paciente
+            )
+            
+            try:
+                crb65 = calcular_crb65(req)
+                atencion_in.crb65_puntaje = crb65.puntaje_total
+                atencion_in.crb65_gravedad = crb65.gravedad
+                atencion_in.crb65_detalle = crb65.criterios
+            except Exception as e:
+                pass # Si falta edad u otro error, omitir el cálculo automático
+
         from app.modules.pacientes.models import EstadoClinico
         self.paciente_repo.update_estado_clinico(paciente, EstadoClinico.PendienteDeEvaluacion)
 

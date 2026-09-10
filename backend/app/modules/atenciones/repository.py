@@ -18,10 +18,15 @@ class AtencionMedicaRepository:
             frecuencia_cardiaca=atencion_in.frecuencia_cardiaca,
             frecuencia_respiratoria=atencion_in.frecuencia_respiratoria,
             saturacion_o2=atencion_in.saturacion_o2,
-            presion_arterial=atencion_in.presion_arterial,
+            presion_sistolica=atencion_in.presion_sistolica,
+            presion_diastolica=atencion_in.presion_diastolica,
             tiempo_evolucion_dias=atencion_in.tiempo_evolucion_dias,
             sintomas_principales=atencion_in.sintomas_principales,
             examen_fisico=atencion_in.examen_fisico,
+            confusion=atencion_in.confusion,
+            crb65_puntaje=atencion_in.crb65_puntaje,
+            crb65_gravedad=atencion_in.crb65_gravedad,
+            crb65_detalle=atencion_in.crb65_detalle,
             estado=atencion_in.estado,
         )
         self.db.add(db_atencion)

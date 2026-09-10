@@ -18,21 +18,25 @@ class Diagnostico(Base):
         unique=True, nullable=False
     )
 
-    # Resultados IA
+    # Resultados IA Consolidado
     enfermo = Column(Boolean, default=False)
-    resultado_ia = Column(String(50), nullable=True)
-    nivel_gravedad_ia = Column(
-        SQLAlchemyEnum("Leve", "Moderado", "Grave", "Crítica", "Normal",
-                       name="tipo_gravedad"),
-        nullable=True
-    )
-    probabilidad_ia = Column(DECIMAL(5, 4), nullable=True)
+    # nivel_gravedad_ia = Column(
+    #     SQLAlchemyEnum("Leve", "Moderado", "Grave", "Crítica", "Normal",
+    #                    name="tipo_gravedad"),
+    #     nullable=True
+    # )
 
-    # Desglose de confianza
-    confianza_radiografica = Column(DECIMAL(5, 2), nullable=True)
-    confianza_clinica = Column(DECIMAL(5, 2), nullable=True)
-    confianza_riesgo = Column(DECIMAL(5, 2), nullable=True)
-    hallazgos_json = Column(JSONB, nullable=True)
+    # Desglose de confianza global (Reservados para Etapa 2)
+    # confianza_clinica = Column(DECIMAL(5, 2), nullable=True)
+    # confianza_riesgo = Column(DECIMAL(5, 2), nullable=True)
+    # hallazgos_json = Column(JSONB, nullable=True)
+
+    # Priorización Dinámica
+    prioridad_final = Column(String(20), nullable=True)
+    prioridad_detalle = Column(JSONB, nullable=True)
+    
+    # Imagen de mayor probabilidad IA
+    imagen_referencia_id = Column(Integer, ForeignKey("diagnostico_imagenes.id", ondelete="SET NULL"), nullable=True)
 
     # Validación médica
     estado_validacion = Column(tipo_estado_clinico, nullable=True)
@@ -45,7 +49,13 @@ class Diagnostico(Base):
     imagenes = relationship(
         "DiagnosticoImagen",
         back_populates="diagnostico",
+        foreign_keys="[DiagnosticoImagen.diagnostico_id]",
         cascade="all, delete-orphan"
+    )
+    
+    imagen_referencia = relationship(
+        "DiagnosticoImagen",
+        foreign_keys="[Diagnostico.imagen_referencia_id]"
     )
 
 
@@ -59,7 +69,17 @@ class DiagnosticoImagen(Base):
     )
     imagen_url = Column(String(255), nullable=False)
     orden = Column(Integer, nullable=False, default=1)
-    tipo_vista = Column(String(2), nullable=True)  # 'AP' | 'PA'
+    tipo_vista = Column(String(10), nullable=True)  # 'AP' | 'PA'
+
+    # Resultados independientes por imagen
+    probabilidad_ia = Column(DECIMAL(5, 4), nullable=True)
+    confianza_radiografica = Column(DECIMAL(5, 2), nullable=True)
+    hallazgo_positivo = Column(Boolean, nullable=True)
+
     created_at = Column(TIMESTAMP, server_default=func.now())
 
-    diagnostico = relationship("Diagnostico", back_populates="imagenes")
+    diagnostico = relationship(
+        "Diagnostico", 
+        back_populates="imagenes", 
+        foreign_keys="[DiagnosticoImagen.diagnostico_id]"
+    )

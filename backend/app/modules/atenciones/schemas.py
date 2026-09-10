@@ -12,21 +12,30 @@ class AtencionMedicaBase(BaseModel):
     frecuencia_cardiaca: Optional[int] = None
     frecuencia_respiratoria: Optional[int] = None
     saturacion_o2: Optional[int] = None
-    presion_arterial: Optional[str] = None
+    presion_sistolica: Optional[int] = None
+    presion_diastolica: Optional[int] = None
     tiempo_evolucion_dias: Optional[int] = None
     sintomas_principales: Optional[str] = None
     examen_fisico: Optional[str] = None
+    confusion: Optional[bool] = False
+    
+    # CRB-65
+    crb65_puntaje: Optional[int] = None
+    crb65_gravedad: Optional[str] = None
+    crb65_detalle: Optional[dict] = None
+    
     estado: EstadoAtencion = EstadoAtencion.EnProceso
 
 
 class AtencionMedicaCreate(AtencionMedicaBase):
-    pass
+    presion_arterial: Optional[str] = None
 
 
 class AtencionMedicaResponse(AtencionMedicaBase):
     id: int
     usuario_id: int
     fecha_registro: datetime
+    presion_arterial: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

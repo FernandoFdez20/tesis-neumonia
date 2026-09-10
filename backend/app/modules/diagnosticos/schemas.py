@@ -9,6 +9,9 @@ class DiagnosticoImagenResponse(BaseModel):
     imagen_url: str
     orden: int
     tipo_vista: Optional[str] = None
+    probabilidad_ia: Optional[float] = None
+    confianza_radiografica: Optional[float] = None
+    hallazgo_positivo: Optional[bool] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -18,13 +21,9 @@ class DiagnosticoResponse(BaseModel):
     id: int
     atencion_medica_id: int
     enfermo: Optional[bool] = None
-    resultado_ia: Optional[str] = None
-    nivel_gravedad_ia: Optional[str] = None
-    probabilidad_ia: Optional[float] = None
-    confianza_radiografica: Optional[float] = None
-    confianza_clinica: Optional[float] = None
-    confianza_riesgo: Optional[float] = None
-    hallazgos_json: Optional[dict] = None
+    prioridad_final: Optional[str] = None
+    prioridad_detalle: Optional[dict] = None
+    imagen_referencia_id: Optional[int] = None
     estado_validacion: Optional[str] = None
     diagnostico_descripcion: Optional[str] = None
     validado_por_id: Optional[int] = None

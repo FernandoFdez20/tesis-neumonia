@@ -8,7 +8,9 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    Boolean,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -41,16 +43,30 @@ class AtencionMedica(Base):
     frecuencia_cardiaca = Column(Integer, nullable=True)
     frecuencia_respiratoria = Column(Integer, nullable=True)
     saturacion_o2 = Column(Integer, nullable=True)
-    presion_arterial = Column(String(20), nullable=True)
+    presion_sistolica = Column(Integer, nullable=True)
+    presion_diastolica = Column(Integer, nullable=True)
     tiempo_evolucion_dias = Column(Integer, nullable=True)
+    
+    # Clínico
     sintomas_principales = Column(Text, nullable=True)
     examen_fisico = Column(Text, nullable=True)
-
+    confusion = Column(Boolean, default=False)
+    
+    # CRB-65
+    crb65_puntaje = Column(Integer, nullable=True)
+    crb65_gravedad = Column(String(20), nullable=True)
+    crb65_detalle = Column(JSONB, nullable=True)
     estado = Column(
         tipo_estado_atencion,
         default=EstadoAtencion.EnProceso,
         nullable=False,
     )
+
+    @property
+    def presion_arterial(self):
+        if self.presion_sistolica is not None and self.presion_diastolica is not None:
+            return f"{self.presion_sistolica}/{self.presion_diastolica}"
+        return None
 
     # Si necesitas relationships
     # paciente = relationship("Paciente", back_populates="atenciones")
