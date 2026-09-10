@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Activity, Thermometer, HeartPulse, Wind, Save, ArrowRight } from "lucide-react"
 
 import {
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { type AtencionResponse, evaluarAtencion } from "@/services/atenciones.service"
+import { Crb65Resultado } from "./crb65-resultado"
 import { toast } from "sonner"
 
 type EvaluacionMedicaDialogProps = {
@@ -48,9 +49,9 @@ export function EvaluacionMedicaDialog({
   const [derivando, setDerivando] = useState(false)
 
   // Actualizar el estado local cuando cambia la atención seleccionada
-  useState(() => {
-    if (atencion) setExamenFisico(atencion.examen_fisico || "")
-  })
+  useEffect(() => {
+    setExamenFisico(atencion?.examen_fisico || "")
+  }, [atencion?.id])
 
   if (!atencion) return null
 
@@ -108,7 +109,7 @@ export function EvaluacionMedicaDialog({
           </DialogHeader>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 max-h-[62vh] overflow-y-auto">
           {/* Motivo de consulta */}
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Motivo de consulta</h4>
@@ -147,6 +148,16 @@ export function EvaluacionMedicaDialog({
                 icon={Wind} 
               />
             </div>
+          </div>
+
+          {/* Score CRB-65 (solo lectura, apoyo a la derivación) */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Score CRB-65</h4>
+            <Crb65Resultado
+              puntaje={atencion.crb65_puntaje}
+              gravedad={atencion.crb65_gravedad}
+              detalle={atencion.crb65_detalle}
+            />
           </div>
 
           {/* Examen físico (Editable) */}

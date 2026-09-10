@@ -27,7 +27,7 @@ export type FormularioAtencion = {
   saturacionOxigeno: string
   tiempoEvolucionDias: string
   sintomasPrincipales: string
-  evaluacionPresuntiva: string
+  confusion: boolean
   estadoAtencion: EstadoAtencion
   observaciones: string
 }
@@ -51,7 +51,7 @@ function crearFormularioInicial(): FormularioAtencion {
     saturacionOxigeno: "",
     tiempoEvolucionDias: "",
     sintomasPrincipales: "",
-    evaluacionPresuntiva: "",
+    confusion: false,
     estadoAtencion: "pendiente-evaluacion",
     observaciones: "",
   }
@@ -71,7 +71,7 @@ function crearRequestAtencion(formulario: FormularioAtencion): CrearAtencionRequ
     presion_arterial: formulario.presionArterial,
     tiempo_evolucion_dias: formulario.tiempoEvolucionDias,
     sintomas_principales: formulario.sintomasPrincipales,
-    evaluacion_presuntiva: formulario.evaluacionPresuntiva,
+    confusion: formulario.confusion,
     estado_atencion: formulario.estadoAtencion,
     observaciones: formulario.observaciones.trim() || null,
   }
@@ -100,7 +100,6 @@ export function useNuevaAtencionForm({
       formulario.saturacionOxigeno.trim().length > 0 &&
       formulario.tiempoEvolucionDias.trim().length > 0 &&
       formulario.sintomasPrincipales.trim().length > 0 &&
-      formulario.evaluacionPresuntiva.trim().length > 0 &&
       !guardando,
     [formulario, guardando]
   )

@@ -8,6 +8,7 @@ import {
   Stethoscope,
   Thermometer,
   Wind,
+  FileBarChart2,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -30,6 +31,8 @@ import {
 import { cn } from "@/lib/utils"
 import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
 import { EvaluacionMedicaDialog } from "./evaluacion-medica-dialog"
+import { useNavigate } from "react-router-dom"
+import { PATHS } from "@/routes/paths"
 
 const ITEMS_PER_PAGE = 6
 
@@ -73,9 +76,15 @@ function SignoVital({
   )
 }
 
-function AtencionCard({ atencion, onAtender }: { atencion: AtencionResponse, onAtender: (a: AtencionResponse) => void }) {
-  const esEnProceso = atencion.estado === "En proceso"
-
+function AtencionCard({ 
+  atencion, 
+  onAtender,
+  onVerResultado
+}: { 
+  atencion: AtencionResponse
+  onAtender: (a: AtencionResponse) => void
+  onVerResultado?: (a: AtencionResponse) => void
+}) {
   return (
     <Card className="transition-all duration-300 hover:shadow-md">
       <CardHeader className="pb-3">
@@ -148,8 +157,8 @@ function AtencionCard({ atencion, onAtender }: { atencion: AtencionResponse, onA
         </div>
       </CardContent>
 
-      {esEnProceso && (
-        <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
+      <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
+        {atencion.paciente_estado_clinico === "Pendiente de evaluación" && (
           <Button 
             className="w-full gap-2 rounded-xl font-bold"
             onClick={() => onAtender(atencion)}
@@ -157,8 +166,18 @@ function AtencionCard({ atencion, onAtender }: { atencion: AtencionResponse, onA
             <Stethoscope className="size-4" />
             Atender
           </Button>
-        </CardFooter>
-      )}
+        )}
+        
+        {atencion.paciente_estado_clinico === "Pendiente de validación" && (
+          <Button 
+            className="w-full gap-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white"
+            onClick={() => onVerResultado?.(atencion)}
+          >
+            <FileBarChart2 className="size-4" />
+            Ver Resultados
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   )
 }
@@ -174,6 +193,8 @@ export function AtencionesList() {
 
   // Estado para el modal de evaluación
   const [atencionEvaluando, setAtencionEvaluando] = useState<AtencionResponse | null>(null)
+  
+  const navigate = useNavigate()
 
   const load = async () => {
     try {
@@ -272,8 +293,8 @@ export function AtencionesList() {
       </div>
 
       {cargando ? (
-        <div className="py-12 text-center text-sm font-medium text-muted-foreground/80">
-          Cargando atenciones...
+        <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/5">
+          <div className="text-sm font-medium text-muted-foreground/80">Cargando atenciones...</div>
         </div>
       ) : atencionesPaginadas.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/60 bg-muted/5 py-12 text-center text-sm font-medium text-muted-foreground/80">
@@ -286,6 +307,7 @@ export function AtencionesList() {
               key={atencion.id} 
               atencion={atencion} 
               onAtender={setAtencionEvaluando}
+              onVerResultado={(a) => navigate(PATHS.RESULTS, { state: { atencionId: a.id } })}
             />
           ))}
         </div>

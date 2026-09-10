@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { useNuevaAtencionForm } from "@/components/atenciones/use-nueva-atencion-form"
 type DialogNuevaAtencionProps = {
   abierto: boolean
@@ -285,27 +286,28 @@ export function DialogNuevaAtencion({
                 required
               />
             </div>
-
-            <div className="grid gap-2">
-              <Label
-                htmlFor={`${formId}-evaluacion-presuntiva`}
-                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 leading-none mb-0.5"
-              >
-                Evaluación presuntiva
-              </Label>
-              <Input
-                id={`${formId}-evaluacion-presuntiva`}
-                value={formulario.evaluacionPresuntiva}
-                onChange={(event) => actualizarCampo("evaluacionPresuntiva", event.target.value)}
-                placeholder="Ej. Sospecha clínica respiratoria"
-                autoComplete="off"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45"
-                required
-              />
-            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2 flex flex-row items-center justify-between rounded-xl border border-border/60 bg-background/50 p-4 shadow-sm">
+              <div className="space-y-0.5">
+                <Label
+                  htmlFor={`${formId}-confusion`}
+                  className="text-sm font-bold text-foreground"
+                >
+                  Confusión Mental
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  ¿Presenta el paciente confusión mental aguda o desorientación de nueva aparición? (Requisito CRB-65)
+                </p>
+              </div>
+              <Switch
+                id={`${formId}-confusion`}
+                checked={formulario.confusion}
+                onCheckedChange={(checked) => actualizarCampo("confusion", checked)}
+              />
+            </div>
+
             <div className="grid gap-2">
               <Label
                 htmlFor={`${formId}-sintomas-principales`}

@@ -19,7 +19,7 @@ export type CrearAtencionRequest = {
   presion_arterial: string
   tiempo_evolucion_dias: string
   sintomas_principales: string
-  evaluacion_presuntiva: string
+  confusion: boolean
   estado_atencion: EstadoAtencion
   observaciones: string | null
 }
@@ -41,6 +41,13 @@ export type AtencionResponse = {
   sintomas_principales?: string | null
   examen_fisico?: string | null
   estado: string
+  confusion?: boolean | null
+  crb65_puntaje?: number | null
+  crb65_gravedad?: string | null
+  crb65_detalle?: Record<
+    string,
+    { valor: boolean | number | string; puntos: number; descripcion: string }
+  > | null
 }
 
 export async function registrarAtencion(
@@ -62,7 +69,7 @@ export async function registrarAtencion(
     presion_arterial: atencion.presion_arterial,
     tiempo_evolucion_dias: parseInt(atencion.tiempo_evolucion_dias),
     sintomas_principales: atencion.sintomas_principales + (atencion.observaciones ? ` | Obs: ${atencion.observaciones}` : ""),
-    examen_fisico: atencion.evaluacion_presuntiva,
+    examen_fisico: null, // Se registrará después por el médico
     estado: "En proceso" // o mapear desde atencion.estado_atencion si lo requieres
   }
 
