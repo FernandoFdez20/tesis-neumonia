@@ -89,9 +89,10 @@ export function PrioridadFinal({ diagnostico, atencion }: PrioridadFinalProps) {
     detalle?.resultado_ia ?? (diagnostico.enfermo === true ? "Positivo" : diagnostico.enfermo === false ? "Negativo" : "—")
 
   // Probabilidad de la imagen de referencia (la peor vista, según el backend).
+  const imagenes = diagnostico.imagenes ?? []
   const imagenRef =
-    diagnostico.imagenes.find((i) => i.id === diagnostico.imagen_referencia_id) ??
-    [...diagnostico.imagenes]
+    imagenes.find((i) => i.id === diagnostico.imagen_referencia_id) ??
+    [...imagenes]
       .filter((i) => i.probabilidad_ia != null)
       .sort((a, b) => Number(b.probabilidad_ia) - Number(a.probabilidad_ia))[0]
   const probRef = imagenRef?.probabilidad_ia != null ? Number(imagenRef.probabilidad_ia) * 100 : null

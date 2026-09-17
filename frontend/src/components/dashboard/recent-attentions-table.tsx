@@ -69,7 +69,7 @@ export function RecentAttentionsTable() {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="rounded-xl border border-border/30 overflow-hidden bg-background/30 shadow-xs">
+        <div className="rounded-xl border border-border/30 overflow-x-auto bg-background/30 shadow-xs">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/20 hover:bg-muted/20">

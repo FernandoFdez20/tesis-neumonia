@@ -17,8 +17,12 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StaggerContainer, StaggerItem } from "@/components/shared/stagger-animation"
+
+import { RegistroDiagnosticoFinalDialog } from "@/components/diagnostico/registro-diagnostico-final-dialog"
+
 import { Crb65Resultado } from "@/components/atenciones/crb65-resultado"
 import { PrioridadFinal } from "@/components/diagnostico/prioridad-final"
+import { InfoPacienteAtencion } from "@/components/resultado/info-paciente-atencion"
 import { getDiagnosticoPorAtencion } from "@/services/diagnosticos.service"
 import { getAtencionPorId, type AtencionResponse } from "@/services/atenciones.service"
 import { type DiagnosticoImagen, type DiagnosticoResponse } from "@/types/diagnostico"
@@ -73,6 +77,11 @@ function TarjetaImagenResultado({
   const pendiente = img.hallazgo_positivo == null || img.probabilidad_ia == null
   const prob = (Number(img.probabilidad_ia) || 0) * 100
   const confianza = Number(img.confianza_radiografica) || 0
+  const esDcm = esDicom(img.imagen_url)
+  // Convención con el backend: el PNG vive junto al DICOM (abc.dcm -> abc.png).
+  // Si aún no existe (imágenes subidas antes), se muestra el placeholder DICOM.
+  const [sinVistaPrevia, setSinVistaPrevia] = useState(false)
+  const vistaPng = esDcm ? img.imagen_url.replace(/\.dcm$/i, ".png") : null
 
   return (
     <div
@@ -105,7 +114,24 @@ function TarjetaImagenResultado({
 
       {/* Imagen */}
       <div className="flex items-center justify-center bg-slate-950/90 min-h-[220px] p-3">
-        {esDicom(img.imagen_url) ? (
+        {esDcm && vistaPng && !sinVistaPrevia ? (
+          <div className="w-full">
+            <img
+              src={`${baseUrl}${vistaPng}`}
+              alt={`Radiografía ${img.tipo_vista ?? ""}`}
+              className="max-h-[280px] w-full object-contain rounded-lg"
+              loading="lazy"
+              onError={() => setSinVistaPrevia(true)}
+            />
+            <div className="mt-2 flex justify-center">
+              <Button variant="secondary" size="sm" className="rounded-lg font-bold" asChild>
+                <a href={`${baseUrl}${img.imagen_url}`} target="_blank" rel="noreferrer">
+                  Abrir original
+                </a>
+              </Button>
+            </div>
+          </div>
+        ) : esDcm ? (
           <div className="flex flex-col items-center text-center text-slate-300 py-8">
             <FileImage className="size-12 mb-2 opacity-70" />
             <span className="text-sm font-bold">Archivo DICOM</span>
@@ -203,7 +229,19 @@ export default function ResultadoPage() {
 
   const [diagnostico, setDiagnostico] = useState<DiagnosticoResponse | null>(null)
   const [atencion, setAtencion] = useState<AtencionResponse | null>(null)
+
+  const handleRecargar = async () => {
+    if (!atencionId) return
+    const diag = await getDiagnosticoPorAtencion(atencionId)
+    setDiagnostico(diag)
+  }
+
   const [cargando, setCargando] = useState(true)
+
+  // TODO: validar rol desde el usuario en localStorage ("Médico" / "Especialista")
+  const esMedicoOEsp = true
+  const [modalValidacionAbierto, setModalValidacionAbierto] = useState(false)
+
 
   useEffect(() => {
     if (!atencionId) return
@@ -298,6 +336,17 @@ export default function ResultadoPage() {
                 AT-{String(diagnostico.atencion_medica_id).padStart(4, "0")}
               </Badge>
               {badgeEstadoValidacion(diagnostico.estado_validacion)}
+
+              {esMedicoOEsp && diagnostico.estado_validacion !== "Validado" && (
+                <Button 
+                  onClick={() => setModalValidacionAbierto(true)}
+                  className="rounded-xl font-bold ml-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Stethoscope className="mr-2 size-4" />
+                  Validar Diagnóstico
+                </Button>
+              )}
+
             </div>
           </div>
         </StaggerItem>
@@ -317,6 +366,13 @@ export default function ResultadoPage() {
               Volver a atenciones
             </Button>
           </div>
+        </StaggerItem>
+      </StaggerContainer>
+
+      {/* ── Paciente y atención médica ── */}
+      <StaggerContainer delay={90}>
+        <StaggerItem index={0}>
+          <InfoPacienteAtencion atencion={atencion} />
         </StaggerItem>
       </StaggerContainer>
 
@@ -482,6 +538,15 @@ export default function ResultadoPage() {
           </Card>
         </StaggerItem>
       </StaggerContainer>
+
+      {/* ── MODAL DE VALIDACION ── */}
+      <RegistroDiagnosticoFinalDialog
+        diagnosticoId={diagnostico.id}
+        abierto={modalValidacionAbierto}
+        onCambioAbierto={setModalValidacionAbierto}
+        onValidadoExitosamente={handleRecargar}
+      />
+
     </div>
   )
 }

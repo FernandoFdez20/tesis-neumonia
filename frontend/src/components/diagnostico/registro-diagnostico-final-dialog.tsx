@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,131 +20,106 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { patologiasRespiratoriasMock } from "@/components/diagnostico/datos-diagnostico"
-
-type ResultadoDiagnostico = "sano" | "positivo-neumonia" | "otra-patologia"
+import { validarDiagnostico } from "@/services/diagnosticos.service"
+import type { DiagnosticoValidacionRequest } from "@/types/diagnostico"
 
 type RegistroDiagnosticoFinalDialogProps = {
+  diagnosticoId: number
   abierto: boolean
   onCambioAbierto: (abierto: boolean) => void
+  onValidadoExitosamente?: () => void
 }
 
 export function RegistroDiagnosticoFinalDialog({
+  diagnosticoId,
   abierto,
   onCambioAbierto,
+  onValidadoExitosamente,
 }: RegistroDiagnosticoFinalDialogProps) {
-  const [resultadoDiagnostico, setResultadoDiagnostico] = useState("")
-  const [gravedad, setGravedad] = useState("")
-  const [patologia, setPatologia] = useState("")
+  const queryClient = useQueryClient()
+  const [clasificacionMedico, setClasificacionMedico] = useState<DiagnosticoValidacionRequest["clasificacion_medico"] | "">("")
   const [descripcionClinica, setDescripcionClinica] = useState("")
-
-  const esPositivoNeumonia = resultadoDiagnostico === "positivo-neumonia"
-  const esOtraPatologia = resultadoDiagnostico === "otra-patologia"
-
-  function handleCambioResultado(valor: ResultadoDiagnostico) {
-    setResultadoDiagnostico(valor)
-
-    if (valor !== "positivo-neumonia") {
-      setGravedad("")
-    }
-
-    if (valor !== "otra-patologia") {
-      setPatologia("")
-    }
-  }
+  const [estaCargando, setEstaCargando] = useState(false)
 
   function handleCambioAbierto(siguienteAbierto: boolean) {
+    if (estaCargando) return
     onCambioAbierto(siguienteAbierto)
-
     if (!siguienteAbierto) {
-      setResultadoDiagnostico("")
-      setGravedad("")
-      setPatologia("")
+      setClasificacionMedico("")
       setDescripcionClinica("")
     }
   }
 
-  function handleGuardarDiagnostico() {
-    toast.success("Diagnóstico final registrado", {
-      description: "El registro quedó guardado temporalmente en modo plantilla.",
-    })
-    handleCambioAbierto(false)
+  async function handleGuardarDiagnostico() {
+    if (!clasificacionMedico || !descripcionClinica.trim()) return
+
+    setEstaCargando(true)
+    try {
+      await validarDiagnostico(diagnosticoId, {
+        clasificacion_medico: clasificacionMedico as DiagnosticoValidacionRequest["clasificacion_medico"],
+        diagnostico_descripcion: descripcionClinica,
+      })
+
+      toast.success("Diagnóstico validado exitosamente")
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ["diagnostico", diagnosticoId] })
+      queryClient.invalidateQueries({ queryKey: ["estadisticasDashboard"] })
+
+      if (onValidadoExitosamente) {
+        onValidadoExitosamente()
+      }
+      handleCambioAbierto(false)
+    } catch (error: any) {
+      toast.error("Error al validar", {
+        description: error.response?.data?.detail || "Ocurrió un error inesperado."
+      })
+    } finally {
+      setEstaCargando(false)
+    }
   }
 
   return (
     <Dialog open={abierto} onOpenChange={handleCambioAbierto}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader className="px-5 pt-5 pb-1">
-          <DialogTitle>Registro de Diagnóstico Final</DialogTitle>
+          <DialogTitle>Validación Médica del Diagnóstico</DialogTitle>
           <DialogDescription className="mt-1">
-            Completa el resultado clínico de la atención actual.
+            Revisa el caso y emite tu conclusión clínica final.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 px-5 pb-5">
           <div className="grid gap-2">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-              Resultado del diagnóstico
+              Clasificación médica final
             </Label>
-            <Select value={resultadoDiagnostico} onValueChange={handleCambioResultado}>
+            <Select 
+              value={clasificacionMedico} 
+              onValueChange={(v: any) => setClasificacionMedico(v)}
+              disabled={estaCargando}
+            >
               <SelectTrigger className="rounded-xl border-border/60 bg-background/50">
                 <SelectValue placeholder="Selecciona el resultado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sano">Sano</SelectItem>
-                <SelectItem value="positivo-neumonia">Positivo para neumonía</SelectItem>
-                <SelectItem value="otra-patologia">Otra patología</SelectItem>
+                <SelectItem value="Neumonía">Neumonía</SelectItem>
+                <SelectItem value="Sano">Sano</SelectItem>
+                <SelectItem value="Otro diagnóstico">Otro diagnóstico</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {esPositivoNeumonia && (
-            <div className="grid gap-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                Gravedad
-              </Label>
-              <Select value={gravedad} onValueChange={setGravedad}>
-                <SelectTrigger className="rounded-xl border-border/60 bg-background/50">
-                  <SelectValue placeholder="Selecciona gravedad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="leve">Leve</SelectItem>
-                  <SelectItem value="moderada">Moderada</SelectItem>
-                  <SelectItem value="grave">Grave</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {esOtraPatologia && (
-            <div className="grid gap-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                Enfermedad respiratoria
-              </Label>
-              <Select value={patologia} onValueChange={setPatologia}>
-                <SelectTrigger className="rounded-xl border-border/60 bg-background/50">
-                  <SelectValue placeholder="Selecciona una patología" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patologiasRespiratoriasMock.map((enfermedad) => (
-                    <SelectItem key={enfermedad} value={enfermedad.toLowerCase()}>
-                      {enfermedad}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
           <div className="grid gap-2">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-              Descripción clínica
+              Descripción / discrepancias
             </Label>
             <Textarea
               value={descripcionClinica}
               onChange={(event) => setDescripcionClinica(event.target.value)}
-              placeholder="Describe el criterio clínico, hallazgos relevantes y conducta médica."
+              placeholder="Documenta observaciones clínicas, coincidencias o diferencias respecto al resultado de la IA."
               className="min-h-28 rounded-xl border-border/60 bg-background/50 px-3.5 py-2.5"
+              disabled={estaCargando}
             />
           </div>
         </div>
@@ -153,6 +129,7 @@ export function RegistroDiagnosticoFinalDialog({
             type="button"
             variant="outline"
             className="rounded-xl font-bold"
+            disabled={estaCargando}
             onClick={() => handleCambioAbierto(false)}
           >
             Cancelar
@@ -160,10 +137,10 @@ export function RegistroDiagnosticoFinalDialog({
           <Button
             type="button"
             className="rounded-xl font-bold"
-            disabled={!resultadoDiagnostico || !descripcionClinica.trim()}
+            disabled={!clasificacionMedico || !descripcionClinica.trim() || estaCargando}
             onClick={handleGuardarDiagnostico}
           >
-            Guardar diagnóstico
+            {estaCargando ? "Guardando..." : "Firmar y Validar"}
           </Button>
         </DialogFooter>
       </DialogContent>

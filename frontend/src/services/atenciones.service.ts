@@ -29,6 +29,8 @@ export type AtencionResponse = {
   paciente_id: number
   paciente_nombre?: string
   paciente_edad?: number
+  paciente_dni?: string
+  paciente_sexo?: string
   paciente_estado_clinico?: string
   usuario_id: number
   fecha_registro: string
@@ -69,6 +71,7 @@ export async function registrarAtencion(
     presion_arterial: atencion.presion_arterial,
     tiempo_evolucion_dias: parseInt(atencion.tiempo_evolucion_dias),
     sintomas_principales: atencion.sintomas_principales + (atencion.observaciones ? ` | Obs: ${atencion.observaciones}` : ""),
+    confusion: atencion.confusion,
     examen_fisico: null, // Se registrará después por el médico
     estado: "En proceso" // o mapear desde atencion.estado_atencion si lo requieres
   }
@@ -97,5 +100,12 @@ export async function evaluarAtencion(
 
 export async function getAtencionPorId(atencionId: number): Promise<AtencionResponse> {
   const response = await api.get<AtencionResponse>(`/atenciones/${atencionId}`)
+  return response.data
+}
+
+export async function listarAtencionesPorPaciente(
+  pacienteId: number
+): Promise<AtencionResponse[]> {
+  const response = await api.get<AtencionResponse[]>(`/atenciones/paciente/${pacienteId}`)
   return response.data
 }
