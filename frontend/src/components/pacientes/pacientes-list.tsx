@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Search, SlidersHorizontal, User } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -17,63 +17,103 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { listarPacientes, type PacienteResponse } from "@/services/pacientes.service"
+import {
+  PacienteDetalleDialog,
+  calcularEdad,
+  capitalizar,
+} from "@/components/pacientes/paciente-detalle-dialog"
+
+const PAGE_SIZE = 6
+
+function formatearFechaCorta(fecha: string | null | undefined): string {
+  if (!fecha) return "—"
+  const d = new Date(fecha)
+  if (Number.isNaN(d.getTime())) return "—"
+  return new Intl.DateTimeFormat("es-PE", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(d)
+}
 
 export function PacientesList() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [generoFilter, setGeneroFilter] = useState("todos")
-  const [estadoFilter, setEstadoFilter] = useState("todos")
-  
-  const [pacientes, setPacientes] = useState<PacienteResponse[]>([])
-  const [cargando, setCargando] = useState(true)
+  const [busqueda, setBusqueda] = useState("")
+  const [busquedaDebounce, setBusquedaDebounce] = useState("")
+  const [sexoFiltro, setSexoFiltro] = useState("todos")
+  const [estadoFiltro, setEstadoFiltro] = useState("todos")
+  const [pagina, setPagina] = useState(1)
 
-  // Función sencilla para calcular edad
-  const calcularEdad = (fechaNacimiento: string) => {
-    const hoy = new Date()
-    const fechaNac = new Date(fechaNacimiento)
-    let edad = hoy.getFullYear() - fechaNac.getFullYear()
-    const m = hoy.getMonth() - fechaNac.getMonth()
-    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
-      edad--
-    }
-    return edad
-  }
+  const [pacientes, setPacientes] = useState<PacienteResponse[]>([])
+  const [totalPaginas, setTotalPaginas] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(false)
+
+  const [pacienteDetalle, setPacienteDetalle] = useState<PacienteResponse | null>(null)
+
+  // Debounce de búsqueda para no saturar al backend
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setBusquedaDebounce(busqueda.trim())
+      setPagina(1)
+    }, 400)
+    return () => clearTimeout(t)
+  }, [busqueda])
+
+  const primeraCarga = useRef(true)
 
   useEffect(() => {
-    async function cargarPacientes() {
+    async function cargar() {
       try {
-        setCargando(true)
-        const response = await listarPacientes({ page: 1, page_size: 100 })
-        setPacientes(response.items)
-      } catch (error) {
-        console.error("Error cargando pacientes:", error)
+        if (primeraCarga.current) setCargando(true)
+        setError(false)
+        const resp = await listarPacientes({
+          page: pagina,
+          page_size: PAGE_SIZE,
+          buscar: busquedaDebounce || undefined,
+          sexo: sexoFiltro === "todos" ? undefined : sexoFiltro,
+          en_atencion:
+            estadoFiltro === "todos" ? undefined : estadoFiltro === "en-atencion",
+        })
+        setPacientes(resp.items)
+        setTotal(resp.total)
+        setTotalPaginas(resp.total_pages || 1)
+      } catch {
+        setError(true)
       } finally {
         setCargando(false)
+        primeraCarga.current = false
       }
     }
-    cargarPacientes()
-  }, [])
+    cargar()
+  }, [pagina, busquedaDebounce, sexoFiltro, estadoFiltro])
 
-  const filteredPacientes = pacientes.filter((p) => {
-    const matchSearch =
-      p.nombres_apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.dni.includes(searchTerm)
-    const matchGenero = generoFilter === "todos" || p.sexo.toLowerCase() === generoFilter.toLowerCase()
-    const matchEstado =
-      estadoFilter === "todos" ||
-      p.estado_clinico.toLowerCase().replace(/ /g, "-") === estadoFilter.toLowerCase()
-    return matchSearch && matchGenero && matchEstado
-  })
-
-  const ITEMS_PER_PAGE = 6
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const totalPages = Math.ceil(filteredPacientes.length / ITEMS_PER_PAGE) || 1
-  const paginatedPacientes = filteredPacientes.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  )
+  const reintentar = () => {
+    primeraCarga.current = true
+    setCargando(true)
+    listarPacientes({
+      page: pagina,
+      page_size: PAGE_SIZE,
+      buscar: busquedaDebounce || undefined,
+      sexo: sexoFiltro === "todos" ? undefined : sexoFiltro,
+      en_atencion:
+        estadoFiltro === "todos" ? undefined : estadoFiltro === "en-atencion",
+    })
+      .then((resp) => {
+        setPacientes(resp.items)
+        setTotal(resp.total)
+        setTotalPaginas(resp.total_pages || 1)
+        setError(false)
+      })
+      .catch(() => setError(true))
+      .finally(() => {
+        setCargando(false)
+        primeraCarga.current = false
+      })
+  }
 
   return (
     <div className="space-y-6">
@@ -82,20 +122,17 @@ export function PacientesList() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por nombre o DNI..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setCurrentPage(1)
-            }}
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
             className="pl-9 w-full"
           />
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <Select
-            value={generoFilter}
+            value={sexoFiltro}
             onValueChange={(val) => {
-              setGeneroFilter(val)
-              setCurrentPage(1)
+              setSexoFiltro(val)
+              setPagina(1)
             }}
           >
             <SelectTrigger className="w-[140px]">
@@ -108,20 +145,19 @@ export function PacientesList() {
             </SelectContent>
           </Select>
           <Select
-            value={estadoFilter}
+            value={estadoFiltro}
             onValueChange={(val) => {
-              setEstadoFilter(val)
-              setCurrentPage(1)
+              setEstadoFiltro(val)
+              setPagina(1)
             }}
           >
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[170px]">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos (Estado)</SelectItem>
-              <SelectItem value="estable">Estable</SelectItem>
-              <SelectItem value="en-evaluacion">En evaluación</SelectItem>
-              <SelectItem value="crítico">Crítico</SelectItem>
+              <SelectItem value="en-atencion">En Atención</SelectItem>
+              <SelectItem value="sin-atencion">Sin Atención Activa</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" size="icon" title="Más filtros">
@@ -131,89 +167,120 @@ export function PacientesList() {
       </div>
 
       {cargando ? (
-        <div className="py-12 text-center text-muted-foreground">Cargando pacientes...</div>
-      ) : paginatedPacientes.length === 0 ? (
-        <div className="py-12 text-center text-muted-foreground">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-[220px] rounded-2xl" />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="py-12 text-center space-y-3 rounded-xl border border-dashed border-border/60 bg-muted/5">
+          <p className="text-sm font-medium text-muted-foreground/80">
+            No se pudieron cargar los pacientes.
+          </p>
+          <Button variant="outline" size="sm" onClick={reintentar} className="rounded-lg font-bold">
+            Reintentar
+          </Button>
+        </div>
+      ) : pacientes.length === 0 ? (
+        <div className="py-12 text-center text-muted-foreground rounded-xl border border-dashed border-border/60 bg-muted/5">
           No se encontraron pacientes con los filtros seleccionados.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {paginatedPacientes.map((paciente) => (
-            <Card key={paciente.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
-                <div className="space-y-1">
-                  <CardTitle className="text-base font-bold line-clamp-1">
-                    {paciente.nombres_apellidos}
-                  </CardTitle>
-                  <div className="text-sm text-muted-foreground">
-                    DNI: {paciente.dni}
-                  </div>
-                </div>
-                <div className="bg-primary/10 p-2 rounded-full text-primary">
-                  <User className="h-4 w-4" />
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <div className="grid grid-cols-2 gap-y-2 text-sm">
-                  <div className="text-muted-foreground">Edad</div>
-                  <div className="font-medium text-right">{calcularEdad(paciente.fecha_nacimiento)} años</div>
-                  
-                  <div className="text-muted-foreground">Sexo</div>
-                  <div className="font-medium text-right">{paciente.sexo}</div>
-                  
-                  <div className="text-muted-foreground">Registro</div>
-                  <div className="font-medium text-right">{new Date(paciente.created_at).toLocaleDateString()}</div>
-                  
-                  <div className="text-muted-foreground">Atenciones</div>
-                  <div className="font-medium text-right">{"-"}</div>
-                </div>
+        <>
+          <p className="text-sm font-medium text-muted-foreground/80">
+            {total} paciente{total === 1 ? "" : "s"} registrado{total === 1 ? "" : "s"}
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pacientes.map((paciente) => {
+              const edad = calcularEdad(paciente.fecha_nacimiento)
+              return (
+                <Card key={paciente.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
+                    <div className="space-y-1 min-w-0">
+                      <CardTitle className="text-base font-bold line-clamp-1">
+                        {paciente.nombres_apellidos}
+                      </CardTitle>
+                      <div className="text-sm text-muted-foreground font-mono">
+                        DNI: {paciente.dni}
+                      </div>
+                    </div>
+                    <div className="bg-primary/10 p-2 rounded-full text-primary shrink-0">
+                      <User className="h-4 w-4" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                      <div className="text-muted-foreground">Edad</div>
+                      <div className="font-medium text-right">
+                        {edad != null ? `${edad} años` : "—"}
+                      </div>
 
-                <div className="mt-4 pt-4 border-t border-border/40 flex justify-between items-center">
-                  <Badge
-                    variant={
-                      paciente.estado_clinico === "Sin atención pendiente"
-                        ? "default"
-                        : paciente.estado_clinico === "Pendiente de validación"
-                        ? "secondary"
-                        : "destructive"
-                    }
-                    className="font-medium"
-                  >
-                    {paciente.estado_clinico}
-                  </Badge>
-                  <Button variant="ghost" size="sm" className="h-8 px-2 text-primary">
-                    Ver perfil
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                      <div className="text-muted-foreground">Sexo</div>
+                      <div className="font-medium text-right">{capitalizar(paciente.sexo)}</div>
+
+                      <div className="text-muted-foreground">Registro</div>
+                      <div className="font-medium text-right">
+                        {formatearFechaCorta(paciente.created_at)}
+                      </div>
+
+                      <div className="text-muted-foreground">Última atención</div>
+                      <div className="font-medium text-right">
+                        {formatearFechaCorta(paciente.ultima_atencion)}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-border/40 flex justify-between items-center">
+                      <Badge variant={paciente.en_atencion ? "default" : "secondary"}>
+                        {paciente.en_atencion ? "En atención" : "Sin atención activa"}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 text-primary"
+                        onClick={() => setPacienteDetalle(paciente)}
+                      >
+                        Ver perfil
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        </>
       )}
 
-      {totalPages > 1 && (
+      {totalPaginas > 1 && (
         <div className="flex justify-center items-center gap-2 pt-4">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => setPagina((p) => Math.max(1, p - 1))}
+            disabled={pagina === 1}
           >
             Anterior
           </Button>
           <span className="text-sm font-medium text-muted-foreground mx-2">
-            Página {currentPage} de {totalPages}
+            Página {pagina} de {totalPaginas}
           </span>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+            disabled={pagina === totalPaginas}
           >
             Siguiente
           </Button>
         </div>
       )}
+
+      <PacienteDetalleDialog
+        paciente={pacienteDetalle}
+        abierto={!!pacienteDetalle}
+        onCambioAbierto={(abierto) => {
+          if (!abierto) setPacienteDetalle(null)
+        }}
+      />
     </div>
   )
 }

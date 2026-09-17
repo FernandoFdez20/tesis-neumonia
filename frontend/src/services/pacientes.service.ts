@@ -12,8 +12,10 @@ export type PacienteCreate = {
 
 export type PacienteResponse = PacienteCreate & {
   id: number
-  estado_clinico: string
+  en_atencion: boolean
+  ultima_atencion?: string | null
   created_at: string
+  enfermedades?: { id: number; nombre: string }[]
 }
 
 export async function registrarPaciente(data: PacienteCreate): Promise<PacienteResponse> {
@@ -34,7 +36,7 @@ export async function listarPacientes(params?: {
   page_size?: number
   buscar?: string
   sexo?: string
-  estado_clinico?: string
+  en_atencion?: boolean
 }): Promise<PaginatedPacientes> {
   const response = await api.get<PaginatedPacientes>("/pacientes/", { params })
   return response.data

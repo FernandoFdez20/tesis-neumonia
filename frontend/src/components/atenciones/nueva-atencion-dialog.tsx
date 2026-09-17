@@ -15,6 +15,24 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useNuevaAtencionForm } from "@/components/atenciones/use-nueva-atencion-form"
+import { cn } from "@/lib/utils"
+
+function ErrorCampo({ mensaje }: { mensaje?: string }) {
+  if (!mensaje) return null
+  return (
+    <p role="alert" className="text-xs font-medium text-destructive leading-snug">
+      {mensaje}
+    </p>
+  )
+}
+
+/** Borde rojo cuando el campo tiene error en vivo; si no, clases base. */
+function claseConError(base: string, hayError: boolean) {
+  return cn(
+    base,
+    hayError && "border-destructive/60 focus-visible:ring-destructive/20 focus-visible:border-destructive"
+  )
+}
 type DialogNuevaAtencionProps = {
   abierto: boolean
   onCambioAbierto: (abierto: boolean) => void
@@ -32,6 +50,7 @@ export function DialogNuevaAtencion({
     guardando,
     puedeGuardar,
     confirmarRegistroPaciente,
+    errores,
     actualizarCampo,
     actualizarDocumentoPaciente,
     handleCambioAbierto,
@@ -69,7 +88,8 @@ export function DialogNuevaAtencion({
                   inputMode="numeric"
                   maxLength={8}
                   autoComplete="off"
-                  className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                  aria-invalid={!!errores.documentoPaciente}
+                  className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.documentoPaciente)}
                   required
                 />
                 <Button
@@ -84,6 +104,7 @@ export function DialogNuevaAtencion({
                   <span className="hidden sm:inline">Buscar</span>
                 </Button>
               </div>
+              <ErrorCampo mensaje={errores.documentoPaciente} />
             </div>
 
             <div className="grid gap-2">
@@ -117,9 +138,11 @@ export function DialogNuevaAtencion({
                 value={formulario.fechaAtencion}
                 onChange={(event) => actualizarCampo("fechaAtencion", event.target.value)}
                 type="date"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.fechaAtencion}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.fechaAtencion)}
                 required
               />
+              <ErrorCampo mensaje={errores.fechaAtencion} />
             </div>
 
             <div className="grid gap-2">
@@ -172,9 +195,11 @@ export function DialogNuevaAtencion({
                 onChange={(event) => actualizarCampo("presionArterial", event.target.value)}
                 placeholder="Ej. 120/80"
                 autoComplete="off"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.presionArterial}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.presionArterial)}
                 required
               />
+              <ErrorCampo mensaje={errores.presionArterial} />
             </div>
 
             <div className="grid gap-2">
@@ -193,9 +218,11 @@ export function DialogNuevaAtencion({
                 min={20}
                 max={240}
                 inputMode="numeric"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.frecuenciaCardiaca}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.frecuenciaCardiaca)}
                 required
               />
+              <ErrorCampo mensaje={errores.frecuenciaCardiaca} />
             </div>
           </div>
 
@@ -217,9 +244,11 @@ export function DialogNuevaAtencion({
                 max={45}
                 step="0.1"
                 inputMode="decimal"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.temperatura}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.temperatura)}
                 required
               />
+              <ErrorCampo mensaje={errores.temperatura} />
             </div>
 
             <div className="grid gap-2">
@@ -238,9 +267,11 @@ export function DialogNuevaAtencion({
                 min={5}
                 max={80}
                 inputMode="numeric"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.frecuenciaRespiratoria}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.frecuenciaRespiratoria)}
                 required
               />
+              <ErrorCampo mensaje={errores.frecuenciaRespiratoria} />
             </div>
 
             <div className="grid gap-2">
@@ -259,9 +290,11 @@ export function DialogNuevaAtencion({
                 min={50}
                 max={100}
                 inputMode="numeric"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.saturacionOxigeno}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.saturacionOxigeno)}
                 required
               />
+              <ErrorCampo mensaje={errores.saturacionOxigeno} />
             </div>
           </div>
 
@@ -282,9 +315,11 @@ export function DialogNuevaAtencion({
                 min={0}
                 max={90}
                 inputMode="numeric"
-                className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums"
+                aria-invalid={!!errores.tiempoEvolucionDias}
+                className={claseConError("h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums", !!errores.tiempoEvolucionDias)}
                 required
               />
+              <ErrorCampo mensaje={errores.tiempoEvolucionDias} />
             </div>
           </div>
 

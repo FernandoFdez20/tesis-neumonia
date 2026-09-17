@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import { Bell } from "lucide-react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 
 import { DialogNuevaAtencion } from "@/components/atenciones/nueva-atencion-dialog"
@@ -7,7 +6,7 @@ import { useAtenciones } from "@/components/atenciones/use-atenciones"
 import { AppSidebar } from "@/components/app-sidebar"
 import { DialogNuevoPaciente } from "@/components/pacientes/nuevo-paciente-dialog"
 import { usePacientes } from "@/components/pacientes/use-pacientes"
-import { Button } from "@/components/ui/button"
+import { NotificacionesBell } from "@/components/shared/notificaciones-bell"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
@@ -84,15 +83,8 @@ export function AppLayout() {
 
             {/* Acciones del header */}
             <div className="flex items-center gap-1">
-              {/* Notificaciones */}
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground/60 hover:text-foreground hover:bg-accent/60 transition-all duration-200 rounded-lg relative"
-              >
-                <Bell className="size-4" strokeWidth={2} />
-                <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-red-500 ring-2 ring-background" />
-              </Button>
+              {/* Notificaciones persistentes de casos prioritarios */}
+              <NotificacionesBell />
             </div>
 
             <Separator orientation="vertical" className="h-5 bg-border/50 hidden sm:block" />

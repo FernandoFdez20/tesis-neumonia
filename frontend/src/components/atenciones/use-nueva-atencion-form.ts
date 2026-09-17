@@ -2,12 +2,15 @@ import type { FormEvent } from "react"
 import { useId, useMemo, useState } from "react"
 import { toast } from "sonner"
 
-import { buscarPacientePorDni } from "@/components/pacientes/datos-pacientes"
 import {
   registrarAtencion,
   type CrearAtencionRequest,
   type EstadoAtencion,
 } from "@/services/atenciones.service"
+import {
+  validarFormularioAtencion,
+  type ErroresAtencion,
+} from "@/components/atenciones/validacion-atencion"
 
 type UseNuevaAtencionFormParams = {
   onCambioAbierto: (abierto: boolean) => void
@@ -86,6 +89,12 @@ export function useNuevaAtencionForm({
   const [guardando, setGuardando] = useState(false)
   const [confirmarRegistroPaciente, setConfirmarRegistroPaciente] = useState(false)
 
+  // Errores en vivo: se recalculan en cada tipeo para mostrarlos bajo el input.
+  const errores: ErroresAtencion = useMemo(
+    () => validarFormularioAtencion(formulario),
+    [formulario]
+  )
+
   const puedeGuardar = useMemo(
     () =>
       formulario.documentoPaciente.trim().length > 0 &&
@@ -100,8 +109,9 @@ export function useNuevaAtencionForm({
       formulario.saturacionOxigeno.trim().length > 0 &&
       formulario.tiempoEvolucionDias.trim().length > 0 &&
       formulario.sintomasPrincipales.trim().length > 0 &&
+      Object.keys(errores).length === 0 &&
       !guardando,
-    [formulario, guardando]
+    [formulario, guardando, errores]
   )
 
   function actualizarCampo<T extends keyof FormularioAtencion>(
@@ -146,23 +156,41 @@ export function useNuevaAtencionForm({
     }
   }
 
-  function buscarPaciente() {
-    const paciente = buscarPacientePorDni(formulario.documentoPaciente)
+  async function buscarPaciente() {
+    setGuardando(true)
+    try {
+      const { getPacientePorDni } = await import("@/services/pacientes.service")
+      const paciente = await getPacientePorDni(formulario.documentoPaciente)
+      
+      if (paciente.en_atencion) {
+        toast.error("Atención en proceso", {
+          description: "El paciente ya tiene una atención médica activa. Finalízala antes de crear otra.",
+        })
+        setFormulario((actual) => ({
+          ...actual,
+          nombrePaciente: "",
+        }))
+        return
+      }
 
-    if (paciente) {
       setFormulario((actual) => ({
         ...actual,
         documentoPaciente: paciente.dni,
-        nombrePaciente: paciente.nombreCompleto,
+        nombrePaciente: paciente.nombres_apellidos,
       }))
-      return
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setFormulario((actual) => ({
+          ...actual,
+          nombrePaciente: "",
+        }))
+        setConfirmarRegistroPaciente(true)
+      } else {
+        toast.error("Error al buscar el paciente")
+      }
+    } finally {
+      setGuardando(false)
     }
-
-    setFormulario((actual) => ({
-      ...actual,
-      nombrePaciente: "",
-    }))
-    setConfirmarRegistroPaciente(true)
   }
 
   function confirmarRegistroNuevoPaciente() {
@@ -206,6 +234,7 @@ export function useNuevaAtencionForm({
     formulario,
     guardando,
     puedeGuardar,
+    errores,
     confirmarRegistroPaciente,
     actualizarCampo,
     actualizarEstadoAtencion,

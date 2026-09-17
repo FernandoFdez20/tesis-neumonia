@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { buscarPacientePorDni } from "@/components/pacientes/datos-pacientes"
 import type { PacienteDisponible } from "@/components/pacientes/datos-pacientes"
 import type { RegistroPaciente } from "@/components/pacientes/use-pacientes"
 import { registrarPaciente } from "@/services/pacientes.service"
@@ -60,6 +59,20 @@ const formularioInicial: FormularioPaciente = {
   antecedentesPersonales: [],
 }
 
+/** El sistema solo atiende adultos (18 años o más), igual que el modelo de IA. */
+export function esMayorDeEdad(fechaNacimiento: string): boolean {
+  if (!fechaNacimiento) return false
+  const hoy = new Date()
+  const nac = new Date(fechaNacimiento)
+  if (Number.isNaN(nac.getTime())) return false
+  let edad = hoy.getFullYear() - nac.getFullYear()
+  const m = hoy.getMonth() - nac.getMonth()
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) {
+    edad--
+  }
+  return edad >= 18
+}
+
 type OpcionAntecedente = {
   value: string
   label: string
@@ -87,7 +100,7 @@ export function DialogNuevoPaciente({
   abierto,
   onCambioAbierto,
   onRegistrarCita,
-  pacientesRegistrados,
+  pacientesRegistrados: _pacientesRegistrados,
   agregarPacienteRegistrado,
 }: DialogNuevoPacienteProps) {
   const formId = useId()
@@ -102,6 +115,7 @@ export function DialogNuevoPaciente({
       formulario.nombreCompleto.trim().length > 0 &&
       formulario.dni.trim().length > 0 &&
       formulario.fechaNacimiento.trim().length > 0 &&
+      esMayorDeEdad(formulario.fechaNacimiento) &&
       formulario.sexo.length > 0,
     [formulario, camposHabilitados]
   )
@@ -150,7 +164,9 @@ export function DialogNuevoPaciente({
     }
   }
 
-  function buscarPaciente() {
+  const [buscando, setBuscando] = useState(false)
+
+  async function buscarPaciente() {
     const dni = formulario.dni.trim()
 
     if (!dni) {
@@ -159,36 +175,62 @@ export function DialogNuevoPaciente({
     }
 
     console.log(`[Búsqueda de Paciente] Buscando DNI: ${dni}`)
+    setBuscando(true)
 
-    const paciente = buscarPacientePorDni(dni, pacientesRegistrados)
+    try {
+      const { getPacientePorDni } = await import("@/services/pacientes.service")
+      const paciente = await getPacientePorDni(dni)
+      
+      console.log("[Búsqueda de Paciente] ✓ Paciente encontrado")
+      
+      if (paciente.en_atencion) {
+        toast.error("Atención en proceso", {
+          description: "El paciente ya existe y actualmente tiene una atención médica activa.",
+        })
+        setFormulario((actual) => ({
+          ...formularioInicial,
+          dni: actual.dni,
+        }))
+        return
+      }
 
-    if (paciente) {
-      console.log("[Búsqueda de Paciente] ✓ Paciente encontrado", {
-        nombre: paciente.nombreCompleto,
+      // Mapear al formato del estado (si es necesario) para mostrarlo
+      const formPaciente: FormularioPaciente = {
+        nombreCompleto: paciente.nombres_apellidos,
         dni: paciente.dni,
-        fechaNacimiento: paciente.fechaNacimiento,
+        fechaNacimiento: paciente.fecha_nacimiento,
         sexo: paciente.sexo,
-        antecedentesFamiliares: paciente.antecedentesFamiliares,
-        antecedentesPersonales: paciente.antecedentesPersonales,
-        registradoEn: (paciente as RegistroPaciente).registradoEn,
-      })
-      setFormulario(paciente)
+        antecedentesFamiliares: paciente.antecedentes_familiares ? paciente.antecedentes_familiares.split(", ") : [],
+        antecedentesPersonales: paciente.otros_antecedentes ? paciente.otros_antecedentes.split(", ") : []
+      }
+      
+      setFormulario(formPaciente)
       setCamposHabilitados(false)
-      setPacienteAConfirmar(paciente)
-      return
+      
+      // Adaptar al tipo que espera el modal
+      setPacienteAConfirmar({
+        ...formPaciente,
+        registradoEn: paciente.created_at
+      } as any)
+      
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        console.warn(`[Búsqueda de Paciente] ✗ No se encontró paciente con DNI: ${dni}`)
+        setCamposHabilitados(true)
+        setFormulario((actual) => ({
+          ...formularioInicial,
+          dni: actual.dni,
+        }))
+
+        toast.warning("No se tiene registrado a ningún paciente con ese documento", {
+          description: "Completa los datos del paciente para crear un nuevo registro.",
+        })
+      } else {
+        toast.error("Error al buscar el paciente")
+      }
+    } finally {
+      setBuscando(false)
     }
-
-    console.warn(`[Búsqueda de Paciente] ✗ No se encontró paciente con DNI: ${dni}`)
-    setCamposHabilitados(true)
-    setFormulario((actual) => ({
-      ...formularioInicial,
-      dni: actual.dni,
-    }))
-
-    toast.warning("No se tiene registrado a ningún paciente con ese documento", {
-      description:
-        "Completa los datos del paciente para crear un registro temporal.",
-    })
   }
 
   function confirmarCita() {
@@ -262,7 +304,7 @@ export function DialogNuevoPaciente({
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={formulario.dni.trim().length === 0}
+                  disabled={formulario.dni.trim().length === 0 || buscando}
                   onClick={buscarPaciente}
                   className="h-10 rounded-xl border border-border/50 px-3.5 font-bold transition-all duration-200 hover:bg-accent/80"
                   aria-label="Buscar paciente por documento"
@@ -303,6 +345,12 @@ export function DialogNuevoPaciente({
                   className="h-10 bg-background/50 px-3.5 rounded-xl border border-border/60 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 placeholder:text-muted-foreground/45 tabular-nums disabled:bg-muted/40 disabled:text-muted-foreground/70"
                   required
                 />
+                {formulario.fechaNacimiento.trim().length > 0 &&
+                  !esMayorDeEdad(formulario.fechaNacimiento) && (
+                    <p className="text-xs font-medium text-destructive">
+                      El paciente debe tener 18 años o más.
+                    </p>
+                  )}
               </div>
 
               <div className="grid gap-2">

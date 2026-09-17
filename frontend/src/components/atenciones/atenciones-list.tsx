@@ -168,7 +168,7 @@ function AtencionCard({
           </Button>
         )}
         
-        {atencion.paciente_estado_clinico === "Pendiente de validación" && (
+        {(atencion.paciente_estado_clinico === "Pendiente de validación" || atencion.paciente_estado_clinico === "Validado") && (
           <Button 
             className="w-full gap-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white"
             onClick={() => onVerResultado?.(atencion)}

@@ -62,13 +62,15 @@ function RadiografiaCard({ atencion }: { atencion: AtencionResponse }) {
           variant={atencion.paciente_estado_clinico !== "Derivado a radiografía" ? "secondary" : "default"}
           onClick={() => navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(atencion.id)))}
         >
-          {atencion.paciente_estado_clinico !== "Derivado a radiografía" ? (
-            <>Ver / Recargar</>
-          ) : (
+          {atencion.paciente_estado_clinico === "Derivado a radiografía" ? (
             <>
               <Upload className="size-4" />
               Cargar
             </>
+          ) : ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "") ? (
+            <>Ver</>
+          ) : (
+            <>Ver / Recargar</>
           )}
         </Button>
       </CardFooter>

@@ -19,8 +19,6 @@ export const PATHS = {
     RADIOGRAPHY: "/radiografias",
     UPLOAD_RADIOGRAPHY: "/radiografias/cargar/:atencionId",
 
-    // Diagnóstico
-    DIAGNOSIS: "/diagnostico",
-    DIAGNOSIS_DETAIL: "/diagnostico/:codigoAtencion",
+    // Diagnóstico (flujo real: atenciones -> radiografías -> resultado)
     RESULTS: "/resultado",
 } as const;
