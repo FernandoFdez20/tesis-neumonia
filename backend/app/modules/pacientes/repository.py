@@ -17,7 +17,7 @@ class PacienteRepository:
         page_size: int,
         buscar: Optional[str] = None,
         sexo: Optional[str] = None,
-        estado_clinico: Optional[EstadoClinico] = None,
+        en_atencion: Optional[bool] = None,
     ) -> tuple[list[Paciente], int]:
         query = self.db.query(Paciente).options(joinedload(Paciente.enfermedades))
 
@@ -33,8 +33,14 @@ class PacienteRepository:
         if sexo:
             query = query.filter(func.lower(Paciente.sexo) == sexo.strip().lower())
 
-        if estado_clinico:
-            query = query.filter(Paciente.estado_clinico == estado_clinico)
+        if en_atencion is not None:
+            if en_atencion:
+                query = query.filter(Paciente.en_atencion == True)  # noqa: E712
+            else:
+                # en_atencion es nullable en BD: NULL equivale a sin atención activa
+                query = query.filter(
+                    or_(Paciente.en_atencion == False, Paciente.en_atencion.is_(None))  # noqa: E712
+                )
 
         total = query.count()
         pacientes = (
@@ -107,8 +113,8 @@ class PacienteRepository:
         self.db.refresh(paciente)
         return paciente
 
-    def update_estado_clinico(self, paciente: Paciente, estado: EstadoClinico) -> Paciente:
-        paciente.estado_clinico = estado
+    def update_en_atencion(self, paciente: Paciente, en_atencion: bool) -> Paciente:
+        paciente.en_atencion = en_atencion
         self.db.commit()
         self.db.refresh(paciente)
         return paciente

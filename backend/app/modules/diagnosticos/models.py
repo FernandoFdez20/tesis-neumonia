@@ -9,6 +9,20 @@ from app.core.database import Base
 from app.modules.pacientes.models import tipo_estado_clinico
 
 
+class NivelGravedad(str, enum.Enum):
+    Baja = "Baja"
+    Moderada = "Moderada"
+    Alta = "Alta"
+    Critica = "Crítica"
+
+
+tipo_gravedad = SQLAlchemyEnum(
+    NivelGravedad,
+    name="tipo_gravedad",
+    values_callable=lambda niveles: [nivel.value for nivel in niveles],
+)
+
+
 class Diagnostico(Base):
     __tablename__ = "diagnosticos"
 
@@ -32,18 +46,23 @@ class Diagnostico(Base):
     # hallazgos_json = Column(JSONB, nullable=True)
 
     # Priorización Dinámica
-    prioridad_final = Column(String(20), nullable=True)
+    prioridad_final = Column(tipo_gravedad, nullable=True)
     prioridad_detalle = Column(JSONB, nullable=True)
-    
+
     # Imagen de mayor probabilidad IA
-    imagen_referencia_id = Column(Integer, ForeignKey("diagnostico_imagenes.id", ondelete="SET NULL"), nullable=True)
+    imagen_referencia_id = Column(Integer, ForeignKey(
+        "diagnostico_imagenes.id", ondelete="SET NULL"), nullable=True)
 
     # Validación médica
     estado_validacion = Column(tipo_estado_clinico, nullable=True)
+    clasificacion_medico = Column(String(50), nullable=True)
+    diagnostico_final_medico = Column(Boolean, nullable=True)
+    concordancia_ia = Column(String(20), nullable=True)
     diagnostico_descripcion = Column(Text, nullable=True)
     validado_por_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     fecha_validacion = Column(TIMESTAMP, nullable=True)
-    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     # Relaciones
     imagenes = relationship(
@@ -52,7 +71,7 @@ class Diagnostico(Base):
         foreign_keys="[DiagnosticoImagen.diagnostico_id]",
         cascade="all, delete-orphan"
     )
-    
+
     imagen_referencia = relationship(
         "DiagnosticoImagen",
         foreign_keys="[Diagnostico.imagen_referencia_id]"
@@ -79,7 +98,7 @@ class DiagnosticoImagen(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     diagnostico = relationship(
-        "Diagnostico", 
-        back_populates="imagenes", 
+        "Diagnostico",
+        back_populates="imagenes",
         foreign_keys="[DiagnosticoImagen.diagnostico_id]"
     )

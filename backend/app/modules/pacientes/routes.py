@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_usuario_actual
 from app.core.database import get_db
-from app.modules.pacientes.models import EstadoClinico
 from app.modules.pacientes.schemas import (
     EnfermedadResponse,
     PacienteCreate,
@@ -24,7 +23,7 @@ def listar_pacientes(
     page_size: int = Query(default=10, ge=1, le=100),
     buscar: Optional[str] = Query(default=None),
     sexo: Optional[str] = Query(default=None),
-    estado_clinico: Optional[EstadoClinico] = Query(default=None),
+    en_atencion: Optional[bool] = Query(default=None),
     db: Session = Depends(get_db),
 ):
     paciente_service = PacienteService(db)
@@ -33,7 +32,7 @@ def listar_pacientes(
         page_size=page_size,
         buscar=buscar,
         sexo=sexo,
-        estado_clinico=estado_clinico,
+        en_atencion=en_atencion,
     )
 
 

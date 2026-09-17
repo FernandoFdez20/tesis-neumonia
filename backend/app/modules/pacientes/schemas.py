@@ -21,7 +21,7 @@ class PacienteBase(BaseModel):
     fecha_nacimiento: date
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
-    estado_clinico: EstadoClinico = EstadoClinico.SinAtencionPendiente
+    en_atencion: bool = False
     enfermedad_ids: list[int] = Field(default_factory=list)
 
     @field_validator("dni", mode="before")
@@ -83,7 +83,7 @@ class PacienteUpdate(BaseModel):
     fecha_nacimiento: Optional[date] = None
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
-    estado_clinico: Optional[EstadoClinico] = None
+    en_atencion: Optional[bool] = None
     enfermedad_ids: Optional[list[int]] = None
 
     @field_validator("dni", mode="before")
@@ -143,7 +143,7 @@ class PacienteResponse(BaseModel):
     otros_antecedentes: Optional[str] = None
     antecedentes_familiares: Optional[str] = None
     ultima_atencion: Optional[datetime] = None
-    estado_clinico: EstadoClinico
+    en_atencion: bool = False
     created_at: datetime
     enfermedades: list[EnfermedadResponse] = Field(default_factory=list)
 

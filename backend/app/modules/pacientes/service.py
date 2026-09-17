@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.modules.pacientes.models import Enfermedad, EstadoClinico
+from app.modules.pacientes.models import Enfermedad
 from app.modules.pacientes.repository import PacienteRepository
 from app.modules.pacientes.schemas import (
     PacienteCreate,
@@ -20,14 +20,14 @@ class PacienteService:
         page_size: int,
         buscar: str | None = None,
         sexo: str | None = None,
-        estado_clinico: EstadoClinico | None = None,
+        en_atencion: bool | None = None,
     ) -> PacientesPaginados:
         pacientes, total = self.repo.listar_pacientes(
             page=page,
             page_size=page_size,
             buscar=buscar,
             sexo=sexo,
-            estado_clinico=estado_clinico,
+            en_atencion=en_atencion,
         )
 
         return PacientesPaginados.crear(

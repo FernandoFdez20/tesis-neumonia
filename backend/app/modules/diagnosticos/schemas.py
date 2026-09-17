@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -25,6 +25,9 @@ class DiagnosticoResponse(BaseModel):
     prioridad_detalle: Optional[dict] = None
     imagen_referencia_id: Optional[int] = None
     estado_validacion: Optional[str] = None
+    clasificacion_medico: Optional[str] = None
+    diagnostico_final_medico: Optional[bool] = None
+    concordancia_ia: Optional[str] = None
     diagnostico_descripcion: Optional[str] = None
     validado_por_id: Optional[int] = None
     fecha_validacion: Optional[datetime] = None
@@ -32,3 +35,6 @@ class DiagnosticoResponse(BaseModel):
     imagenes: List[DiagnosticoImagenResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+class DiagnosticoValidacionRequest(BaseModel):
+    clasificacion_medico: str = Field(..., description="'Neumonía', 'Sano' o 'Otro diagnóstico'")
+    diagnostico_descripcion: str = Field(..., description="Observaciones médicas")

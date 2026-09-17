@@ -36,6 +36,7 @@ class AtencionMedicaRepository:
 
     def get_atenciones(self, skip: int = 0, limit: int = 100):
         from app.modules.pacientes.models import Paciente
+        from app.modules.diagnosticos.models import Diagnostico
         resultados = (
             self.db.query(AtencionMedica, Paciente)
             .join(Paciente, AtencionMedica.paciente_id == Paciente.id)
@@ -51,26 +52,59 @@ class AtencionMedicaRepository:
             hoy = date.today()
             edad = hoy.year - paciente.fecha_nacimiento.year - ((hoy.month, hoy.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day)) if paciente.fecha_nacimiento else 0
             
+            # Calcular estado dinámico de ESTA atención médica
+            estado_atencion_especifico = "Pendiente de evaluación"
+            if getattr(atencion.estado, 'value', str(atencion.estado)) == "Finalizada":
+                estado_atencion_especifico = "Validado"
+            else:
+                diag = self.db.query(Diagnostico).filter(Diagnostico.atencion_medica_id == atencion.id).first()
+                if diag:
+                    val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
+                    estado_atencion_especifico = val if val else "Pendiente de validación"
+                elif atencion.examen_fisico:
+                    estado_atencion_especifico = "Derivado a radiografía"
+            
             atencion_dict = atencion.__dict__.copy()
             atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
             atencion_dict["paciente_edad"] = edad
             atencion_dict["paciente_dni"] = paciente.dni
             atencion_dict["paciente_sexo"] = paciente.sexo
-            atencion_dict["paciente_estado_clinico"] = paciente.estado_clinico
+            atencion_dict["paciente_estado_clinico"] = estado_atencion_especifico
             atenciones_extendidas.append(atencion_dict)
             
         return atenciones_extendidas
 
-    def get_atenciones_por_paciente(self, paciente_id: int) -> list[AtencionMedica]:
-        return (
+    def get_atenciones_por_paciente(self, paciente_id: int) -> list[dict]:
+        from app.modules.diagnosticos.models import Diagnostico
+        atenciones = (
             self.db.query(AtencionMedica)
             .filter(AtencionMedica.paciente_id == paciente_id)
             .order_by(AtencionMedica.fecha_registro.desc())
             .all()
         )
+        
+        resultados = []
+        for atencion in atenciones:
+            estado_atencion_especifico = "Pendiente de evaluación"
+            if getattr(atencion.estado, 'value', str(atencion.estado)) == "Finalizada":
+                estado_atencion_especifico = "Validado"
+            else:
+                diag = self.db.query(Diagnostico).filter(Diagnostico.atencion_medica_id == atencion.id).first()
+                if diag:
+                    val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
+                    estado_atencion_especifico = val if val else "Pendiente de validación"
+                elif atencion.examen_fisico:
+                    estado_atencion_especifico = "Derivado a radiografía"
+                    
+            atencion_dict = atencion.__dict__.copy()
+            atencion_dict["paciente_estado_clinico"] = estado_atencion_especifico
+            resultados.append(atencion_dict)
+            
+        return resultados
 
     def get_atencion_por_id(self, atencion_id: int) -> Optional[dict]:
         from app.modules.pacientes.models import Paciente
+        from app.modules.diagnosticos.models import Diagnostico
         from datetime import date
 
         resultado = (
@@ -89,12 +123,24 @@ class AtencionMedicaRepository:
         nacimiento = paciente.fecha_nacimiento
         edad = hoy.year - nacimiento.year - ((hoy.month, hoy.day) < (nacimiento.month, nacimiento.day))
 
+        # Calcular estado dinámico de ESTA atención médica
+        estado_atencion_especifico = "Pendiente de evaluación"
+        if getattr(atencion.estado, 'value', str(atencion.estado)) == "Finalizada":
+            estado_atencion_especifico = "Validado"
+        else:
+            diag = self.db.query(Diagnostico).filter(Diagnostico.atencion_medica_id == atencion.id).first()
+            if diag:
+                val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
+                estado_atencion_especifico = val if val else "Pendiente de validación"
+            elif atencion.examen_fisico:
+                estado_atencion_especifico = "Derivado a radiografía"
+
         atencion_dict = atencion.__dict__.copy()
         atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
         atencion_dict["paciente_edad"] = edad
         atencion_dict["paciente_dni"] = paciente.dni
         atencion_dict["paciente_sexo"] = paciente.sexo
-        atencion_dict["paciente_estado_clinico"] = paciente.estado_clinico.value if paciente.estado_clinico else ""
+        atencion_dict["paciente_estado_clinico"] = estado_atencion_especifico
         return atencion_dict
 
     def update_atencion_evaluacion(self, atencion: AtencionMedica, examen_fisico: str, estado_final: str = None) -> AtencionMedica:

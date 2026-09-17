@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    Boolean,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -63,9 +64,9 @@ class Paciente(Base):
     otros_antecedentes = Column(Text, nullable=True)
     antecedentes_familiares = Column(Text, nullable=True)
     ultima_atencion = Column(DateTime, nullable=True)
-    estado_clinico = Column(
-        tipo_estado_clinico,
-        default=EstadoClinico.SinAtencionPendiente,
+    en_atencion = Column(
+        Boolean,
+        default=False,
         nullable=False,
     )
     created_at = Column(DateTime, default=func.now())
