@@ -21,7 +21,7 @@ Estado: En desarrollo activo. Flujo diagnóstico funcional con simulación IA (a
   1. Implementar un modelo de deep learning para detectar signos radiológicos de neumonía en radiografías de tórax de adultos
   2. Estratificación de gravedad y priorización dinámica
   3. Validación funcional con datasets públicos + evaluación de aceptación con experto en neumología
-- **Población objetivo:** Adultos, edad mínima 14 años (validación en formulario)
+- **Población objetivo:** Adultos de 18 años o más (validación en formulario y backend; igual que el filtro del modelo).
 - **Criterios de inclusión del dataset (FIRMES, 2026-08-23):** Radiografías de tórax de **adultos** únicamente, con vistas **AP (anteroposterior) y PA (posteroanterior)**. Excluir otras proyecciones (lateral, decúbito, etc.).
 - **Principio clínico:** Diagnóstico es **presuntivo**, siempre con advertencia clínica. La IA no da diagnóstico definitivo.
 
@@ -87,7 +87,7 @@ Estados validación (`tipo_estado_val`): `Pendiente de imagenes`, `Pendiente de 
 5.  **No inventar lógica médica.** Sistema de soporte, no reemplaza diagnóstico.
 6.  **No hardcodear secretos/datos sensibles.** JWT centralizado en `backend/app/core/config.py`
 7.  **No agregar dependencias innecesarias.**
-8.  **Validaciones clínicas en `/diagnostico`:** DNI 8 dígitos, edad 14-125, rangos de signos vitales, presión `SYS/DIA` con SYS>DIA. Mensajes con "años" (tilde).
+8.  **Validaciones clínicas:** DNI 8 dígitos, solo adultos 18 años o más (igual que el modelo de IA), rangos de signos vitales, presión `SYS/DIA` con SYS>DIA. Mensajes con "años" (tilde).
 9.  **Idioma del proyecto:** Código y comentarios en español donde ya existe, UI en español.
 10. **Antes de modificar:** Leer `.ai/instruccions.md` + archivo específico según tarea (UI/backend/ML).
 
