@@ -19,7 +19,7 @@ import {
   type Notificacion,
 } from "@/services/notificaciones.service"
 
-const INTERVALO_ACTUALIZACION = 60000
+const INTERVALO_ACTUALIZACION = 30000 // Panel de alertas dinámico: mismo ritmo que el dashboard
 
 /**
  * Campana de notificaciones persistentes de casos prioritarios.

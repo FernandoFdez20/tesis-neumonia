@@ -1,6 +1,7 @@
 import type { FormEvent } from "react"
 import { useId, useMemo, useState } from "react"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 import {
   registrarAtencion,
@@ -85,6 +86,7 @@ export function useNuevaAtencionForm({
   onRegistrarPaciente,
 }: UseNuevaAtencionFormParams) {
   const formId = useId()
+  const queryClient = useQueryClient()
   const [formulario, setFormulario] = useState<FormularioAtencion>(crearFormularioInicial)
   const [guardando, setGuardando] = useState(false)
   const [confirmarRegistroPaciente, setConfirmarRegistroPaciente] = useState(false)
@@ -210,6 +212,10 @@ export function useNuevaAtencionForm({
 
     try {
       await registrarAtencion(crearRequestAtencion(formulario))
+
+      // Panel dinámico: el caso nuevo debe verse sin recargar.
+      queryClient.invalidateQueries({ queryKey: ["atencionesRecientes"] })
+      queryClient.invalidateQueries({ queryKey: ["estadisticasDashboard"] })
 
       toast.success("Atención guardada correctamente", {
         description:

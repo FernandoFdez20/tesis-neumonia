@@ -37,7 +37,7 @@ def get_atenciones(
     return service.get_atenciones(skip=skip, limit=limit)
 
 
-@router.get("/paciente/{paciente_id}", response_model=list[AtencionMedicaResponse])
+@router.get("/paciente/{paciente_id}", response_model=list[AtencionMedicaConPacienteResponse])
 def get_atenciones_por_paciente(
     paciente_id: int,
     db: Session = Depends(get_db),

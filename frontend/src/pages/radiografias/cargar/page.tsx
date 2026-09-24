@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"
 import { UploadCloud, FileImage, X, Play, ArrowLeft, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -17,6 +18,7 @@ type TipoVista = "AP" | "PA"
 export default function CargarRadiografiaPage() {
   const { atencionId } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   
   const [atencion, setAtencion] = useState<AtencionResponse | null>(null)
   const [cargandoInfo, setCargandoInfo] = useState(true)
@@ -184,6 +186,9 @@ export default function CargarRadiografiaPage() {
     try {
       setProcesando(true)
       await cargarRadiografias(Number(atencionId), archivoAP, archivoPA)
+      // La prioridad del caso nuevo debe reflejarse en el panel sin recargar.
+      queryClient.invalidateQueries({ queryKey: ["estadisticasDashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["atencionesRecientes"] })
       toast.success("Radiografías guardadas correctamente.")
       navigate(PATHS.RADIOGRAPHY)
     } catch (error) {

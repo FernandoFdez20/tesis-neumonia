@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -20,28 +21,23 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
+import { listarAtenciones } from "@/services/atenciones.service"
 
 const ITEMS_PER_PAGE = 4
 
 export function RecentAttentionsTable() {
   const [currentPage, setCurrentPage] = useState(1)
-  const [attentions, setAttentions] = useState<AtencionResponse[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await listarAtenciones()
-        setAttentions(data)
-      } catch (error) {
-        console.error("Error al cargar atenciones:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  // Dinámico: re-pregunta al backend con cada intervalo y al volver a la ventana,
+  // para que un caso nuevo aparezca sin recargar la página.
+  const { data: attentions = [], isLoading: loading } = useQuery({
+    queryKey: ["atencionesRecientes"],
+    queryFn: listarAtenciones,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0,
+  })
 
   const totalPages = Math.ceil(attentions.length / ITEMS_PER_PAGE) || 1
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE

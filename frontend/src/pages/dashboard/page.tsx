@@ -18,7 +18,10 @@ export default function DashboardPage() {
   const { data: prioridades, isLoading } = useQuery({
     queryKey: ["estadisticasDashboard"],
     queryFn: getPrioridadesPendientes,
-    refetchInterval: 60000, // Cada minuto
+    refetchInterval: 30000, // Panel de alertas dinámico: cada caso nuevo aparece sin recargar
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0,
   })
 
   // Los avisos de casos prioritarios viven en la campana del header

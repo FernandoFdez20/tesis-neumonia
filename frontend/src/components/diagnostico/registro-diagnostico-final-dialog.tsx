@@ -65,6 +65,7 @@ export function RegistroDiagnosticoFinalDialog({
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["diagnostico", diagnosticoId] })
       queryClient.invalidateQueries({ queryKey: ["estadisticasDashboard"] })
+      queryClient.invalidateQueries({ queryKey: ["atencionesRecientes"] })
 
       if (onValidadoExitosamente) {
         onValidadoExitosamente()
