@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { CalendarClock, User } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { CalendarClock, ChevronRight, User } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,9 @@ import {
   listarAtencionesPorPaciente,
   type AtencionResponse,
 } from "@/services/atenciones.service"
+import { getDiagnosticoPorAtencion } from "@/services/diagnosticos.service"
+import type { DiagnosticoResponse } from "@/types/diagnostico"
+import { PATHS } from "@/routes/paths"
 import type { PacienteResponse } from "@/services/pacientes.service"
 
 type PacienteDetalleDialogProps = {
@@ -69,16 +73,46 @@ export function PacienteDetalleDialog({
   abierto,
   onCambioAbierto,
 }: PacienteDetalleDialogProps) {
+  const navigate = useNavigate()
   const [atenciones, setAtenciones] = useState<AtencionResponse[]>([])
+  const [diagnosticos, setDiagnosticos] = useState<Record<number, DiagnosticoResponse>>({})
   const [cargandoAtenciones, setCargandoAtenciones] = useState(false)
+
+  function verDiagnostico(atencionId: number) {
+    onCambioAbierto(false)
+    navigate(PATHS.RESULTS, { state: { atencionId } })
+  }
 
   useEffect(() => {
     if (!abierto || !paciente) return
+    let cancelado = false
     setCargandoAtenciones(true)
+    setDiagnosticos({})
     listarAtencionesPorPaciente(paciente.id)
-      .then(setAtenciones)
-      .catch(() => setAtenciones([]))
-      .finally(() => setCargandoAtenciones(false))
+      .then(async (lista) => {
+        if (cancelado) return
+        setAtenciones(lista)
+        // Se intenta traer el diagnóstico de TODAS las atenciones: si existe (200) hay caso para revisar,
+        // si da 404 es que aún no tiene Rx. Así el botón no depende del campo de estado del backend.
+        const resultados = await Promise.allSettled(
+          lista.map((a) => getDiagnosticoPorAtencion(a.id))
+        )
+        if (cancelado) return
+        const mapa: Record<number, DiagnosticoResponse> = {}
+        resultados.forEach((r, i) => {
+          if (r.status === "fulfilled" && r.value) mapa[lista[i].id] = r.value
+        })
+        setDiagnosticos(mapa)
+      })
+      .catch(() => {
+        if (!cancelado) setAtenciones([])
+      })
+      .finally(() => {
+        if (!cancelado) setCargandoAtenciones(false)
+      })
+    return () => {
+      cancelado = true
+    }
   }, [abierto, paciente])
 
   if (!paciente) return null
@@ -158,7 +192,7 @@ export function PacienteDetalleDialog({
 
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Historial de atenciones
+              Historial clínico de diagnósticos
             </h4>
             {cargandoAtenciones ? (
               <p className="text-sm text-muted-foreground">Cargando historial...</p>
@@ -168,7 +202,9 @@ export function PacienteDetalleDialog({
               </p>
             ) : (
               <div className="space-y-2">
-                {atenciones.map((a) => (
+                {atenciones.map((a) => {
+                  const dx = diagnosticos[a.id]
+                  return (
                   <div
                     key={a.id}
                     className="flex items-center justify-between gap-3 rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5"
@@ -177,21 +213,47 @@ export function PacienteDetalleDialog({
                       <CalendarClock className="size-4 shrink-0 text-muted-foreground/60" />
                       <div className="min-w-0">
                         <p className="font-mono text-xs font-bold text-muted-foreground">
-                          AT-{String(a.id).padStart(4, "0")}
+                          AT-{String(a.id).padStart(4, "0")} · {formatearFecha(a.fecha_registro)}
                         </p>
                         <p className="text-xs text-muted-foreground/80 truncate">
                           {a.sintomas_principales || "Sin motivo registrado"}
                         </p>
+                        {dx && (
+                          <div className="mt-1.5 flex flex-wrap gap-1.5">
+                            <Badge variant={dx.enfermo ? "grave" : "leve"}>
+                              {dx.enfermo ? "Positivo" : "Negativo"}
+                            </Badge>
+                            {dx.prioridad_final && (
+                              <Badge variant="outline">{dx.prioridad_final}</Badge>
+                            )}
+                            {dx.estado_validacion && (
+                              <Badge variant="pendiente">{dx.estado_validacion}</Badge>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-xs font-bold text-foreground/85">
-                        {formatearFecha(a.fecha_registro)}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground/70">{a.estado}</p>
+                    <div className="text-right shrink-0 flex items-center gap-2">
+                      {dx ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs font-bold text-primary hover:text-primary/80"
+                          onClick={() => verDiagnostico(a.id)}
+                          title="Abrir el resultado IA, prioridad y validación de este caso anterior"
+                        >
+                          Ver diagnóstico
+                          <ChevronRight className="size-3.5" />
+                        </Button>
+                      ) : (
+                        <span className="text-[11px] font-medium text-muted-foreground/50">
+                          {a.paciente_estado_clinico || a.estado}
+                        </span>
+                      )}
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>

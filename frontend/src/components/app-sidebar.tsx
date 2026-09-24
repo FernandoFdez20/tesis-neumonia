@@ -2,6 +2,7 @@ import {
   Activity,
   ClipboardList,
   ClipboardPlus,
+  History,
   Home,
   LogOut,
   UserRoundPlus,
@@ -130,6 +131,21 @@ export function AppSidebar({ onRegistrarPaciente, onNuevaAtencion }: AppSidebarP
                   <Link to={PATHS.RADIOGRAPHY}>
                     <Activity className="size-[18px]" strokeWidth={2} />
                     <span className="font-medium">Radiografías</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Historial */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === PATHS.HISTORY}
+                  tooltip="Historial de diagnósticos"
+                  className="h-10 px-3 rounded-xl transition-all duration-200 hover:bg-accent/80 data-active:bg-primary/8 data-active:text-primary data-active:shadow-sm data-active:shadow-primary/10"
+                >
+                  <Link to={PATHS.HISTORY}>
+                    <History className="size-[18px]" strokeWidth={2} />
+                    <span className="font-medium">Historial</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

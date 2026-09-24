@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, Outlet } from "react-router-dom
 import LoginPage from "@/pages/auth/LoginPage";
 import AtencionesPage from "@/pages/atenciones/page";
 import DashboardPage from "@/pages/dashboard/page";
+import HistorialPage from "@/pages/historial/page";
 import PacientesPage from "@/pages/pacientes/page";
 import RadiografiasPage from "@/pages/radiografias/page";
 import CargarRadiografiaPage from "@/pages/radiografias/cargar/page";
@@ -32,6 +33,7 @@ export default function AppRoutes() {
                         <Route element={<AppLayout />}>
                             <Route path={PATHS.APP} element={<Navigate to={PATHS.DASHBOARD} replace />} />
                             <Route path={PATHS.DASHBOARD} element={<DashboardPage />} />
+                            <Route path={PATHS.HISTORY} element={<HistorialPage />} />
                             <Route path={PATHS.PATIENTS} element={<PacientesPage />} />
                             <Route path={PATHS.ATTENTIONS} element={<AtencionesPage />} />
                             <Route path={PATHS.RADIOGRAPHY} element={<RadiografiasPage />} />

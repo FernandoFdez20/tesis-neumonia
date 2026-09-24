@@ -9,6 +9,7 @@ import {
   ShieldAlert,
   FileImage,
   FolderOpen,
+  Printer,
   Stethoscope,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from "@/components/ui/card"
@@ -23,6 +24,7 @@ import { RegistroDiagnosticoFinalDialog } from "@/components/diagnostico/registr
 import { Crb65Resultado } from "@/components/atenciones/crb65-resultado"
 import { PrioridadFinal } from "@/components/diagnostico/prioridad-final"
 import { InfoPacienteAtencion } from "@/components/resultado/info-paciente-atencion"
+import { generarReportePdf } from "@/services/reporte-pdf.service"
 import { getDiagnosticoPorAtencion } from "@/services/diagnosticos.service"
 import { getAtencionPorId, type AtencionResponse } from "@/services/atenciones.service"
 import { type DiagnosticoImagen, type DiagnosticoResponse } from "@/types/diagnostico"
@@ -241,6 +243,19 @@ export default function ResultadoPage() {
   // TODO: validar rol desde el usuario en localStorage ("Médico" / "Especialista")
   const esMedicoOEsp = true
   const [modalValidacionAbierto, setModalValidacionAbierto] = useState(false)
+  const [generandoReporte, setGenerandoReporte] = useState(false)
+
+  async function handleReportePdf() {
+    if (generandoReporte || !diagnostico) return
+    setGenerandoReporte(true)
+    try {
+      await generarReportePdf(diagnostico, atencion)
+    } catch (error) {
+      console.error("No se pudo generar el reporte PDF", error)
+    } finally {
+      setGenerandoReporte(false)
+    }
+  }
 
 
   useEffect(() => {
@@ -337,6 +352,16 @@ export default function ResultadoPage() {
               </Badge>
               {badgeEstadoValidacion(diagnostico.estado_validacion)}
 
+              <Button
+                variant="outline"
+                onClick={handleReportePdf}
+                disabled={generandoReporte}
+                className="gap-2 rounded-xl font-bold ml-2"
+                title="Descargar reporte en PDF con diagnóstico, gravedad, radiografías y datos del paciente"
+              >
+                <Printer className="size-4" />
+                {generandoReporte ? "Generando..." : "Reporte PDF"}
+              </Button>
               {esMedicoOEsp && diagnostico.estado_validacion !== "Validado" && (
                 <Button 
                   onClick={() => setModalValidacionAbierto(true)}

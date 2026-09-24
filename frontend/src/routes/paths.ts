@@ -21,4 +21,7 @@ export const PATHS = {
 
     // Diagnóstico (flujo real: atenciones -> radiografías -> resultado)
     RESULTS: "/resultado",
+
+    // Historial clínico por paciente
+    HISTORY: "/historial",
 } as const;
