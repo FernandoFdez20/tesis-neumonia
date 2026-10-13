@@ -64,7 +64,8 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 *.db
-bd.sql
+# bd.sql NO se ignora: es la fuente de verdad del esquema y sí se versiona.
+# No debe contener ni credenciales ni hashes de contraseña.
 
 
 pneumonia-insight-main
