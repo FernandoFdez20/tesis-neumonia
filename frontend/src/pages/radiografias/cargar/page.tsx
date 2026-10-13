@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PATHS } from "@/routes/paths"
+import { urlConToken } from "@/lib/archivos"
 import { getAtencionPorId, type AtencionResponse } from "@/services/atenciones.service"
 import { cargarRadiografias, getDiagnosticoPorAtencion, vistaPreviaDicom } from "@/services/diagnosticos.service"
 
@@ -114,11 +115,8 @@ export default function CargarRadiografiaPage() {
             const imgAP = diag.imagenes.find(img => img.tipo_vista === "AP")
             const imgPA = diag.imagenes.find(img => img.tipo_vista === "PA")
             
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"
-            const baseUrl = apiUrl.replace("/api/v1", "")
-
             const fetchFile = async (url: string, nombre: string) => {
-              const res = await fetch(`${baseUrl}${url}`)
+              const res = await fetch(urlConToken(url))
               const blob = await res.blob()
               return new File([blob], nombre, { type: blob.type })
             }

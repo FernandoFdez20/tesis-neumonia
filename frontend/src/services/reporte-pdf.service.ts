@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 
+import { urlConToken } from "@/lib/archivos"
 import type { AtencionResponse } from "@/services/atenciones.service"
 import type { DiagnosticoResponse, DiagnosticoImagen } from "@/types/diagnostico"
 
@@ -38,19 +39,13 @@ function fechaCorta(fecha: string | null | undefined): string {
   }).format(d)
 }
 
-function baseUrl(): string {
-  const apiUrl = import.meta.env.VITE_API_URL as string | undefined
-  if (apiUrl) return apiUrl.replace("/api/v1", "")
-  return "http://localhost:8000"
-}
-
 // URL visible de la imagen: el PNG vive junto al DICOM (abc.dcm -> abc.png).
+// Requiere token porque /uploads exige sesión (ver lib/archivos.ts).
 function urlVisible(img: DiagnosticoImagen): string {
-  const base = baseUrl()
   if (img.imagen_url.toLowerCase().endsWith(".dcm")) {
-    return `${base}${img.imagen_url.replace(/\.dcm$/i, ".png")}`
+    return urlConToken(img.imagen_url.replace(/\.dcm$/i, ".png"))
   }
-  return `${base}${img.imagen_url}`
+  return urlConToken(img.imagen_url)
 }
 
 type ImagenLista = { dataUrl: string; ancho: number; alto: number }
@@ -219,7 +214,7 @@ export async function generarReportePdf(
 
     // Se prueba primero la vista previa PNG y luego el archivo original.
     const cargadas = await Promise.all(
-      imagenes.map((img) => cargarImagen([urlVisible(img), `${baseUrl()}${img.imagen_url}`]))
+      imagenes.map((img) => cargarImagen([urlVisible(img), urlConToken(img.imagen_url)]))
     )
     const conImagen = imagenes
       .map((img, i) => ({ img, foto: cargadas[i] }))

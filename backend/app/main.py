@@ -2,8 +2,8 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from app.api.router import api_router
+from app.core.archivos import ArchivosConSesion
 from app.ml.modelo_manager import inicializar_modelo
 
 UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
@@ -27,7 +27,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+# Las radiografías son datos clínicos: el montaje exige un JWT vigente.
+# El token llega en la query (?token=) porque <img src> no manda cabeceras.
+app.mount("/uploads", ArchivosConSesion(directory=str(UPLOAD_DIR)), name="uploads")
 app.include_router(api_router, prefix="/api/v1")
 
 
