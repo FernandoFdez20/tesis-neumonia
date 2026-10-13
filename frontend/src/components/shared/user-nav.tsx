@@ -2,6 +2,7 @@ import { LogOut, Settings, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 import { PATHS } from "@/routes/paths"
+import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,12 +14,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+/** Iniciales para el avatar: primeras letras del nombre y los apellidos. */
+function iniciales(nombre: string | undefined): string {
+  if (!nombre) return "?"
+  const partes = nombre.trim().split(/\s+/).filter(Boolean)
+  if (partes.length === 0) return "?"
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase()
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+}
+
 export function UserNav() {
   const navigate = useNavigate()
+  const { usuario, etiquetaRol, cerrarSesion } = useAuth()
 
   function handleLogout() {
-    localStorage.removeItem("token")
-    localStorage.removeItem("usuario")
+    cerrarSesion()
     navigate(PATHS.LOGIN, { replace: true })
   }
 
@@ -30,15 +40,19 @@ export function UserNav() {
           className="relative size-9 rounded-full p-0 hover:bg-accent/60 transition-all duration-200"
         >
           <div className="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/15 text-[11px] font-extrabold text-primary select-none tracking-wider shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/25">
-            DF
+            {iniciales(usuario?.nombre_completo)}
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-base font-semibold text-foreground/90">Dr. Fernández</p>
-            <p className="text-sm text-muted-foreground/65">Médico residente</p>
+            <p className="text-base font-semibold text-foreground/90">
+            {usuario?.nombre_completo ?? "Usuario"}
+          </p>
+            <p className="text-sm text-muted-foreground/65">
+              {etiquetaRol ?? "—"}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

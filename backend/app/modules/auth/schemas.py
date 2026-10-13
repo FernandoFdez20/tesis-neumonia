@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 from app.modules.auth.models import TipoRol
@@ -20,6 +20,8 @@ class UsuarioResponse(BaseModel):
     rol: TipoRol
     estado: bool
     ultimo_login: Optional[datetime] = None
+    #: HU-04: permisos efectivos del usuario (rol + desviaciones).
+    permisos: list[str] = Field(default_factory=list)
 
     class Config:
         from_attributes = True

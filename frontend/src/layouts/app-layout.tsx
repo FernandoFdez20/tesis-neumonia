@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/sidebar"
 import { UserNav } from "@/components/shared/user-nav"
 import { CommandPalette, CommandPaletteTrigger } from "@/components/shared/command-palette"
+import { useAuth } from "@/hooks/use-auth"
 import { PATHS } from "@/routes/paths"
 
 export function AppLayout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const { usuario, etiquetaRol, esAdmin } = useAuth()
   const {
     dialogNuevoPacienteAbierto,
     setDialogNuevoPacienteAbierto,
@@ -75,16 +77,18 @@ export function AppLayout() {
               </p>
             </div>
 
-            {/* Búsqueda - Command Palette */}
+            {/* Búsqueda - Command Palette (solo en el ámbito clínico) */}
+            {!esAdmin && (
             <div className="flex-1 sm:flex-none">
               <CommandPaletteTrigger />
               <CommandPalette />
             </div>
+            )}
 
             {/* Acciones del header */}
+            {/* Las alertas son casos clínicos: el Administrador no las recibe. */}
             <div className="flex items-center gap-1">
-              {/* Notificaciones persistentes de casos prioritarios */}
-              <NotificacionesBell />
+              {!esAdmin && <NotificacionesBell />}
             </div>
 
             <Separator orientation="vertical" className="h-5 bg-border/50 hidden sm:block" />
@@ -103,8 +107,12 @@ export function AppLayout() {
             {/* Usuario con Dropdown */}
             <div className="flex items-center gap-2.5 pl-1">
               <div className="hidden sm:flex flex-col items-end leading-none gap-1">
-                <span className="text-md font-bold text-foreground/85">Dr. Fernández</span>
-                <span className="text-xs text-muted-foreground/65 font-semibold">Médico residente</span>
+                <span className="text-md font-bold text-foreground/85">
+                  {usuario?.nombre_completo ?? "Usuario"}
+                </span>
+                <span className="text-xs text-muted-foreground/65 font-semibold">
+                  {etiquetaRol ?? "—"}
+                </span>
               </div>
               <UserNav />
             </div>

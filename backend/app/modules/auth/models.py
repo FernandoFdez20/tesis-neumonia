@@ -12,8 +12,10 @@ import enum
 
 
 class TipoRol(str, enum.Enum):
+    # HU-03: los 3 roles del caso de uso. Debe coincidir con el enum `tipo_rol`
+    # de PostgreSQL (ver bd.sql y backend/scripts/migrar_rol_hu03.py).
     Admin = "Admin"
-    Medico = "Médico"
+    Enfermera = "Enfermera"
     Especialista = "Especialista"
 
 

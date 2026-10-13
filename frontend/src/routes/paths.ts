@@ -24,4 +24,7 @@ export const PATHS = {
 
     // Historial clínico por paciente
     HISTORY: "/historial",
+
+    // Administración (solo Administrador)
+    USERS: "/usuarios",
 } as const;

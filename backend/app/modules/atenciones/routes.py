@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_usuario_actual
+from app.api.deps import get_usuario_actual, requiere_permiso
 from app.core.database import get_db
 from app.modules.auth.models import Usuario
 from app.modules.atenciones.schemas import (
@@ -12,12 +12,14 @@ from app.modules.atenciones.schemas import (
 )
 from app.modules.atenciones.service import AtencionMedicaService
 
-router = APIRouter(dependencies=[Depends(get_usuario_actual)])
+# HU-04: cada endpoint exige el permiso que le corresponde.
+router = APIRouter()
 
 @router.post(
     "/",
     response_model=AtencionMedicaResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(requiere_permiso("atenciones.registrar"))],
 )
 def registrar_atencion(
     atencion_in: AtencionMedicaCreate,
@@ -27,7 +29,11 @@ def registrar_atencion(
     service = AtencionMedicaService(db)
     return service.create_atencion(atencion_in, current_user.id)
 
-@router.get("/", response_model=list[AtencionMedicaConPacienteResponse])
+@router.get(
+    "/",
+    response_model=list[AtencionMedicaConPacienteResponse],
+    dependencies=[Depends(requiere_permiso("atenciones.ver"))],
+)
 def get_atenciones(
     skip: int = 0,
     limit: int = 100,
@@ -37,7 +43,11 @@ def get_atenciones(
     return service.get_atenciones(skip=skip, limit=limit)
 
 
-@router.get("/paciente/{paciente_id}", response_model=list[AtencionMedicaConPacienteResponse])
+@router.get(
+    "/paciente/{paciente_id}",
+    response_model=list[AtencionMedicaConPacienteResponse],
+    dependencies=[Depends(requiere_permiso("historial.ver", "atenciones.ver"))],
+)
 def get_atenciones_por_paciente(
     paciente_id: int,
     db: Session = Depends(get_db),
@@ -46,7 +56,11 @@ def get_atenciones_por_paciente(
     return service.get_atenciones_por_paciente(paciente_id)
 
 
-@router.get("/{atencion_id}", response_model=AtencionMedicaConPacienteResponse)
+@router.get(
+    "/{atencion_id}",
+    response_model=AtencionMedicaConPacienteResponse,
+    dependencies=[Depends(requiere_permiso("atenciones.ver", "historial.ver"))],
+)
 def get_atencion(
     atencion_id: int,
     db: Session = Depends(get_db),
@@ -54,7 +68,11 @@ def get_atencion(
     service = AtencionMedicaService(db)
     return service.get_atencion_por_id(atencion_id)
 
-@router.patch("/{atencion_id}/evaluar", response_model=AtencionMedicaConPacienteResponse)
+@router.patch(
+    "/{atencion_id}/evaluar",
+    response_model=AtencionMedicaConPacienteResponse,
+    dependencies=[Depends(requiere_permiso("atenciones.examen_fisico"))],
+)
 def evaluar_atencion(
     atencion_id: int,
     evaluacion: AtencionMedicaEvaluar,

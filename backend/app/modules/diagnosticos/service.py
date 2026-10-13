@@ -268,9 +268,16 @@ class DiagnosticoService:
         from sqlalchemy.orm import Session
         from app.modules.atenciones.models import AtencionMedica
 
-        # Validar rol (temporalmente deshabilitado para pruebas)
-        # if current_user.rol not in ["Médico", "Especialista"]:
-        #     raise HTTPException(status_code=403, detail="No tiene permisos para validar diagnósticos")
+        # HU-04: validar el diagnóstico requiere el permiso `diagnostico.validar`
+        # (base del rol: Especialista). La ruta ya lo exige, pero se repite
+        # aquí para que el service no quede abierto a un uso interno.
+        from app.core.permisos import resolver_permisos
+
+        if "diagnostico.validar" not in resolver_permisos(self.repo.db, current_user):
+            raise HTTPException(
+                status_code=403,
+                detail="No tiene el permiso para validar diagnósticos",
+            )
 
         diag = self.repo.db.query(Diagnostico).filter(
             Diagnostico.id == diagnostico_id).first()

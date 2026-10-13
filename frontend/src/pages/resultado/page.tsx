@@ -29,13 +29,9 @@ import { getDiagnosticoPorAtencion } from "@/services/diagnosticos.service"
 import { getAtencionPorId, type AtencionResponse } from "@/services/atenciones.service"
 import { type DiagnosticoImagen, type DiagnosticoResponse } from "@/types/diagnostico"
 import { PATHS } from "@/routes/paths"
+import { PERMISOS, useAuth } from "@/hooks/use-auth"
 import { cn } from "@/lib/utils"
-
-function getBaseUrl() {
-  const apiUrl = import.meta.env.VITE_API_URL as string | undefined
-  if (apiUrl) return apiUrl.replace("/api/v1", "")
-  return "http://localhost:8000"
-}
+import { urlConToken } from "@/lib/archivos"
 
 function esDicom(url: string) {
   return url.toLowerCase().endsWith(".dcm")
@@ -68,11 +64,9 @@ function badgeHallazgo(hallazgo: boolean | null) {
 
 function TarjetaImagenResultado({ 
   img, 
-  baseUrl,
   esReferencia 
 }: { 
   img: DiagnosticoImagen; 
-  baseUrl: string;
   esReferencia?: boolean;
 }) {
   const positivo = img.hallazgo_positivo === true
@@ -119,7 +113,7 @@ function TarjetaImagenResultado({
         {esDcm && vistaPng && !sinVistaPrevia ? (
           <div className="w-full">
             <img
-              src={`${baseUrl}${vistaPng}`}
+              src={urlConToken(vistaPng)}
               alt={`Radiografía ${img.tipo_vista ?? ""}`}
               className="max-h-[280px] w-full object-contain rounded-lg"
               loading="lazy"
@@ -127,7 +121,7 @@ function TarjetaImagenResultado({
             />
             <div className="mt-2 flex justify-center">
               <Button variant="secondary" size="sm" className="rounded-lg font-bold" asChild>
-                <a href={`${baseUrl}${img.imagen_url}`} target="_blank" rel="noreferrer">
+                <a href={urlConToken(img.imagen_url)} target="_blank" rel="noreferrer">
                   Abrir original
                 </a>
               </Button>
@@ -141,14 +135,14 @@ function TarjetaImagenResultado({
               {img.imagen_url.split("/").pop()}
             </span>
             <Button variant="secondary" size="sm" className="mt-3 rounded-lg font-bold" asChild>
-              <a href={`${baseUrl}${img.imagen_url}`} target="_blank" rel="noreferrer">
+              <a href={urlConToken(img.imagen_url)} target="_blank" rel="noreferrer">
                 Abrir original
               </a>
             </Button>
           </div>
         ) : (
           <img
-            src={`${baseUrl}${img.imagen_url}`}
+            src={urlConToken(img.imagen_url)}
             alt={`Radiografía ${img.tipo_vista ?? ""}`}
             className="max-h-[280px] w-full object-contain rounded-lg"
             loading="lazy"
@@ -240,8 +234,11 @@ export default function ResultadoPage() {
 
   const [cargando, setCargando] = useState(true)
 
-  // TODO: validar rol desde el usuario en localStorage ("Médico" / "Especialista")
-  const esMedicoOEsp = true
+  // HU-04: validar el diagnóstico y emitir el reporte PDF dependen de
+  // permisos concretos, no del rol. El backend también los exige (403).
+  const { tienePermiso } = useAuth()
+  const puedeValidar = tienePermiso(PERMISOS.DIAGNOSTICO_VALIDAR)
+  const puedePdf = tienePermiso(PERMISOS.REPORTE_PDF)
   const [modalValidacionAbierto, setModalValidacionAbierto] = useState(false)
   const [generandoReporte, setGenerandoReporte] = useState(false)
 
@@ -330,7 +327,6 @@ export default function ResultadoPage() {
   const nPositivas = imagenes.filter((i) => i.hallazgo_positivo === true).length
   const discordantes = nPositivas > 0 && nPositivas < conResultado.length
   const esPositivo = diagnostico.enfermo === true
-  const baseUrl = getBaseUrl()
 
   return (
     <div className="space-y-8">
@@ -352,6 +348,8 @@ export default function ResultadoPage() {
               </Badge>
               {badgeEstadoValidacion(diagnostico.estado_validacion)}
 
+              {/* Reporte PDF */}
+              {puedePdf && (
               <Button
                 variant="outline"
                 onClick={handleReportePdf}
@@ -362,7 +360,8 @@ export default function ResultadoPage() {
                 <Printer className="size-4" />
                 {generandoReporte ? "Generando..." : "Reporte PDF"}
               </Button>
-              {esMedicoOEsp && diagnostico.estado_validacion !== "Validado" && (
+              )}
+              {puedeValidar && diagnostico.estado_validacion !== "Validado" && (
                 <Button 
                   onClick={() => setModalValidacionAbierto(true)}
                   className="rounded-xl font-bold ml-2 bg-blue-600 hover:bg-blue-700"
@@ -534,7 +533,6 @@ export default function ResultadoPage() {
                 <TarjetaImagenResultado 
                   key={img.id} 
                   img={img} 
-                  baseUrl={baseUrl} 
                   esReferencia={diagnostico.imagen_referencia_id === img.id}
                 />
               ))}

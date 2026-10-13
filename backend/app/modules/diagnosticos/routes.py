@@ -3,7 +3,7 @@ from fastapi import HTTPException, Response
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_usuario_actual
+from app.api.deps import get_usuario_actual, requiere_permiso
 from app.core.database import get_db
 from app.modules.diagnosticos.service import DiagnosticoService
 from app.modules.diagnosticos.schemas import DiagnosticoResponse, DiagnosticoValidacionRequest
@@ -14,13 +14,15 @@ from fastapi import HTTPException
 from datetime import date
 from app.modules.pacientes.models import Paciente
 
-router = APIRouter(dependencies=[Depends(get_usuario_actual)])
+# HU-04: cada endpoint exige el permiso que le corresponde.
+router = APIRouter()
 
 
 @router.post(
     "/atenciones/{atencion_medica_id}/crb65",
     response_model=CRB65Response,
     summary="Calcular escala de gravedad CRB-65",
+    dependencies=[Depends(requiere_permiso("atenciones.registrar"))],
 )
 def evaluar_crb65(
     atencion_medica_id: int,
@@ -50,6 +52,7 @@ def evaluar_crb65(
 @router.post(
     "/radiografias/vista-previa",
     summary="Vista previa PNG de un DICOM sin guardarlo en disco",
+    dependencies=[Depends(requiere_permiso("radiografias.cargar"))],
 )
 def vista_previa_radiografia(archivo: UploadFile = File(..., description="Archivo DICOM")):
     nombre = (archivo.filename or "").lower()
@@ -69,6 +72,7 @@ def vista_previa_radiografia(archivo: UploadFile = File(..., description="Archiv
     "/atenciones/{atencion_medica_id}/radiografias",
     response_model=DiagnosticoResponse,
     summary="Cargar radiografías AP y/o PA de una atención médica",
+    dependencies=[Depends(requiere_permiso("radiografias.cargar"))],
 )
 def cargar_radiografias(
     atencion_medica_id: int,
@@ -84,6 +88,7 @@ def cargar_radiografias(
     "/atenciones/{atencion_medica_id}/diagnostico",
     response_model=DiagnosticoResponse,
     summary="Obtener el diagnóstico de una atención médica",
+    dependencies=[Depends(requiere_permiso("resultados.ver"))],
 )
 def get_diagnostico(
     atencion_medica_id: int,
@@ -92,7 +97,11 @@ def get_diagnostico(
     service = DiagnosticoService(db)
     return service.get_por_atencion(atencion_medica_id)
 
-@router.patch("/{diagnostico_id}/validar", response_model=DiagnosticoResponse)
+@router.patch(
+    "/{diagnostico_id}/validar",
+    response_model=DiagnosticoResponse,
+    dependencies=[Depends(requiere_permiso("diagnostico.validar"))],
+)
 def validar_diagnostico(
     diagnostico_id: int,
     payload: DiagnosticoValidacionRequest,
@@ -102,7 +111,10 @@ def validar_diagnostico(
     service = DiagnosticoService(db)
     return service.validar_diagnostico(diagnostico_id, payload, current_user)
 
-@router.get("/prioridades/pendientes")
+@router.get(
+    "/prioridades/pendientes",
+    dependencies=[Depends(requiere_permiso("alertas.ver"))],
+)
 def get_prioridades_pendientes(
     db: Session = Depends(get_db),
     current_user = Depends(get_usuario_actual)

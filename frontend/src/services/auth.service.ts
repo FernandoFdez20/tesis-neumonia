@@ -5,8 +5,12 @@ export type Usuario = {
   username: string
   correo: string
   nombre_completo: string
+  /** Valor del enum `tipo_rol`: Admin | Enfermera | Especialista. */
   rol: string
   estado: boolean
+  ultimo_login?: string | null
+  /** HU-04: permisos efectivos que devuelve el backend al iniciar sesión. */
+  permisos?: string[]
 }
 
 type LoginResponse = {
