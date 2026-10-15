@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # backend/app/ml/modelo_manager.py → parents[3] = raíz tesis-neumonia/
 RUTA_PTH = (
     Path(__file__).resolve().parents[3]
-    / "modelo" / "modelos" / "densenet121_v1_best.pth"
+    / "modelo" / "modelos" / "densenet121_v2_best.pth"
 )
 
 _modelo = None   # instancia única (singleton)
