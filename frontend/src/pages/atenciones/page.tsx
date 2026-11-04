@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/shared/page-header"
 import { useEffect, useState } from "react"
 import {
   Activity,
@@ -27,7 +28,7 @@ export default function AtencionesPage() {
     {
       title: "Atenciones registradas",
       value: totalAtenciones.toString(),
-      description: "Registros clínicos en plantilla",
+      description: "Registros clínicos del sistema",
       icon: ClipboardList,
       accent: "blue" as const,
     },
@@ -55,30 +56,17 @@ export default function AtencionesPage() {
   ]
 
   return (
-    <div className="space-y-8">
-      <StaggerContainer className="space-y-2 pb-1" delay={80}>
-        <StaggerItem index={0}>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary/70 leading-none">
-            Gestión clínica
-          </p>
-        </StaggerItem>
-        <StaggerItem index={1}>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground/90 leading-tight">
-            Atenciones Médicas
-          </h1>
-        </StaggerItem>
-        <StaggerItem index={2}>
-          <p className="max-w-3xl text-base text-muted-foreground/70 leading-relaxed font-medium">
-            Consulta el registro inicial de atenciones, signos vitales y estado del
-            flujo clínico previo al diagnóstico.
-          </p>
-        </StaggerItem>
-      </StaggerContainer>
+    <div className="min-w-0 space-y-6">
+      <PageHeader
+        eyebrow="Gestión clínica"
+        title="Atenciones médicas"
+        description="Consulta las atenciones, compara los signos vitales y continúa el flujo clínico de cada caso."
+      />
 
       <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" delay={80}>
         {atencionesStats.map((stat, index) => (
           <StaggerItem key={stat.title} index={index}>
-            <StatCard {...stat} />
+            <StatCard {...stat} compact />
           </StaggerItem>
         ))}
       </StaggerContainer>

@@ -2,6 +2,8 @@ import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState, useMemo } from "react"
 import {
   Activity,
+  LayoutGrid,
+  List,
   CalendarClock,
   HeartPulse,
   Search,
@@ -21,6 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -79,17 +82,14 @@ function SignoVital({
   )
 }
 
-function AtencionCard({ 
-  atencion, 
-  onAtender,
-  onVerResultado,
-  onCargarRadiografia,
-}: { 
+type AccionesAtencion = {
   atencion: AtencionResponse
   onAtender: (a: AtencionResponse) => void
   onVerResultado: (a: AtencionResponse) => void
   onCargarRadiografia: (a: AtencionResponse) => void
-}) {
+}
+
+function AccionAtencion({ atencion, onAtender, onVerResultado, onCargarRadiografia }: AccionesAtencion) {
   const { tienePermiso } = useAuth()
   const estiloEstado = obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico)
   const accion = obtenerAccionAtencion(atencion.paciente_estado_clinico, tienePermiso)
@@ -100,6 +100,22 @@ function AtencionCard({
     else if (accion?.tipo === "radiografia") onCargarRadiografia(atencion)
     else if (accion?.tipo === "resultado") onVerResultado(atencion)
   }
+
+  if (!accion) return null
+
+  return (
+    <Button size="sm" className={cn("gap-2 rounded-lg", estiloEstado.boton)} onClick={continuarAtencion}>
+      <IconoAccion className="size-4" />
+      {accion.etiqueta}
+    </Button>
+  )
+}
+
+function AtencionCard(props: AccionesAtencion) {
+  const { atencion } = props
+  const { tienePermiso } = useAuth()
+  const estiloEstado = obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico)
+  const accion = obtenerAccionAtencion(atencion.paciente_estado_clinico, tienePermiso)
 
   return (
     <Card className="transition-all duration-300 hover:shadow-md">
@@ -168,10 +184,7 @@ function AtencionCard({
 
       {accion && (
         <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
-          <Button className={cn("w-full gap-2 rounded-xl font-bold", estiloEstado.boton)} onClick={continuarAtencion}>
-            <IconoAccion className="size-4" />
-            {accion.etiqueta}
-          </Button>
+          <AccionAtencion {...props} />
         </CardFooter>
       )}
     </Card>
@@ -179,6 +192,7 @@ function AtencionCard({
 }
 
 export function AtencionesList() {
+  const [vista, setVista] = useState<"tabla" | "tarjetas">("tabla")
   const [busqueda, setBusqueda] = useState("")
   const [estadoFiltro, setEstadoFiltro] = useState("todos")
   const [saturacionFiltro, setSaturacionFiltro] = useState("todos")
@@ -231,8 +245,27 @@ export function AtencionesList() {
     paginaActual * ITEMS_PER_PAGE
   )
 
+  const acciones = {
+    onAtender: setAtencionEvaluando,
+    onCargarRadiografia: (a: AtencionResponse) => navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(a.id))),
+    onVerResultado: (a: AtencionResponse) => navigate(PATHS.RESULTS, { state: { atencionId: a.id } }),
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground" aria-live="polite">
+          {cargando ? "Cargando..." : `${atencionesFiltradas.length} ${atencionesFiltradas.length === 1 ? "atención encontrada" : "atenciones encontradas"}`}
+        </p>
+        <div role="group" aria-label="Vista de atenciones" className="flex gap-1 rounded-lg border p-1">
+          <Button size="sm" variant={vista === "tabla" ? "secondary" : "ghost"} aria-pressed={vista === "tabla"} onClick={() => setVista("tabla")} className="gap-2 rounded-md">
+            <List className="size-4" /> Tabla
+          </Button>
+          <Button size="sm" variant={vista === "tarjetas" ? "secondary" : "ghost"} aria-pressed={vista === "tarjetas"} onClick={() => setVista("tarjetas")} className="gap-2 rounded-md">
+            <LayoutGrid className="size-4" /> Tarjetas
+          </Button>
+        </div>
+      </div>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative w-full lg:max-w-md">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -255,7 +288,7 @@ export function AtencionesList() {
               setPaginaActual(1)
             }}
           >
-            <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectTrigger className="w-full sm:w-[190px]">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
@@ -272,7 +305,7 @@ export function AtencionesList() {
               setPaginaActual(1)
             }}
           >
-            <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectTrigger className="w-full sm:w-[190px]">
               <SelectValue placeholder="Sat. O2" />
             </SelectTrigger>
             <SelectContent>
@@ -293,15 +326,49 @@ export function AtencionesList() {
         <div className="rounded-xl border border-dashed border-border/60 bg-muted/5 py-12 text-center text-sm font-medium text-muted-foreground/80">
           No se encontraron atenciones con los filtros actuales.
         </div>
+      ) : vista === "tabla" ? (
+        <div className="min-w-0 overflow-hidden rounded-xl border bg-card">
+          <Table aria-label="Atenciones médicas y signos vitales">
+            <TableHeader className="bg-muted/40">
+              <TableRow>
+                <TableHead className="pl-4">Paciente / atención</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>PA <span className="text-xs font-normal">mmHg</span></TableHead>
+                <TableHead>FC <span className="text-xs font-normal">lpm</span></TableHead>
+                <TableHead>FR <span className="text-xs font-normal">rpm</span></TableHead>
+                <TableHead>Sat. O₂</TableHead>
+                <TableHead>Temp. °C</TableHead>
+                <TableHead>Estado clínico</TableHead>
+                <TableHead className="pr-4 text-right">Acción</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {atencionesPaginadas.map((atencion) => (
+                <TableRow key={atencion.id}>
+                  <TableCell className="max-w-60 py-3 pl-4">
+                    <p className="whitespace-normal font-medium">{atencion.paciente_nombre || `Paciente ${atencion.paciente_id}`}</p>
+                    <p className="mt-1 font-mono text-xs text-muted-foreground">AT-{String(atencion.id).padStart(4, "0")}</p>
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{formatearFecha(atencion.fecha_registro)}</TableCell>
+                  <TableCell className="tabular-nums">{atencion.presion_arterial || "--"}</TableCell>
+                  <TableCell className="tabular-nums">{atencion.frecuencia_cardiaca ?? "--"}</TableCell>
+                  <TableCell className="tabular-nums">{atencion.frecuencia_respiratoria ?? "--"}</TableCell>
+                  <TableCell className={cn("font-medium tabular-nums", obtenerClaseSaturacion(atencion.saturacion_o2))}>{atencion.saturacion_o2 == null ? "--" : `${atencion.saturacion_o2}%`}</TableCell>
+                  <TableCell className="tabular-nums">{atencion.temperatura ?? "--"}</TableCell>
+                  <TableCell><Badge variant="outline" className={obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico).badge}>{atencion.paciente_estado_clinico || atencion.estado}</Badge></TableCell>
+                  <TableCell className="pr-4 text-right"><AccionAtencion atencion={atencion} {...acciones} /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {atencionesPaginadas.map((atencion) => (
             <AtencionCard 
               key={atencion.id} 
               atencion={atencion} 
-              onAtender={setAtencionEvaluando}
-              onCargarRadiografia={(a) => navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(a.id)))}
-              onVerResultado={(a) => navigate(PATHS.RESULTS, { state: { atencionId: a.id } })}
+              {...acciones}
             />
           ))}
         </div>

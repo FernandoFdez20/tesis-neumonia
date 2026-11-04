@@ -19,7 +19,7 @@ type DatoMes = { mes: string; pacientes: number }
 const chartConfig = {
   pacientes: {
     label: "Pacientes",
-    color: "hsl(var(--primary))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig
 
@@ -31,9 +31,9 @@ export function PacientesChart({ datos }: { datos: DatoMes[] }) {
         <CardDescription>Registro de pacientes en los últimos 6 meses</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[240px] w-full">
           <BarChart data={datos} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground)/0.2)" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="mes"
               tickLine={false}
@@ -49,7 +49,7 @@ export function PacientesChart({ datos }: { datos: DatoMes[] }) {
               allowDecimals={false}
             />
             <ChartTooltip
-              cursor={{ fill: "hsl(var(--muted)/0.4)" }}
+              cursor={{ fill: "var(--muted)" }}
               content={<ChartTooltipContent />}
             />
             <Bar

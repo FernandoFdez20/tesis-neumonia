@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/shared/page-header"
+import { ResumenCaso } from "@/components/resultado/resumen-caso"
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, Navigate } from "react-router-dom"
@@ -47,10 +49,6 @@ function formatearFecha(fecha: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(fecha))
-}
-
-function badgeEstadoValidacion(estado: string | null) {
-  return <Badge variant="outline" className={obtenerEstiloEstadoClinico(estado).badge}>{estado || "Sin estado"}</Badge>
 }
 
 function badgeHallazgo(hallazgo: boolean | null) {
@@ -280,7 +278,7 @@ export default function ResultadoPage() {
 
   if (cargando) {
     return (
-      <div className="space-y-8">
+      <div className="min-w-0 space-y-6">
         <div className="space-y-2 pb-1">
           <Skeleton className="h-4 w-40" />
           <Skeleton className="h-9 w-80 max-w-full" />
@@ -326,76 +324,29 @@ export default function ResultadoPage() {
   const esPositivo = diagnostico.enfermo === true
 
   return (
-    <div className="space-y-8">
-      {/* ── Encabezado (patrón dashboard / atenciones) ── */}
-      <StaggerContainer className="space-y-2 pb-1" delay={80}>
-        <StaggerItem index={0}>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary/70 leading-none">
-            Soporte diagnóstico · Inteligencia artificial
-          </p>
-        </StaggerItem>
-        <StaggerItem index={1}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground/90 leading-tight">
-              Resultado del análisis IA
-            </h1>
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="font-mono">
-                AT-{String(diagnostico.atencion_medica_id).padStart(4, "0")}
-              </Badge>
-              {badgeEstadoValidacion(diagnostico.estado_validacion)}
-
-              {/* Reporte PDF */}
-              {puedePdf && (
-              <Button
-                variant="outline"
-                onClick={handleReportePdf}
-                disabled={generandoReporte}
-                className="gap-2 rounded-xl font-bold ml-2"
-                title="Descargar reporte en PDF con diagnóstico, gravedad, radiografías y datos del paciente"
-              >
-                <Printer className="size-4" />
-                {generandoReporte ? "Generando..." : "Reporte PDF"}
-              </Button>
-              )}
-              {puedeValidar && diagnostico.estado_validacion !== "Validado" && (
-                <Button 
-                  onClick={() => setModalValidacionAbierto(true)}
-                  className={cn("rounded-xl font-bold ml-2", obtenerEstiloEstadoClinico(diagnostico.estado_validacion).boton)}
-                >
-                  <Stethoscope className="mr-2 size-4" />
-                  Validar Diagnóstico
-                </Button>
-              )}
-
-            </div>
-          </div>
-        </StaggerItem>
-        <StaggerItem index={2}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-3xl text-base text-muted-foreground/70 leading-relaxed font-medium">
-              Cada radiografía se analiza de forma independiente con DenseNet121.{" "}
-              {conResultado.length > 0 && (
-                <>
-                  {nPositivas} de {conResultado.length} vista{conResultado.length > 1 ? "s" : ""} con hallazgos.
-                </>
-              )}{" "}
-              Requiere validación médica.
-            </p>
-            <Button variant="ghost" onClick={() => navigate(PATHS.ATTENTIONS)} className="gap-2 w-fit -ml-2 sm:ml-0 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="size-4" />
-              Volver a atenciones
+    <div className="min-w-0 space-y-6">
+      <PageHeader
+        eyebrow="Soporte diagnóstico · Inteligencia artificial"
+        title="Resultado del análisis IA"
+        description="Revisa el resumen del caso y consulta después el fundamento clínico y el análisis de cada radiografía."
+        actions={<>
+          <Button variant="outline" onClick={() => navigate(PATHS.ATTENTIONS)} className="gap-2 rounded-lg">
+            <ArrowLeft className="size-4" /> Atenciones
+          </Button>
+          {puedePdf && (
+            <Button variant="outline" onClick={handleReportePdf} disabled={generandoReporte} className="gap-2 rounded-lg" title="Descargar reporte en PDF con diagnóstico, gravedad, radiografías y datos del paciente">
+              <Printer className="size-4" />{generandoReporte ? "Generando..." : "Reporte PDF"}
             </Button>
-          </div>
-        </StaggerItem>
-      </StaggerContainer>
+          )}
+          {puedeValidar && diagnostico.estado_validacion !== "Validado" && (
+            <Button onClick={() => setModalValidacionAbierto(true)} className={cn("gap-2 rounded-lg", obtenerEstiloEstadoClinico(diagnostico.estado_validacion).boton)}>
+              <Stethoscope className="size-4" /> Validar diagnóstico
+            </Button>
+          )}
+        </>}
+      />
 
-      {/* ── Paciente y atención médica ── */}
-      <StaggerContainer delay={90}>
-        <StaggerItem index={0}>
-          <InfoPacienteAtencion atencion={atencion} />
-        </StaggerItem>
-      </StaggerContainer>
+      <ResumenCaso diagnostico={diagnostico} atencion={atencion} />
 
       {/* ── Resumen consolidado + confianza global ── */}
       <StaggerContainer className="grid gap-4 xl:grid-cols-[1.1fr_1fr] items-stretch" delay={80}>
@@ -490,6 +441,12 @@ export default function ResultadoPage() {
               />
             </CardContent>
           </Card>
+        </StaggerItem>
+      </StaggerContainer>
+
+      <StaggerContainer delay={90}>
+        <StaggerItem index={0}>
+          <InfoPacienteAtencion atencion={atencion} />
         </StaggerItem>
       </StaggerContainer>
 

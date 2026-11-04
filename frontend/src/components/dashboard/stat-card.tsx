@@ -15,6 +15,7 @@ type StatCardProps = {
   description: string
   icon: LucideIcon
   accent?: "blue" | "green" | "amber" | "red"
+  compact?: boolean
 }
 
 const accentStyles = {
@@ -50,8 +51,24 @@ export function StatCard({
   description,
   icon: Icon,
   accent = "blue",
+  compact = false,
 }: StatCardProps) {
   const styles = accentStyles[accent]
+
+  if (compact) {
+    return (
+      <Card size="sm" className="h-full data-[size=sm]:py-0">
+        <CardContent className="flex items-start justify-between gap-3 p-4">
+          <div className="min-w-0 space-y-1">
+            <p className="text-xs font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold tracking-tight tabular-nums">{value}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </div>
+          <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card
