@@ -2,6 +2,7 @@ import uuid
 import shutil
 import logging
 import enum
+import os
 from pathlib import Path
 from typing import Optional
 from fastapi import HTTPException, UploadFile
@@ -19,8 +20,13 @@ from app.ml.modelo_manager import get_modelo
 
 logger = logging.getLogger(__name__)
 
-# Carpeta base para guardar imágenes
-UPLOAD_DIR = Path(__file__).resolve().parents[4] / "uploads" / "radiografias"
+# Carpeta base para guardar imágenes.
+# Se puede redirigir con la variable UPLOAD_DIR (lo usa la evaluación masiva
+# para no mezclarse con las radiografías reales del paciente).
+UPLOAD_DIR = Path(
+    os.getenv("UPLOAD_DIR")
+    or Path(__file__).resolve().parents[4] / "uploads" / "radiografias"
+)
 
 UMBRAL = 0.5
 
@@ -39,10 +45,14 @@ def _guardar_archivo(archivo: UploadFile, subfolder: str) -> Path:
 
 
 def _url_relativa(ruta_abs: Path) -> str:
-    """Convierte ruta absoluta a URL relativa para guardar en BD."""
+    """Convierte ruta absoluta a URL relativa a /uploads para guardar en BD."""
     partes = ruta_abs.parts
-    idx = next(i for i, p in enumerate(partes) if p == "uploads")
-    return "/" + "/".join(partes[idx:])
+    # Se busca 'radiografias' y se incluye la carpeta que lo contiene
+    # ('uploads'), para no depender de una ruta absoluta fija.
+    for i in range(len(partes) - 1, -1, -1):
+        if partes[i] == "radiografias":
+            return "/" + "/".join(partes[i - 1:])
+    return "/" + ruta_abs.name
 
 
 def _ejecutar_inferencia(ruta_ap: Optional[Path], ruta_pa: Optional[Path]) -> dict:
