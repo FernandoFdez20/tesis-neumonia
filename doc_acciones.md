@@ -410,3 +410,49 @@ Desde esta entrega, despues de cada funcionalidad solicitada, este documento se 
 1. **frontend/src/pages/Diagnostico.jsx**: Se refactorizo la funcion de carga multiple para evitar efectos secundarios dentro del updater de estado (`setImageFiles`), eliminando el comportamiento donde al seleccionar 4 imagenes se renderizaban 8 previews en entorno de desarrollo.
 
 2. **frontend/src/pages/Diagnostico.jsx**: Se mantuvo intacta la regla de maximo 4 imagenes y la notificacion al usuario cuando intenta exceder el limite.
+
+### Funcionalidad: Pulido de navegación y acciones por estado (2026-11-04)
+
+1. **Panel:** `recent-attentions-table.tsx` lleva Ver todas a `/atenciones` y describe los datos como Últimas atenciones, sin afirmar que pertenecen al día actual.
+2. **Datos clínicos:** `atenciones/repository.py` incluye la propiedad calculada `presion_arterial` al construir las respuestas de listado, detalle e historial. `pacientes/repository.py`, `service.py` y `routes.py` exponen la última fecha real de atención mediante una consulta agregada por paciente. Se recupera el historial existente sin migraciones ni escrituras de corrección.
+3. **Buscador:** `command-palette.tsx` conecta el clic y Ctrl/Meta+K al mismo diálogo, filtra las opciones por permisos, ofrece las secciones y acciones implementadas y corrige Registrar paciente para abrir su formulario. El texto aclara que busca secciones y acciones. `app-layout.tsx` utiliza el control integrado.
+4. **Filtros:** se retiran únicamente los botones Más filtros sin acción en pacientes y atenciones; los filtros existentes se conservan.
+5. **Acciones por estado:** `lib/accion-atencion.ts` centraliza etiquetas y permisos para Atenciones y Radiografías. Evaluación -> Evaluar atención; derivación/diagnóstico pendiente -> Cargar radiografía; pendiente de validación -> Revisar y validar (o Ver resultado sin permiso de validación); validado -> Ver diagnóstico y reporte (o Ver diagnóstico sin permiso de PDF). Los botones navegan al caso correspondiente y no ejecutan validaciones automáticamente.
+6. **Pendientes:** El plan temporal de UX conservaba los puntos 3-6, completados en entregas posteriores. No se implementan el rediseño, nuevo visor o persistencia de navegación en esta entrega; tampoco se modifican reglas médicas, modelo ni umbral.
+7. **Verificación:** build TypeScript/Vite correcto. Comprobación de repositorios/serialización contra 7 pacientes y 10 atenciones, sin escrituras. En navegador: buscador y formulario de registro, enlace Ver todas, evaluación sin guardar, carga sin subir archivos, resultado validado, última atención y presión 85/55 en el resumen. ESLint de archivos afectados señala dos errores en los efectos de carga preexistentes de los listados; el resto de los archivos comprobados pasa.
+
+
+### Funcionalidad: Colores por estado y regresión del flujo completo (2026-11-04)
+
+1. `frontend/src/lib/estado-clinico.ts` centraliza los estilos: evaluación ámbar, radiografía azul, diagnóstico pendiente naranja, validación pendiente violeta, validado verde; sin atención/estado desconocido neutro. Badges y botones conservan el mismo color por etapa con contraste de texto.
+2. Aplicado en tarjetas de Atenciones/Radiografías, carga, resumen de dashboard, modal de evaluación, resultados, historial y ficha del paciente, sin cambiar eventos, estados persistidos ni reglas médicas.
+3. `frontend/tests/flujo-clinico.test.cjs`: cuatro pruebas sobre unicidad/coherencia de colores y acceso a acciones por estado y permisos, todas correctas.
+4. `backend/tests/test_regresion_flujo_clinico.py`: peticiones a la aplicación ASGI con PostgreSQL real en un esquema transaccional aislado y archivos temporales; dos recorridos con DICOM reales (normal y positivo), inicio de sesión, validaciones de adulto/DNI duplicado/atención duplicada, permisos, registro, CRB-65, derivación, inferencia, alertas, validación, cierre, historial y última atención. Correcto. Se usa solo la biblioteca estándar para el cliente de prueba, sin añadir paquetes.
+5. Se verificó que el rollback elimina los esquemas de prueba y mantiene los siete pacientes y diez atenciones originales. Build TypeScript/Vite correcto; lint de los módulos nuevos y buscador correcto. Los dos errores ESLint de efectos de los listados ya existían en HEAD.
+6. Revisión visual en Brave y generación del PDF desde la interfaz; no se pudo verificar el archivo nuevo descargado por restricciones del navegador. No dar por validada esa descarga.
+7. El commit incluye solo frontend/backend y pruebas; excluye Markdown, documentación y cambios previos ajenos a la entrega. Sin push.
+
+
+### Ajuste visual: Paleta pastel de estados (2026-11-04)
+
+1. Se sustituyen los fondos sólidos de botones por fondos pastel iguales a sus badges, con texto oscuro y hover suave. Evaluación naranja suave, radiografía celeste, diagnóstico pendiente ámbar, validación lavanda y validado verde suave.
+2. Cambio centralizado en `frontend/src/lib/estado-clinico.ts`, sin modificar acciones, permisos ni reglas. Cuatro pruebas frontend correctas, build correcto y revisión visual en Brave.
+3. La documentación queda fuera del commit.
+
+
+### Pulido UX: Jerarquía visual, punto 3 (2026-11-04)
+
+1. `shared/page-header.tsx` establece encabezado, descripción y acciones consistentes. Se aplica a Panel, Pacientes, Atenciones, Radiografías y Resultados; se elimina padding duplicado en Radiografías.
+2. Panel: accesos rápidos compactos en encabezado, contadores de prioridad más bajos y casos prioritarios primero en pantallas estrechas. Se adapta el skeleton de carga.
+3. Pacientes y Atenciones: `StatCard` ofrece variante compacta neutra. Directorio de pacientes antes del gráfico mensual plegable; colores del gráfico usan las variables CSS vigentes.
+4. Atenciones: vista Tabla inicial y alternativa Tarjetas. Reutilizan filtros, página, permisos y un único componente de acción; incluyen presión, FC, FR, saturación y temperatura con unidades en encabezados. Búsqueda mantiene su valor al alternar vistas. Sin alterar endpoints ni reglas clínicas.
+5. `resultado/resumen-caso.tsx` presenta primero paciente/DNI/edad, resultado presuntivo, prioridad del backend y estado. Datos clínicos completos se mueven debajo del fundamento del resultado. Se conservan detalle por imagen, advertencias, permisos y callbacks de validación/PDF.
+6. Verificación: build TypeScript/Vite correcto y cuatro pruebas frontend aprobadas. Revisión visual en Brave de las cinco páginas, filtro y estado vacío, paginación, alternancia de vistas, evaluación/carga/validación sin escrituras, gráfico plegable y resumen. ESLint de archivos tocados solo informa el error preexistente `react-hooks/set-state-in-effect` en el listado de Atenciones. No se ejecuta otra inferencia ni descarga PDF en esta entrega.
+7. Los puntos 4-6 se completaron en entregas posteriores. Commit solo de archivos frontend; quedan fuera documentación y cambios previos de backend/modelo.
+
+
+## 2026-11-04 — UX punto 4: registro clínico
+
+- `frontend/src/components/atenciones/nueva-atencion-dialog.tsx`: agrupación semántica Paciente / Signos vitales / Síntomas y observaciones; encabezado y botones fijos con cuerpo desplazable; unidades persistentes y accesibles; ayudas para diferenciar motivo y síntomas; observaciones opcionales.
+- Conserva hook, API, campos obligatorios, validaciones y reglas médicas. Sin nuevas dependencias.
+- Verificación: build, ESLint del componente, cuatro pruebas frontend existentes y Brave en escritorio/390 × 844, con errores de DNI, presión y frecuencia, enfoque al final y cancelación. Sin guardar registros.

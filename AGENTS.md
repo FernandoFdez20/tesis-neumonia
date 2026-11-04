@@ -2,6 +2,8 @@
 
 > **Este archivo es la memoria portátil del proyecto.** Debe ser leído por cualquier modelo (Muse, Gemini, Claude, Cursor, Antigravity) al iniciar sesión. Complementa a `.ai/` que contiene el detalle modular.
 
+> **Contexto funcional actualizado:** leer [CONTEXTO_PROYECTO.md](CONTEXTO_PROYECTO.md) después de este archivo. Consolida el producto, los cuatro objetivos, el informe aprobado, el flujo clínico, las decisiones de IA y las diferencias conocidas con el código.
+
 ---
 
 ## 1. Qué es este proyecto
@@ -9,33 +11,35 @@
 Sistema web clínico para **soporte al diagnóstico presuntivo de neumonía y estratificación de gravedad en adultos**, con priorización dinámica de casos. No reemplaza al médico, solo apoya la decisión clínica.
 Autor: **Fernando Fernandez** - Tesis de Ingeniería de Tecnologías de la Información.
 Ubicación contexto: Hospital Las Mercedes (referencia clínica).
-Estado: En desarrollo activo. Flujo diagnóstico funcional con simulación IA (aún no modelo real).
+Estado: Producto funcional terminado en el alcance del informe aprobado, que declara la versión v1.0.0 (22 historias de usuario y 21 requerimientos funcionales). Fase actual: preparación de la presentación final. DenseNet121 v2 ya está integrado; la demostración del escenario clínico usa datos de prueba e imágenes públicas.
 
 ---
 
 ## 2. Tesis - Definiciones Vigentes
 
 - **Título actualizado:** "Plataforma web basada en deep learning para el soporte diagnóstico y la estratificación de gravedad de neumonía en adultos del Hospital Las Mercedes"
-- **Objetivo general:** Desarrollar una plataforma web basada en deep learning para soporte diagnóstico y estratificación de gravedad en pacientes adultos del Hospital Las Mercedes.
-- **Objetivos específicos (parcial):**
-  1. Implementar un modelo de deep learning para detectar signos radiológicos de neumonía en radiografías de tórax de adultos
-  2. Estratificación de gravedad y priorización dinámica
-  3. Validación funcional con datasets públicos + evaluación de aceptación con experto en neumología
+- **Objetivo general:** Desarrollar una plataforma web basada en deep learning para el soporte diagnóstico y la estratificación de gravedad de neumonía en pacientes adultos del Hospital Las Mercedes.
+- **Objetivos específicos:**
+  1. Implementar un modelo de deep learning entrenado para detectar signos radiológicos de neumonía en imágenes de tórax de adultos.
+  2. Integrar el modelo predictivo en una plataforma web que permita la carga de imágenes médicas, genere un soporte diagnóstico automatizado y realice la estratificación de gravedad cruzando los resultados visuales con los signos vitales del paciente.
+  3. Validar la precisión del modelo y la funcionalidad del sistema mediante pruebas con imágenes de datasets públicos de casos de neumonía en pacientes.
+  4. Evaluar la percepción de aceptación tecnológica de la plataforma web por parte de un experto en neumología, considerando factores como utilidad y facilidad de uso.
 - **Población objetivo:** Adultos de 18 años o más (validación en formulario y backend; igual que el filtro del modelo).
 - **Criterios de inclusión del dataset (FIRMES, 2026-08-23):** Radiografías de tórax de **adultos** únicamente, con vistas **AP (anteroposterior) y PA (posteroanterior)**. Excluir otras proyecciones (lateral, decúbito, etc.).
 - **Principio clínico:** Diagnóstico es **presuntivo**, siempre con advertencia clínica. La IA no da diagnóstico definitivo.
 
-Actualizar esta sección cada vez que el título/objetivos cambien en conversación.
+Actualizar esta sección cuando cambien el título o los objetivos de la tesis.
 
 ---
 
 ## 3. Stack Innegociable (Lean Engineering)
 
-**Frontend:** React + TypeScript + Vite + Tailwind CSS + shadcn/ui + React Router + Axios/fetch + pnpm + framer-motion
-**Backend:** FastAPI + Python 3.10+ + Uvicorn + SQLModel/SQLAlchemy + PostgreSQL + Pydantic + JWT (HS256, nativo)
+**Frontend:** React + TypeScript + Vite + Tailwind CSS + shadcn/ui + React Router + Axios/fetch + TanStack Query + pnpm
+**Backend:** FastAPI + Python 3.10+ + Uvicorn + SQLAlchemy + PostgreSQL + Pydantic + JWT HS256 (python-jose)
+**ML:** PyTorch/torchvision + DenseNet121, pydicom + NumPy + Pillow. Módulo separado por responsabilidad, ejecutado dentro del backend.
 **Infra posible:** Docker, Cloud Run
 
-No cambiar stack sin acuerdo explícito. Ver detalle en `.ai/stack.md`.
+No cambiar stack sin acuerdo explícito. Estas líneas describen la implementación revisada; no autorizan añadir dependencias.
 
 ---
 
@@ -44,37 +48,39 @@ No cambiar stack sin acuerdo explícito. Ver detalle en `.ai/stack.md`.
 ```
 tesis-neumonia/
 ├── AGENTS.md              <- ESTE ARCHIVO (fuente de verdad universal)
+├── CONTEXTO_PROYECTO.md   <- Contexto funcional y académico consolidado
 ├── .ai/                   <- Memoria modular detallada
 │   ├── memory.md          <- Memoria conversacional autónoma (tipo ChatGPT)
-│   ├── decisions.md       <- Decisiones arquitectónicas
 │   ├── architecture.md    <- Capas y responsabilidades
-│   ├── stack.md
 │   ├── instructions.md    <- Reglas para agentes (alias instruccions.md)
 │   ├── ui-rules.md
 │   ├── coding-style.md
 │   └── agent-workflow.md
 ├── doc_acciones.md        <- Bitácora técnica de cada funcionalidad implementada
 ├── frontend/src/
-│   ├── pages/ (Login, PanelMedico /panel, Diagnostico /diagnostico, Resultados /resultados, Historial /historial)
-│   ├── components/ui, layout, shared, dashboard
-│   ├── services/api.js    <- Centraliza fetch (loginRequest, getEnfermedadesRequest, createDiagnosticoRequest, etc.)
-│   └── routes, hooks, lib, types, store
+│   ├── pages/             <- Login, dashboard, pacientes, atenciones, radiografías, resultado, historial, usuarios
+│   ├── components/        <- UI shadcn y componentes por módulo
+│   ├── services/          <- Servicios TypeScript; cliente Axios en lib/api.ts
+│   └── routes, hooks, lib, types, layouts
 ├── backend/app/
-│   ├── main.py (CORS, create_all, /uploads estático)
+│   ├── main.py            <- Carga inicial del modelo, CORS, /uploads con sesión
 │   ├── core/ (config, security JWT, database)
-│   ├── api/router.py (router principal)
+│   ├── api/               <- Router /api/v1 y autorización
+│   ├── ml/                <- Carga de DenseNet121, inferencia y vistas previas
 │   └── modules/
-│       ├── usuarios/ (auth, JWT, roles: Admin/Médico/Especialista/Enfermera/Técnico)
+│       ├── auth/
+│       ├── usuarios/       <- Cuentas y permisos
 │       ├── pacientes/
-│       ├── diagnosticos/ (Paciente, Diagnostico, DiagnosticoImagen, PacienteEnfermedad)
-│       ├── enfermedades/ (catálogo)
-│       └── xrays, reports, notifications
+│       ├── atenciones/
+│       ├── diagnosticos/   <- Imágenes, resultados, CRB-65 y priorización
+│       └── notificaciones/
+├── modelo/                <- Datos, splits, notebooks Colab y pesos entrenados
 ├── bd.sql                 <- Esquema PostgreSQL fuente de verdad (ENUMs, tablas)
 └── readme.md / doc.md
 ```
 
-Roles BD (`tipo_rol`): `Admin`, `Médico`, `Especialista`, `Enfermera`, `Técnico`
-Estados validación (`tipo_estado_val`): `Pendiente de imagenes`, `Pendiente de validación`, `Validado`
+Roles BD (`tipo_rol`): `Admin`, `Enfermera`, `Especialista`. Permisos efectivos por rol y desviaciones individuales; el administrador no accede a datos clínicos.
+Estados (`tipo_estado_val`): `Sin atención pendiente`, `Pendiente de evaluación`, `Derivado a radiografía`, `Diagnostico pendiente`, `Pendiente de validación`, `Validado`. Ver distinción entre estado visible y persistido en `CONTEXTO_PROYECTO.md`.
 
 ---
 
@@ -89,7 +95,7 @@ Estados validación (`tipo_estado_val`): `Pendiente de imagenes`, `Pendiente de 
 7.  **No agregar dependencias innecesarias.**
 8.  **Validaciones clínicas:** DNI 8 dígitos, solo adultos 18 años o más (igual que el modelo de IA), rangos de signos vitales, presión `SYS/DIA` con SYS>DIA. Mensajes con "años" (tilde).
 9.  **Idioma del proyecto:** Código y comentarios en español donde ya existe, UI en español.
-10. **Antes de modificar:** Leer `.ai/instruccions.md` + archivo específico según tarea (UI/backend/ML).
+10. **Antes de modificar:** Leer `CONTEXTO_PROYECTO.md`, `.ai/instruccions.md` y las reglas existentes según la tarea. No asumir que existen archivos mencionados por documentación histórica.
 
 ---
 
@@ -102,9 +108,9 @@ Estados validación (`tipo_estado_val`): `Pendiente de imagenes`, `Pendiente de 
 - **No preguntes** "¿quieres que lo guarde?". Hazlo al finalizar y **no le recuerdes al usuario cada vez** que actualices la memoria (actualización silenciosa).
 - **INFERENCIA (regla clave):** No esperes a que el usuario defina explícitamente qué guardar. Compórtate como la memoria de ChatGPT: si surge una preferencia, restricción, decisión, duda recurrente, razonamiento clínico, elección de tecnología o contexto relevante para la tesis, **infiérelo y guárdalo proactivamente**. Incluye también el "por qué" (criterio), no solo el hecho.
 - **Qué guardar como oraciones naturales:**
-  - Sobre el usuario: perfil, conocimientos previos (p. ej. "sin experiencia en IA"), forma de explicarle, estilo de trabajo
+  - Criterios de colaboración: nivel de explicación, estilo de trabajo y restricciones del proyecto
   - Tesis: "Título actualizado a: ...", "Objetivo general es...", definiciones clínicas y criterios de inclusión
-  - Decisiones/definiciones aunque no haya código: "Acordamos entrenar DenseNet121 primero y luego probar EfficientNet", "Dataset definido: NIH Chest X-ray"
+  - Decisiones y definiciones aunque no haya código: modelo seleccionado, dataset, protocolo de evaluación y justificación
   - Recomendaciones y justificaciones dadas (p. ej. por qué se recomienda X dataset o modelo)
   - Preferencias, acuerdos, ideas, contexto crítico
 - **Qué NO guardar:** Saludos, errores temporales, charla trivial sin valor futuro.
@@ -113,57 +119,57 @@ Estados validación (`tipo_estado_val`): `Pendiente de imagenes`, `Pendiente de 
   `YYYY-MM-DD | Origen: chat/codigo | Tipo | Título | Detalle | Estado: Vigente/Descartado`
   y también oraciones naturales en las secciones.
 
-Este archivo `AGENTS.md` es el índice. El detalle conversacional vive en `.ai/memory.md`.
+La documentación debe usar redacción directa e impersonal: describir hechos, decisiones y reglas del proyecto, sin atribuirlos a conversaciones, al autor como interlocutor ni al agente que los redactó. Evitar fórmulas como «según el autor», «se pidió» o «se confirmó en el chat». Conservar la autoría, los nombres de archivos y las rutas cuando sean datos documentales.
+
+Este archivo `AGENTS.md` es el índice. `CONTEXTO_PROYECTO.md` conserva el contexto compartido del producto y puede versionarse; `.ai/memory.md` conserva la continuidad personal local. Mantener los resúmenes alineados y distinguir hechos del código, evidencia del informe y verificaciones nuevas.
 
 ---
 
 ## 7. Decisiones Vigentes (Resumen)
 
-Ver detalle completo en `.ai/decisions.md`. Resumen crítico:
+Ver el detalle y las fuentes en `CONTEXTO_PROYECTO.md`. Resumen crítico:
 
 - Sistema será web, diagnóstico presuntivo, priorización dinámica.
 - Frontend React+Vite+TS, UI shadcn/ui, paleta sobria clínica (slate/teal).
 - Backend FastAPI, JWT HS256 nativo, PostgreSQL.
-- Modelo IA separado de API.
+- Modelo IA separado por responsabilidad en `backend/app/ml/`, cargado una vez dentro de FastAPI; no es un microservicio independiente.
 - DNI 8 dígitos obligatorio como expediente (antes `expediente_id`).
-- Carga de 1 a 4 radiografías por diagnóstico (`diagnostico_imagenes` con `orden`, `imagen_url`), `imagen_url` principal se mantiene por compatibilidad.
-- Simulación IA actualmente en backend (resultado aleatorio positivo/negativo, prioridad, confianzas) persistida en `diagnosticos` (`enfermo`, `resultado_ia`, `probabilidad_ia`, `confianza_*`, `hallazgos_json`). Frontend ya no simula.
-- Flujo validación: `Pendiente de imagenes` -> `Pendiente de validación` -> `Validado` (por médico).
+- Carga de AP y/o PA, un archivo por vista. Resultado independiente en `diagnostico_imagenes`; referencia consolidada con la mayor probabilidad (`imagen_referencia_id`), sin promedio.
+- DenseNet121 v2 real, umbral 0.50, pesos en `modelo/modelos/densenet121_v2_best.pth`. La demostración usa un escenario clínico de prueba, no IA aleatoria.
+- Gravedad clínica mediante CRB-65; prioridad final Baja/Moderada/Alta/Crítica mediante seis combinaciones de CRB-65 y resultado IA. No modificar reglas médicas por iniciativa propia.
+- Validación por especialista: conserva la IA y registra clasificación médica, concordancia, autor y fecha; finaliza la atención y cierra su alerta.
+- Notificaciones persistentes y panel con consultas cada 30 segundos; PDF generado en frontend.
 - Edad calculada automáticamente desde `fecha_nacimiento`.
 
 ---
 
-## 8. Estado Actual (2026-08-22)
+## 8. Estado Actual (2026-11-04)
 
-**Funcional y validado (build OK):**
-- [x] Auth JWT: `POST /usuarios/login`, `GET /usuarios/me`, `GET /usuarios` (con roles), login visual migrado, ProtectedRoute, logout
-- [x] Panel `/panel` con KPIs, casos recientes reales desde `GET /diagnosticos/recientes` (JWT), búsqueda, fecha relativa, chart
-- [x] Flujo diagnóstico `/diagnostico` (4 pasos: radiografía 1-4 imgs, datos paciente con DNI 8, signos vitales con rangos, antecedentes con catálogo `GET /enfermedades/`), validación secuencial, toast
-- [x] Registro `POST /diagnosticos/` multipart (soporta `imagen_files[]` + legacy `imagen_file`), guarda en `backend/uploads/radiografias`, crea/actualiza paciente por DNI, sincroniza enfermedades
-- [x] Resultados `/resultados` consume `GET /diagnosticos/{id}/resultado` real, simulación movida a backend, navegación desde historial/casos recientes via `diagnostico_id` (state + query)
-- [x] Historial `/historial` con filtros, búsqueda, paginación
-- [x] Timestamps corregidos (`server_default=func.now()`)
+El informe `SCRUM_FERNANDEZ_FERNANDO.pdf` fue revisado y aprobado por las docentes. Documenta la versión v1.0.0 y el alcance funcional completado al 100 %. El código revisado incluye autenticación, usuarios/permisos, pacientes, atenciones, evaluación/derivación, análisis real, prioridad, alertas, validación, historial y PDF.
 
-**Pendiente / Próximo:**
-- [ ] Integrar modelo PyTorch real (reemplazar simulación en `diagnosticos/service.py`)
-- [ ] Módulo ML `backend/app/ml/` (preprocessing, inference, explainability)
-- [ ] Validación médica final y reportes PDF
-- [ ] Priorización dinámica avanzada y notificaciones websocket
+Flujo actual: login -> paciente -> atención/signos -> evaluación/derivación -> radiografías -> IA + CRB-65/prioridad -> validación -> PDF/historial. Rutas principales: `/dashboard`, `/pacientes`, `/atenciones`, `/radiografias`, `/resultado`, `/historial`, `/usuarios`; API bajo `/api/v1`.
 
-Ver bitácora detallada paso a paso en `doc_acciones.md`.
+Modelo final documentado: DenseNet121 v2, corrida `20261013_062105`, umbral 0.50. Prueba n=2.104: exactitud 94,49 %, sensibilidad 94,56 %, F1 93,23 %, AUC 0,9885. Dos notebooks de corrida contienen resultados coincidentes. El informe documenta seis escenarios aprobados y paridad de predicciones entre plataforma y notebook.
+
+La documentación reúne el informe, el código, los CSV, los resultados guardados de los notebooks y las verificaciones funcionales registradas en la bitácora. El plan de pulido de navegación, jerarquía visual, registro clínico, visor y contexto de navegación está completado. Las verificaciones deben indicar su alcance y distinguir las métricas del informe de las pruebas ejecutadas sobre cada versión.
+
+Las diferencias históricas y los límites de evaluación se detallan en `CONTEXTO_PROYECTO.md`. Cualquier ampliación funcional requiere definir su alcance antes de implementarla; las recomendaciones opcionales no forman parte de los requisitos de cierre.
+
+La bitácora `doc_acciones.md` describe etapas históricas y no sustituye al contexto actualizado.
 
 ---
 
 ## 9. Archivos Fuente de la Verdad - Orden de Lectura para Agentes
 
 1. `AGENTS.md` (este archivo) - contexto rápido universal
-2. `.ai/memory.md` - memoria conversacional autónoma (imprescindible para continuidad entre modelos)
-3. `.ai/instruccions.md` + `.ai/architecture.md` + `.ai/stack.md`
-4. `bd.sql` - esquema real de BD (no asumir columnas)
-5. `doc_acciones.md` - qué se hizo exactamente y en qué archivos
+2. `CONTEXTO_PROYECTO.md` - producto, tesis, flujo, modelo, evidencias y diferencias conocidas
+3. `.ai/memory.md` - memoria personal local, si está disponible
+4. `.ai/instruccions.md` + `.ai/architecture.md` y reglas existentes pertinentes
+5. `bd.sql` + código del módulo afectado - verificar la implementación, no asumir columnas ni comportamiento
+6. `doc_acciones.md` - bitácora histórica
 
-**Para Muse / Gemini / Claude:** Al iniciar, lee siempre `AGENTS.md` y `.ai/memory.md` antes de responder. Mantén `AGENTS.md` < 10k tokens, `.ai/memory.md` < 2k tokens.
+**Para cualquier agente:** leer primero `AGENTS.md` y `CONTEXTO_PROYECTO.md`. No depender de que el PDF externo o la memoria local estén presentes en otro equipo. Mantén `AGENTS.md` < 10k tokens, `.ai/memory.md` < 2k tokens.
 
 ---
 
-*Última actualización: 2026-08-22. Mantener actualizado por agentes de forma autónoma.*
+*Última actualización: 2026-11-04. Mantener actualizado por agentes de forma autónoma.*

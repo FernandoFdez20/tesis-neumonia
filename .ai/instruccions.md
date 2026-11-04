@@ -26,8 +26,11 @@ Después de CADA conversación o tarea, analiza internamente lo hablado y actual
 No preguntes "¿quieres que lo guarde?". Hazlo al finalizar.
 
 Qué guardar como oraciones naturales:
-- Sobre el usuario, tesis, stack, decisiones, preferencias. Ej: "El usuario está desarrollando su tesis con backend FastAPI y frontend React+Vite+shadcn/ui"
+- Contexto de la tesis, stack, decisiones, preferencias y criterios de colaboración. Ej: "Backend FastAPI y frontend React+Vite+shadcn/ui"
 - Ideas, definiciones y acuerdos aunque no haya código. Ej: "Título actualizado a: Plataforma web basada en deep learning para el soporte diagnóstico y la estratificación de gravedad de neumonía en adultos del Hospital Las Mercedes"
 
 Qué NO guardar: saludos, errores temporales, charla trivial sin valor futuro.
 Cómo: Consolida y reescribe por secciones, no solo append. Máx ~2000 tokens para `memory.md`.
+## Redacción de documentación
+
+Describir el proyecto de forma directa e impersonal. Registrar decisiones y hechos sin atribuirlos al autor como interlocutor ni narrar la conversación. Evitar sustituir referencias en tercera persona por frases artificiales en primera persona. Conservar la autoría y los nombres de archivos o rutas que formen parte de las referencias documentales.
