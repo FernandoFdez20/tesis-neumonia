@@ -2,30 +2,30 @@ type EstiloEstado = { badge: string; boton: string }
 
 const ESTILOS_ESTADO: Record<string, EstiloEstado> = {
   "Pendiente de evaluación": {
-    badge: "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200",
-    boton: "bg-amber-700 text-white hover:bg-amber-800 active:bg-amber-900 focus-visible:ring-amber-500/40",
+    badge: "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200",
+    boton: "border-orange-200 bg-orange-100 text-orange-800 hover:bg-orange-200 active:bg-orange-200 focus-visible:ring-orange-300/50 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200 dark:hover:bg-orange-900 dark:active:bg-orange-900",
   },
   "Derivado a radiografía": {
-    badge: "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200",
-    boton: "bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900 focus-visible:ring-blue-500/40",
+    badge: "border-sky-200 bg-sky-100 text-sky-800 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-200",
+    boton: "border-sky-200 bg-sky-100 text-sky-800 hover:bg-sky-200 active:bg-sky-200 focus-visible:ring-sky-300/50 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-200 dark:hover:bg-sky-900 dark:active:bg-sky-900",
   },
   "Diagnostico pendiente": {
-    badge: "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200",
-    boton: "bg-orange-700 text-white hover:bg-orange-800 active:bg-orange-900 focus-visible:ring-orange-500/40",
+    badge: "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200",
+    boton: "border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-200 active:bg-amber-200 focus-visible:ring-amber-300/50 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200 dark:hover:bg-amber-900 dark:active:bg-amber-900",
   },
   "Pendiente de validación": {
     badge: "border-violet-200 bg-violet-100 text-violet-800 dark:border-violet-800 dark:bg-violet-950 dark:text-violet-200",
-    boton: "bg-violet-700 text-white hover:bg-violet-800 active:bg-violet-900 focus-visible:ring-violet-500/40",
+    boton: "border-violet-200 bg-violet-100 text-violet-800 hover:bg-violet-200 active:bg-violet-200 focus-visible:ring-violet-300/50 dark:border-violet-800 dark:bg-violet-950 dark:text-violet-200 dark:hover:bg-violet-900 dark:active:bg-violet-900",
   },
   Validado: {
     badge: "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
-    boton: "bg-emerald-700 text-white hover:bg-emerald-800 active:bg-emerald-900 focus-visible:ring-emerald-500/40",
+    boton: "border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 active:bg-emerald-200 focus-visible:ring-emerald-300/50 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 dark:hover:bg-emerald-900 dark:active:bg-emerald-900",
   },
 }
 
 const ESTILO_NEUTRO: EstiloEstado = {
   badge: "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
-  boton: "bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 focus-visible:ring-slate-500/40",
+  boton: "border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-200 focus-visible:ring-slate-300/50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:active:bg-slate-900",
 }
 
 export function obtenerEstiloEstadoClinico(estado: string | null | undefined): EstiloEstado {
