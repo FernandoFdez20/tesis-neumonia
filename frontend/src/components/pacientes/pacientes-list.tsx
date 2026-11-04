@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Search, SlidersHorizontal, User } from "lucide-react"
+import { Search, User } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -160,9 +160,6 @@ export function PacientesList() {
               <SelectItem value="sin-atencion">Sin Atención Activa</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" title="Más filtros">
-            <SlidersHorizontal className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 

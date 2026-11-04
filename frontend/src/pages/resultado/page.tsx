@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, Navigate } from "react-router-dom"
 import {
@@ -49,11 +50,7 @@ function formatearFecha(fecha: string | null) {
 }
 
 function badgeEstadoValidacion(estado: string | null) {
-  if (!estado) return <Badge variant="outline">Sin estado</Badge>
-  if (estado.toLowerCase().includes("validado") && !estado.toLowerCase().includes("pendiente")) {
-    return <Badge variant="leve">{estado}</Badge>
-  }
-  return <Badge variant="pendiente">{estado}</Badge>
+  return <Badge variant="outline" className={obtenerEstiloEstadoClinico(estado).badge}>{estado || "Sin estado"}</Badge>
 }
 
 function badgeHallazgo(hallazgo: boolean | null) {
@@ -364,7 +361,7 @@ export default function ResultadoPage() {
               {puedeValidar && diagnostico.estado_validacion !== "Validado" && (
                 <Button 
                   onClick={() => setModalValidacionAbierto(true)}
-                  className="rounded-xl font-bold ml-2 bg-blue-600 hover:bg-blue-700"
+                  className={cn("rounded-xl font-bold ml-2", obtenerEstiloEstadoClinico(diagnostico.estado_validacion).boton)}
                 >
                   <Stethoscope className="mr-2 size-4" />
                   Validar Diagnóstico

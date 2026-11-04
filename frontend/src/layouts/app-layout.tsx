@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { UserNav } from "@/components/shared/user-nav"
-import { CommandPalette, CommandPaletteTrigger } from "@/components/shared/command-palette"
+import { CommandPalette } from "@/components/shared/command-palette"
 import { useAuth } from "@/hooks/use-auth"
 import { PATHS } from "@/routes/paths"
 
@@ -80,7 +80,6 @@ export function AppLayout() {
             {/* Búsqueda - Command Palette (solo en el ámbito clínico) */}
             {!esAdmin && (
             <div className="flex-1 sm:flex-none">
-              <CommandPaletteTrigger />
               <CommandPalette />
             </div>
             )}

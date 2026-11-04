@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CalendarClock, ChevronRight, User } from "lucide-react"
@@ -227,7 +228,7 @@ export function PacienteDetalleDialog({
                               <Badge variant="outline">{dx.prioridad_final}</Badge>
                             )}
                             {dx.estado_validacion && (
-                              <Badge variant="pendiente">{dx.estado_validacion}</Badge>
+                              <Badge variant="outline" className={obtenerEstiloEstadoClinico(dx.estado_validacion).badge}>{dx.estado_validacion}</Badge>
                             )}
                           </div>
                         )}
@@ -238,7 +239,7 @@ export function PacienteDetalleDialog({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 px-2 text-xs font-bold text-primary hover:text-primary/80"
+                          className={`h-7 px-2 text-xs font-bold ${obtenerEstiloEstadoClinico(dx.estado_validacion).boton}`}
                           onClick={() => verDiagnostico(a.id)}
                           title="Abrir el resultado IA, prioridad y validación de este caso anterior"
                         >

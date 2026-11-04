@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState, useMemo } from "react"
 import { CalendarClock, Search, Upload, Activity } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -14,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.service"
 import { PATHS } from "@/routes/paths"
+import { useAuth } from "@/hooks/use-auth"
+import { obtenerAccionAtencion } from "@/lib/accion-atencion"
 
 const ITEMS_PER_PAGE = 6
 
@@ -28,6 +31,9 @@ function formatearFecha(fechaRegistro: string) {
 
 function RadiografiaCard({ atencion }: { atencion: AtencionResponse }) {
   const navigate = useNavigate()
+  const { tienePermiso } = useAuth()
+  const estiloEstado = obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico)
+  const accion = obtenerAccionAtencion(atencion.paciente_estado_clinico, tienePermiso)
 
   return (
     <Card className="transition-all duration-300 hover:shadow-md border-primary/20 bg-primary/[0.02]">
@@ -38,7 +44,7 @@ function RadiografiaCard({ atencion }: { atencion: AtencionResponse }) {
               <span className="font-mono text-xs font-bold text-muted-foreground">
                 AT-{String(atencion.id).padStart(4, '0')}
               </span>
-              <Badge className="bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400">
+              <Badge variant="outline" className={estiloEstado.badge}>
                 {atencion.paciente_estado_clinico}
               </Badge>
             </div>
@@ -56,24 +62,20 @@ function RadiografiaCard({ atencion }: { atencion: AtencionResponse }) {
         </div>
       </CardContent>
 
-      <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
-        <Button 
-          className="w-full gap-2 rounded-xl font-bold shadow-md shadow-primary/10"
-          variant={atencion.paciente_estado_clinico !== "Derivado a radiografía" ? "secondary" : "default"}
-          onClick={() => navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(atencion.id)))}
-        >
-          {atencion.paciente_estado_clinico === "Derivado a radiografía" ? (
-            <>
-              <Upload className="size-4" />
-              Cargar
-            </>
-          ) : ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "") ? (
-            <>Ver</>
-          ) : (
-            <>Ver / Recargar</>
-          )}
-        </Button>
-      </CardFooter>
+      {accion && (
+        <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
+          <Button className={`w-full gap-2 rounded-xl font-bold ${estiloEstado.boton}`} onClick={() => {
+            if (accion.tipo === "resultado") {
+              navigate(PATHS.RESULTS, { state: { atencionId: atencion.id } })
+            } else {
+              navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(atencion.id)))
+            }
+          }}>
+            {accion.tipo === "radiografia" && <Upload className="size-4" />}
+            {accion.etiqueta}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   )
 }

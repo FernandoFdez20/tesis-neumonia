@@ -1,11 +1,12 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.modules.pacientes.models import Enfermedad
+from app.modules.pacientes.models import Enfermedad, Paciente
 from app.modules.pacientes.repository import PacienteRepository
 from app.modules.pacientes.schemas import (
     PacienteCreate,
     PacienteUpdate,
+    PacienteResponse,
     PacientesPaginados,
 )
 
@@ -31,11 +32,23 @@ class PacienteService:
         )
 
         return PacientesPaginados.crear(
-            items=pacientes,
+            items=self._serializar_pacientes(pacientes),
             total=total,
             page=page,
             page_size=page_size,
         )
+
+    def _serializar_pacientes(self, pacientes: list[Paciente]) -> list[PacienteResponse]:
+        fechas = self.repo.obtener_ultimas_atenciones([p.id for p in pacientes])
+        return [
+            PacienteResponse.model_validate(p).model_copy(
+                update={"ultima_atencion": fechas.get(p.id)}
+            )
+            for p in pacientes
+        ]
+
+    def respuesta_paciente(self, paciente: Paciente) -> PacienteResponse:
+        return self._serializar_pacientes([paciente])[0]
 
     def get_paciente(self, paciente_id: int):
         paciente = self.repo.get_paciente_por_id(paciente_id)

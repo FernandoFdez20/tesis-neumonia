@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CalendarClock, ChevronRight, History, Search, User, X } from "lucide-react"
@@ -266,7 +267,7 @@ export default function HistorialPage() {
                               <Badge variant="outline">{dx.prioridad_final}</Badge>
                             )}
                             {dx.estado_validacion && (
-                              <Badge variant="pendiente">{dx.estado_validacion}</Badge>
+                              <Badge variant="outline" className={obtenerEstiloEstadoClinico(dx.estado_validacion).badge}>{dx.estado_validacion}</Badge>
                             )}
                           </div>
                         ) : (
@@ -279,7 +280,7 @@ export default function HistorialPage() {
                     {dx ? (
                       <Button
                         size="sm"
-                        className="w-fit shrink-0 rounded-lg font-bold"
+                        className={`w-fit shrink-0 rounded-lg font-bold ${obtenerEstiloEstadoClinico(dx.estado_validacion).boton}`}
                         onClick={() =>
                           navigate(PATHS.RESULTS, { state: { atencionId: a.id } })
                         }

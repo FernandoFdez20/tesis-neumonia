@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/table"
 
 import { listarAtenciones } from "@/services/atenciones.service"
+import { PATHS } from "@/routes/paths"
 
 const ITEMS_PER_PAGE = 4
 
@@ -52,11 +54,11 @@ export function RecentAttentionsTable() {
               Atenciones recientes
             </CardTitle>
             <CardDescription className="mt-1.5 text-sm text-muted-foreground/70 font-medium">
-              Registros de hoy · {attentions.length} atenciones
+              Últimas atenciones · {attentions.length} registros
             </CardDescription>
           </div>
           <Link
-            to="#"
+            to={PATHS.ATTENTIONS}
             className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors duration-200 mt-0.5 tracking-tight hover:gap-1.5"
           >
             Ver todas
@@ -111,7 +113,7 @@ export function RecentAttentionsTable() {
                     {attention.sintomas_principales || attention.examen_fisico || "Sin evaluación"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={attention.paciente_estado_clinico === "Pendiente de evaluación" ? "secondary" : "default"}>
+                    <Badge variant="outline" className={obtenerEstiloEstadoClinico(attention.paciente_estado_clinico).badge}>
                       {attention.paciente_estado_clinico || attention.estado}
                     </Badge>
                   </TableCell>

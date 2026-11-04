@@ -1,14 +1,15 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState, useMemo } from "react"
 import {
   Activity,
   CalendarClock,
   HeartPulse,
   Search,
-  SlidersHorizontal,
   Stethoscope,
   Thermometer,
   Wind,
   FileBarChart2,
+  Upload,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -33,6 +34,8 @@ import { listarAtenciones, type AtencionResponse } from "@/services/atenciones.s
 import { EvaluacionMedicaDialog } from "./evaluacion-medica-dialog"
 import { useNavigate } from "react-router-dom"
 import { PATHS } from "@/routes/paths"
+import { useAuth } from "@/hooks/use-auth"
+import { obtenerAccionAtencion } from "@/lib/accion-atencion"
 
 const ITEMS_PER_PAGE = 6
 
@@ -79,12 +82,25 @@ function SignoVital({
 function AtencionCard({ 
   atencion, 
   onAtender,
-  onVerResultado
+  onVerResultado,
+  onCargarRadiografia,
 }: { 
   atencion: AtencionResponse
   onAtender: (a: AtencionResponse) => void
-  onVerResultado?: (a: AtencionResponse) => void
+  onVerResultado: (a: AtencionResponse) => void
+  onCargarRadiografia: (a: AtencionResponse) => void
 }) {
+  const { tienePermiso } = useAuth()
+  const estiloEstado = obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico)
+  const accion = obtenerAccionAtencion(atencion.paciente_estado_clinico, tienePermiso)
+  const IconoAccion = accion?.tipo === "evaluar" ? Stethoscope : accion?.tipo === "radiografia" ? Upload : FileBarChart2
+
+  function continuarAtencion() {
+    if (accion?.tipo === "evaluar") onAtender(atencion)
+    else if (accion?.tipo === "radiografia") onCargarRadiografia(atencion)
+    else if (accion?.tipo === "resultado") onVerResultado(atencion)
+  }
+
   return (
     <Card className="transition-all duration-300 hover:shadow-md">
       <CardHeader className="pb-3">
@@ -94,14 +110,7 @@ function AtencionCard({
               <span className="font-mono text-xs font-bold text-muted-foreground">
                 AT-{String(atencion.id).padStart(4, '0')}
               </span>
-              <Badge
-                variant={atencion.paciente_estado_clinico === "Pendiente de evaluación" ? "secondary" : "outline"}
-                className={
-                  atencion.paciente_estado_clinico === "Pendiente de evaluación"
-                    ? "bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:text-amber-400"
-                    : "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400"
-                }
-              >
+              <Badge variant="outline" className={estiloEstado.badge}>
                 {atencion.paciente_estado_clinico || atencion.estado}
               </Badge>
             </div>
@@ -157,27 +166,14 @@ function AtencionCard({
         </div>
       </CardContent>
 
-      <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
-        {atencion.paciente_estado_clinico === "Pendiente de evaluación" && (
-          <Button 
-            className="w-full gap-2 rounded-xl font-bold"
-            onClick={() => onAtender(atencion)}
-          >
-            <Stethoscope className="size-4" />
-            Atender
+      {accion && (
+        <CardFooter className="border-t border-border/40 bg-muted/10 px-5 py-4">
+          <Button className={cn("w-full gap-2 rounded-xl font-bold", estiloEstado.boton)} onClick={continuarAtencion}>
+            <IconoAccion className="size-4" />
+            {accion.etiqueta}
           </Button>
-        )}
-        
-        {(atencion.paciente_estado_clinico === "Pendiente de validación" || atencion.paciente_estado_clinico === "Validado") && (
-          <Button 
-            className="w-full gap-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white"
-            onClick={() => onVerResultado?.(atencion)}
-          >
-            <FileBarChart2 className="size-4" />
-            Ver Resultados
-          </Button>
-        )}
-      </CardFooter>
+        </CardFooter>
+      )}
     </Card>
   )
 }
@@ -286,9 +282,6 @@ export function AtencionesList() {
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="icon" className="hidden shrink-0 sm:flex" title="Más filtros">
-            <SlidersHorizontal className="size-4" />
-          </Button>
         </div>
       </div>
 
@@ -307,6 +300,7 @@ export function AtencionesList() {
               key={atencion.id} 
               atencion={atencion} 
               onAtender={setAtencionEvaluando}
+              onCargarRadiografia={(a) => navigate(PATHS.UPLOAD_RADIOGRAPHY.replace(":atencionId", String(a.id)))}
               onVerResultado={(a) => navigate(PATHS.RESULTS, { state: { atencionId: a.id } })}
             />
           ))}

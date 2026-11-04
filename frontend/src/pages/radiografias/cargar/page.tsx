@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useState, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
@@ -228,7 +229,7 @@ export default function CargarRadiografiaPage() {
 
         <div className="flex gap-2 w-full sm:w-auto">
           {["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "") ? (
-            <Button variant="outline" onClick={() => navigate(PATHS.RESULTS, { state: { atencionId: atencion.id } })} className="flex-1 sm:flex-none">
+            <Button variant="outline" onClick={() => navigate(PATHS.RESULTS, { state: { atencionId: atencion.id } })} className={`flex-1 sm:flex-none ${obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico).boton}`}>
               Ver Resultados IA
             </Button>
           ) : (
@@ -236,7 +237,7 @@ export default function CargarRadiografiaPage() {
               <Button variant="outline" onClick={handleLimpiar} disabled={procesando} className="flex-1 sm:flex-none">
                 Limpiar todo
               </Button>
-              <Button onClick={handleGuardar} disabled={procesando || (!archivoAP && !archivoPA)} className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+              <Button onClick={handleGuardar} disabled={procesando || (!archivoAP && !archivoPA)} className={`flex-1 sm:flex-none gap-2 ${obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico).boton}`}>
                 <Play className="size-4" />
                 {procesando ? "Procesando..." : "Iniciar Análisis"}
               </Button>
@@ -252,7 +253,7 @@ export default function CargarRadiografiaPage() {
             <Badge variant="outline" className="bg-background">
               AT-{String(atencion.id).padStart(4, '0')}
             </Badge>
-            <Badge className="bg-emerald-500/10 text-emerald-700">
+            <Badge variant="outline" className={obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico).badge}>
               {atencion.paciente_estado_clinico}
             </Badge>
           </div>

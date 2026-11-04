@@ -1,3 +1,4 @@
+import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
 import { useEffect, useState } from "react"
 import { Activity, Thermometer, HeartPulse, Wind, Save, ArrowRight } from "lucide-react"
 
@@ -98,7 +99,7 @@ export function EvaluacionMedicaDialog({
               <Badge variant="outline" className="bg-background">
                 AT-{String(atencion.id).padStart(4, '0')}
               </Badge>
-              <Badge variant={atencion.paciente_estado_clinico === "Pendiente de evaluación" ? "secondary" : "default"}>
+              <Badge variant="outline" className={obtenerEstiloEstadoClinico(atencion.paciente_estado_clinico).badge}>
                 {atencion.paciente_estado_clinico || atencion.estado}
               </Badge>
             </div>

@@ -49,7 +49,7 @@ def listar_pacientes(
 )
 def registrar_paciente(paciente_in: PacienteCreate, db: Session = Depends(get_db)):
     paciente_service = PacienteService(db)
-    return paciente_service.create_paciente(paciente_in)
+    return paciente_service.respuesta_paciente(paciente_service.create_paciente(paciente_in))
 
 
 @router.get(
@@ -69,7 +69,7 @@ def listar_enfermedades(db: Session = Depends(get_db)):
 )
 def get_paciente_por_dni(dni: str, db: Session = Depends(get_db)):
     paciente_service = PacienteService(db)
-    return paciente_service.get_paciente_por_dni(dni)
+    return paciente_service.respuesta_paciente(paciente_service.get_paciente_por_dni(dni))
 
 
 @router.get(
@@ -79,7 +79,7 @@ def get_paciente_por_dni(dni: str, db: Session = Depends(get_db)):
 )
 def get_paciente(paciente_id: int, db: Session = Depends(get_db)):
     paciente_service = PacienteService(db)
-    return paciente_service.get_paciente(paciente_id)
+    return paciente_service.respuesta_paciente(paciente_service.get_paciente(paciente_id))
 
 
 @router.patch(
@@ -93,4 +93,4 @@ def actualizar_paciente(
     db: Session = Depends(get_db),
 ):
     paciente_service = PacienteService(db)
-    return paciente_service.update_paciente(paciente_id, paciente_in)
+    return paciente_service.respuesta_paciente(paciente_service.update_paciente(paciente_id, paciente_in))

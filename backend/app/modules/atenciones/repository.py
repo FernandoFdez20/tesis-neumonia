@@ -65,6 +65,7 @@ class AtencionMedicaRepository:
                     estado_atencion_especifico = "Derivado a radiografía"
             
             atencion_dict = atencion.__dict__.copy()
+            atencion_dict["presion_arterial"] = atencion.presion_arterial
             atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
             atencion_dict["paciente_edad"] = edad
             atencion_dict["paciente_dni"] = paciente.dni
@@ -97,6 +98,7 @@ class AtencionMedicaRepository:
                     estado_atencion_especifico = "Derivado a radiografía"
                     
             atencion_dict = atencion.__dict__.copy()
+            atencion_dict["presion_arterial"] = atencion.presion_arterial
             atencion_dict["paciente_estado_clinico"] = estado_atencion_especifico
             resultados.append(atencion_dict)
             
@@ -136,6 +138,7 @@ class AtencionMedicaRepository:
                 estado_atencion_especifico = "Derivado a radiografía"
 
         atencion_dict = atencion.__dict__.copy()
+        atencion_dict["presion_arterial"] = atencion.presion_arterial
         atencion_dict["paciente_nombre"] = paciente.nombres_apellidos
         atencion_dict["paciente_edad"] = edad
         atencion_dict["paciente_dni"] = paciente.dni

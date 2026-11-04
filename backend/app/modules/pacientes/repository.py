@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import func, or_
@@ -70,6 +71,20 @@ class PacienteRepository:
 
     def listar_enfermedades(self) -> list[Enfermedad]:
         return self.db.query(Enfermedad).order_by(Enfermedad.nombre.asc()).all()
+
+    def obtener_ultimas_atenciones(self, paciente_ids: list[int]) -> dict[int, datetime]:
+        from app.modules.atenciones.models import AtencionMedica
+
+        if not paciente_ids:
+            return {}
+        return dict(
+            self.db.query(
+                AtencionMedica.paciente_id, func.max(AtencionMedica.fecha_registro)
+            )
+            .filter(AtencionMedica.paciente_id.in_(paciente_ids))
+            .group_by(AtencionMedica.paciente_id)
+            .all()
+        )
 
     def get_enfermedades_por_ids(self, enfermedad_ids: list[int]) -> list[Enfermedad]:
         if not enfermedad_ids:
