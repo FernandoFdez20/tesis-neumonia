@@ -3,6 +3,8 @@ import shutil
 import logging
 import enum
 import os
+import tempfile
+import math
 from pathlib import Path
 from typing import Optional
 from fastapi import HTTPException, UploadFile
@@ -29,6 +31,37 @@ UPLOAD_DIR = Path(
 )
 
 UMBRAL = 0.5
+
+
+def _comprobar_archivos(archivo_ap: Optional[UploadFile], archivo_pa: Optional[UploadFile]) -> dict:
+    """Valida todas las vistas antes de reemplazar archivos o filas existentes."""
+    with tempfile.TemporaryDirectory(prefix="validar_radiografias_") as temporal:
+        rutas = {}
+        for vista, archivo in (("AP", archivo_ap), ("PA", archivo_pa)):
+            if archivo is None:
+                continue
+            if Path(archivo.filename or "").suffix.lower() != ".dcm":
+                raise HTTPException(status_code=400, detail="Solo se admiten archivos DICOM (.dcm)")
+            datos = archivo.file.read(30 * 1024 * 1024 + 1)
+            archivo.file.seek(0)
+            if len(datos) > 30 * 1024 * 1024:
+                raise HTTPException(status_code=413, detail="Archivo demasiado grande (máx. 30 MB)")
+            ruta = Path(temporal) / f"{vista}.dcm"
+            ruta.write_bytes(datos)
+            try:
+                generar_vista_png(ruta)
+                preprocesar_imagen(ruta)
+            except Exception:
+                raise HTTPException(status_code=422, detail=f"No se pudo interpretar el archivo DICOM {vista}")
+            rutas[vista] = ruta
+        try:
+            resultados = _ejecutar_inferencia(rutas.get("AP"), rutas.get("PA"))
+        except Exception:
+            raise HTTPException(status_code=503, detail="No se pudo completar el análisis; intente nuevamente")
+        if any(v not in resultados or not math.isfinite(resultados[v])
+               or not 0 <= resultados[v] <= 1 for v in rutas):
+            raise HTTPException(status_code=503, detail="No se pudo completar el análisis; intente nuevamente")
+        return resultados
 
 
 def _guardar_archivo(archivo: UploadFile, subfolder: str) -> Path:
@@ -108,6 +141,7 @@ class DiagnosticoService:
         atencion = (
             self.atencion_repo.db.query(AtencionMedica)
             .filter_by(id=atencion_medica_id)
+            .with_for_update()
             .first()
         )
         if not atencion:
@@ -116,17 +150,15 @@ class DiagnosticoService:
 
         subfolder = str(atencion_medica_id)
 
-        # --- Limpiar historial anterior si ya existe diagnóstico ---
+        from app.modules.atenciones.estado import exigir_atencion_abierta
+        exigir_atencion_abierta(self.repo.db, atencion)
+        if not atencion.derivado_radiografia:
+            raise HTTPException(status_code=400, detail="La atención debe estar derivada a radiografía")
         diagnostico = self.repo.get_por_atencion(atencion_medica_id)
         if diagnostico:
-            # 1. Borrar filas de la BD
-            self.repo.limpiar_imagenes(diagnostico.id)
-            # 2. Borrar archivos físicos
-            dir_atencion = UPLOAD_DIR / subfolder
-            if dir_atencion.exists():
-                shutil.rmtree(dir_atencion)
-        else:
-            diagnostico = self.repo.crear_diagnostico(atencion_medica_id)
+            raise HTTPException(status_code=400, detail="El caso ya tiene un análisis radiográfico; no se permite sustituirlo")
+        resultados_crudos = _comprobar_archivos(archivo_ap, archivo_pa)
+        diagnostico = self.repo.crear_diagnostico(atencion_medica_id)
 
         # --- Guardar nuevas imágenes en disco ---
         ruta_ap: Optional[Path] = None
@@ -148,7 +180,6 @@ class DiagnosticoService:
                     f"No se pudo generar vista previa de {ruta.name}: {e}")
 
         # --- Ejecutar inferencia IA (independiente) ---
-        resultados_crudos = _ejecutar_inferencia(ruta_ap, ruta_pa)
         print(
             f"Diccionario de resultados crudos devueltos: {resultados_crudos}")
 
@@ -299,6 +330,16 @@ class DiagnosticoService:
             raise HTTPException(
                 status_code=400, detail="Este diagnóstico ya fue validado")
 
+        atencion = self.repo.db.query(AtencionMedica).filter_by(
+            id=diag.atencion_medica_id).with_for_update().first()
+        from app.modules.atenciones.estado import exigir_atencion_abierta
+        if not atencion:
+            raise HTTPException(status_code=404, detail="Atención no encontrada")
+        exigir_atencion_abierta(self.repo.db, atencion)
+        self.repo.db.refresh(diag)
+        if diag.estado_validacion != EstadoClinico.PendienteDeValidacion:
+            raise HTTPException(status_code=400, detail="El diagnóstico no está pendiente de validación")
+
         # Reglas Clínicas
         diag.clasificacion_medico = payload.clasificacion_medico
         diag.diagnostico_descripcion = payload.diagnostico_descripcion
@@ -325,7 +366,7 @@ class DiagnosticoService:
             paciente = self.paciente_repo.get_paciente_por_id(
                 atencion.paciente_id)
             if paciente:
-                self.paciente_repo.update_en_atencion(paciente, False)
+                paciente.en_atencion = False
 
         # Transaccionalidad
         try:

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, List
+from typing import Literal, Optional, List
 from datetime import datetime
 
 
@@ -36,5 +36,5 @@ class DiagnosticoResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 class DiagnosticoValidacionRequest(BaseModel):
-    clasificacion_medico: str = Field(..., description="'Neumonía', 'Sano' o 'Otro diagnóstico'")
+    clasificacion_medico: Literal["Neumonía", "Sano", "Otro diagnóstico"]
     diagnostico_descripcion: str = Field(..., description="Observaciones médicas")

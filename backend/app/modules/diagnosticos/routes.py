@@ -34,6 +34,8 @@ def evaluar_crb65(
     if not atencion:
         raise HTTPException(status_code=404, detail="Atención no encontrada")
     
+    from app.modules.atenciones.estado import exigir_atencion_abierta
+    exigir_atencion_abierta(db, atencion)
     # Buscar paciente para calcular edad
     paciente = db.query(Paciente).filter_by(id=atencion.paciente_id).first()
     edad_paciente = None
@@ -58,7 +60,7 @@ def vista_previa_radiografia(archivo: UploadFile = File(..., description="Archiv
     nombre = (archivo.filename or "").lower()
     if not nombre.endswith(".dcm"):
         raise HTTPException(status_code=400, detail="Solo se admiten archivos DICOM (.dcm).")
-    datos = archivo.file.read()
+    datos = archivo.file.read(30 * 1024 * 1024 + 1)
     if len(datos) > 30 * 1024 * 1024:
         raise HTTPException(status_code=413, detail="Archivo demasiado grande (máx. 30 MB).")
     try:

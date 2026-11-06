@@ -17,6 +17,7 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.modules.auth.models import Usuario
+from app.core.permisos import resolver_permisos
 
 
 def _rechazo(status: int, detalle: str) -> JSONResponse:
@@ -45,6 +46,8 @@ def _usuario_activo(token: str):
             return False, 403, "Usuario no encontrado"
         if not usuario.estado:
             return False, 400, "Usuario inactivo"
+        if not resolver_permisos(db, usuario).intersection({"resultados.ver", "historial.ver"}):
+            return False, 403, "No tiene permiso para consultar archivos clínicos"
     finally:
         db.close()
 
