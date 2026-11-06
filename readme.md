@@ -178,7 +178,6 @@ tesis-neumonia/
 │   └── *.py                  # Exploración, preparación y prueba
 ├── bd.sql                    # Esquema PostgreSQL
 ├── CONTEXTO_PROYECTO.md       # Contexto funcional, académico y técnico
-├── doc_acciones.md            # Bitácora de implementación
 └── AGENTS.md                 # Reglas de mantenimiento para agentes
 ```
 
@@ -396,7 +395,6 @@ El formulario de login usa `username` y `password`. Los campos multipart de carg
 | [Esquema de base de datos](bd.sql) | Tablas, relaciones y tipos PostgreSQL. |
 | [Notebooks](modelo/colab/) | Comparación de arquitecturas, entrenamiento y evaluación. |
 | [Particiones del dataset](modelo/splits/) | CSV de entrenamiento, validación y prueba. |
-| [Bitácora técnica](doc_acciones.md) | Implementaciones y verificaciones por entrega; incluye etapas históricas. |
 | [Reglas de mantenimiento](AGENTS.md) | Convenciones y contexto para trabajar en el repositorio con agentes. |
 
 El informe académico es **SCRUM_FERNANDEZ_FERNANDO.pdf**. Se mantiene como documento externo al repositorio; los resultados principales y la estructura del producto se resumen aquí.

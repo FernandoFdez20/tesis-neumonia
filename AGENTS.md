@@ -56,7 +56,6 @@ tesis-neumonia/
 │   ├── ui-rules.md
 │   ├── coding-style.md
 │   └── agent-workflow.md
-├── doc_acciones.md        <- Bitácora técnica de cada funcionalidad implementada
 ├── frontend/src/
 │   ├── pages/             <- Login, dashboard, pacientes, atenciones, radiografías, resultado, historial, usuarios
 │   ├── components/        <- UI shadcn y componentes por módulo
@@ -134,6 +133,8 @@ Ver el detalle y las fuentes en `CONTEXTO_PROYECTO.md`. Resumen crítico:
 - Backend FastAPI, JWT HS256 nativo, PostgreSQL.
 - Modelo IA separado por responsabilidad en `backend/app/ml/`, cargado una vez dentro de FastAPI; no es un microservicio independiente.
 - DNI 8 dígitos obligatorio como expediente (antes `expediente_id`).
+- Atención conserva motivo y fecha/hora seleccionadas, separados de la fecha de registro. Guardar progreso mantiene evaluación pendiente; solo Derivar activa `derivado_radiografia`. La migración conserva los estados históricos. Panel y API usan prioridad Baja/Moderada/Alta/Crítica; Leve es gravedad CRB-65.
+- Protección: alta valida rangos y coherencia de presión en backend; escrituras clínicas respetan etapa y cierre. Carga solo DICOM decodificable, con todas las predicciones válidas antes de persistir; no sustituye análisis existentes. Archivos requieren permisos efectivos de consulta. Alcance y pruebas en `REPORTE_PROTECCION.md`.
 - Carga de AP y/o PA, un archivo por vista. Resultado independiente en `diagnostico_imagenes`; referencia consolidada con la mayor probabilidad (`imagen_referencia_id`), sin promedio.
 - DenseNet121 v2 real, umbral 0.50, pesos en `modelo/modelos/densenet121_v2_best.pth`. La demostración usa un escenario clínico de prueba, no IA aleatoria.
 - Gravedad clínica mediante CRB-65; prioridad final Baja/Moderada/Alta/Crítica mediante seis combinaciones de CRB-65 y resultado IA. No modificar reglas médicas por iniciativa propia.
@@ -151,11 +152,11 @@ Flujo actual: login -> paciente -> atención/signos -> evaluación/derivación -
 
 Modelo final documentado: DenseNet121 v2, corrida `20261013_062105`, umbral 0.50. Prueba n=2.104: exactitud 94,49 %, sensibilidad 94,56 %, F1 93,23 %, AUC 0,9885. Dos notebooks de corrida contienen resultados coincidentes. El informe documenta seis escenarios aprobados y paridad de predicciones entre plataforma y notebook.
 
-La documentación reúne el informe, el código, los CSV, los resultados guardados de los notebooks y las verificaciones funcionales registradas en la bitácora. El plan de pulido de navegación, jerarquía visual, registro clínico, visor y contexto de navegación está completado. Las verificaciones deben indicar su alcance y distinguir las métricas del informe de las pruebas ejecutadas sobre cada versión.
+La documentación reúne el informe, el código, los CSV, los resultados guardados de los notebooks y las verificaciones funcionales registradas. El plan de pulido de navegación, jerarquía visual, registro clínico, visor y contexto de navegación está completado. Las verificaciones deben indicar su alcance y distinguir las métricas del informe de las pruebas ejecutadas sobre cada versión.
 
 Las diferencias históricas y los límites de evaluación se detallan en `CONTEXTO_PROYECTO.md`. Cualquier ampliación funcional requiere definir su alcance antes de implementarla; las recomendaciones opcionales no forman parte de los requisitos de cierre.
 
-La bitácora `doc_acciones.md` describe etapas históricas y no sustituye al contexto actualizado.
+
 
 ---
 
@@ -166,7 +167,6 @@ La bitácora `doc_acciones.md` describe etapas históricas y no sustituye al con
 3. `.ai/memory.md` - memoria personal local, si está disponible
 4. `.ai/instruccions.md` + `.ai/architecture.md` y reglas existentes pertinentes
 5. `bd.sql` + código del módulo afectado - verificar la implementación, no asumir columnas ni comportamiento
-6. `doc_acciones.md` - bitácora histórica
 
 **Para cualquier agente:** leer primero `AGENTS.md` y `CONTEXTO_PROYECTO.md`. No depender de que el PDF externo o la memoria local estén presentes en otro equipo. Mantén `AGENTS.md` < 10k tokens, `.ai/memory.md` < 2k tokens.
 

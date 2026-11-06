@@ -35,7 +35,6 @@ El sistema apoya al profesional. Su resultado automatizado es presuntivo, requie
 | --- | --- |
 | `SCRUM_FERNANDEZ_FERNANDO.pdf` | Metodología, evolución, alcance entregado, pruebas, modelo final, limitaciones e instrumento de aceptación. |
 | Código de frontend/backend, `bd.sql` y notebooks | Implementación presente y resultados guardados que pueden contrastarse con el informe. |
-| `doc_acciones.md` | Bitácora histórica; describe también etapas anteriores que ya no representan el producto actual. |
 
 Ruta local del informe: `C:\Users\Fernando\OneDrive - Catholic University Santo Toribio de Mogrovejo\TESIS\SCRUM_FERNANDEZ_FERNANDO.pdf` (157 páginas; presentación fechada el 15/10/2026). Este archivo está fuera del repositorio y puede no estar disponible en otros equipos. No asumir acceso a otros documentos de esa carpeta.
 
@@ -49,7 +48,7 @@ Referencias útiles dentro del PDF, por página física:
 - 147-151: resultados por objetivo.
 - 155-157: cuestionario TAM adaptado y hoja de resultados.
 
-La evidencia disponible comprende el informe, capturas, código, CSV, resultados guardados de notebooks y pruebas funcionales registradas en la bitácora. Las verificaciones del pulido se resumen en el apartado 12. Las métricas del modelo corresponden al entrenamiento y la evaluación documentados; los ajustes de interfaz no implican un nuevo entrenamiento.
+La evidencia disponible comprende el informe, capturas, código, CSV, resultados guardados de notebooks y pruebas funcionales registradas. Las verificaciones del pulido se resumen en el apartado 12. Las métricas del modelo corresponden al entrenamiento y la evaluación documentados; los ajustes de interfaz no implican un nuevo entrenamiento.
 
 ## 4. Usuarios y autorización
 
@@ -69,8 +68,8 @@ No existe autorregistro público de cuentas en el flujo actual. El alta requiere
 | --- | --- |
 | 1. Acceso | Iniciar sesión con una cuenta activa; habilitar navegación y acciones según rol/permisos. |
 | 2. Paciente | Buscar por DNI o registrar identificación, fecha de nacimiento, sexo y antecedentes. DNI de ocho dígitos y población adulta. |
-| 3. Atención | Seleccionar al paciente, registrar síntomas, signos vitales, evolución y confusión; calcular CRB-65 y conservar su desglose. Se controla que no exista otra atención activa del mismo paciente. |
-| 4. Evaluación | El especialista registra el examen físico; la interfaz ofrece guardar progreso o derivar a radiografía. |
+| 3. Atención | Seleccionar al paciente, registrar motivo de consulta, fecha/hora elegidas, síntomas, signos vitales, evolución y confusión; calcular CRB-65 y conservar su desglose. Se controla que no exista otra atención activa del mismo paciente. |
+| 4. Evaluación | El especialista registra el examen físico. Guardar progreso conserva las notas y mantiene Pendiente de evaluación; Derivar a radiografía registra una marca explícita independiente de las notas. |
 | 5. Radiografías | Elegir una atención derivada, cargar AP y/o PA, previsualizar e iniciar el análisis. La interfaz tiene un archivo por vista. |
 | 6. Inferencia | Preprocesar cada radiografía y ejecutar DenseNet121; guardar probabilidad, confianza y hallazgo de cada vista. |
 | 7. Prioridad | Elegir la imagen de referencia, combinar el veredicto con CRB-65 y guardar la prioridad y la regla aplicada. Los casos Alta/Crítica generan aviso persistente. |
@@ -80,7 +79,9 @@ No existe autorregistro público de cuentas en el flujo actual. El alta requiere
 
 **Paciente, atención y diagnóstico son entidades diferentes.** El paciente mantiene sus datos maestros; cada atención representa un episodio con datos clínicos propios; su diagnóstico reúne el análisis radiográfico y la revisión médica.
 
-Los estados operativos incluyen `Pendiente de evaluación`, `Derivado a radiografía`, `Diagnostico pendiente`, `Pendiente de validación` y `Validado`; también existe `Sin atención pendiente`. No todos son transiciones guardadas en una sola columna: la API deriva parte del estado visible usando atención, examen físico y diagnóstico. La atención tiene además su propio estado `En proceso` / `Finalizada`, y el paciente el indicador `en_atencion`.
+Los estados operativos incluyen `Pendiente de evaluación`, `Derivado a radiografía`, `Diagnostico pendiente`, `Pendiente de validación` y `Validado`; también existe `Sin atención pendiente`. No todos son transiciones guardadas en una sola columna: la API calcula el estado visible usando atención, `derivado_radiografia` y diagnóstico. La atención tiene además su propio estado `En proceso` / `Finalizada`, y el paciente el indicador `en_atencion`.
+
+`fecha_atencion` y `hora_atencion` conservan los valores locales elegidos en el formulario; `fecha_registro` mantiene la marca del sistema y el orden de registro. `motivo_consulta` se conserva separado de síntomas/observaciones. Los registros anteriores mantienen sus datos; cuando no existen los campos nuevos, las vistas usan la fecha de registro y el texto clínico histórico como respaldo. La migración `backend/scripts/migrar_adecuacion_funcional.py` agrega los campos sin inventar valores de captura anteriores y conserva las derivaciones históricas. Es idempotente y no reclasifica borradores en aplicaciones posteriores.
 
 ## 6. Reglas de resultado, gravedad y prioridad
 
@@ -207,12 +208,12 @@ La siguiente tabla conserva observaciones de la revisión inicial del 2026-11-04
 
 | Tema | Diferencia o límite de la implementación revisada |
 | --- | --- |
-| Formatos | Informe y selector mencionan JPG/PNG/DICOM; el preproceso de inferencia actual lee con pydicom. No dar por verificado el análisis de JPG/PNG. |
+| Formatos | La corrección de Protección alinea selector y API con el pipeline DICOM real; JPG/PNG se rechazan explícitamente para análisis. No se agregó soporte de inferencia para esos formatos. |
 | Vistas | Parte del informe dice AP requerida/PA opcional; el código exige al menos una de AP o PA. |
-| Panel | El informe habla de totales/positivos; el panel actual cuenta prioridades pendientes. Además usa `Leve` donde la API devuelve `Baja`, diferencia relevante para ese contador. |
-| Evaluación y derivación | Las acciones guardar progreso y derivar terminan guardando el examen físico; el estado visible se deduce de su existencia. Revisar antes de afirmar que ambas transiciones son independientes. |
-| Validaciones | DNI/adulto tienen validación en backend; varios rangos de signos vitales están en frontend y no tienen la misma exigencia en los esquemas de atención. |
-| Archivos clínicos | `/uploads` exige JWT y usuario activo por parámetro de consulta; esa comprobación por sí sola no aplica la misma resolución de permisos clínicos que los endpoints. |
+| Panel | El informe habla de totales/positivos; el panel cuenta prioridades pendientes. La discrepancia histórica `Leve`/`Baja` se corrigió en adecuación funcional: API y panel usan Baja/Moderada/Alta/Crítica. `Leve` permanece como gravedad CRB-65. |
+| Evaluación y derivación | Corregido en adecuación funcional: guardar notas no deriva; la derivación se registra explícitamente. La migración conserva el estado visible de los casos anteriores. |
+| Validaciones | Corregido en Protección: el alta aplica los rangos de captura de frontend y coherencia SYS/DIA en backend; el servidor calcula CRB-65. |
+| Archivos clínicos | Corregido en Protección: `/uploads` exige JWT, cuenta activa y permisos efectivos resultados.ver o historial.ver. Admin y usuarios con ambos permisos revocados reciben 403. |
 | Antecedentes | Backend mantiene catálogo y relación con enfermedades; el diálogo actual presenta listas locales y envía antecedentes como texto. No asumir que esa UI consume el catálogo dinámico antiguo. |
 
 ## 11. Criterio para las próximas tareas
@@ -255,6 +256,18 @@ El plan de pulido también comprende las mejoras del visor de radiografías y de
 - Integración ASGI/PostgreSQL con dos flujos de inferencia real, normal y positivo, en un esquema aislado revertido al terminar; conservación de los datos de demostración.
 - Revisión de navegación, búsqueda entre vistas, paginación, estado vacío, evaluación, carga, validación, gráfico plegable y resumen del caso.
 - Revisión del formulario clínico en escritorio y 390 × 844, con unidades, errores de validación, enfoque y cancelación sin guardar registros.
-- La descarga de un nuevo PDF no quedó comprobada automáticamente. Las limitaciones de ESLint preexistentes se detallan en la bitácora.
+- La descarga de un nuevo PDF no quedó comprobada automáticamente. Las limitaciones de ESLint preexistentes se documentan en el contexto de la revisión.
 
 Las comprobaciones corresponden a las entregas registradas; no sustituyen una prueba de regresión de cada versión posterior. Las ampliaciones de corrección/anulación y trazabilidad de eventos quedan fuera del alcance funcional aprobado.
+
+## 13. Corrección de adecuación funcional (2026-11-04)
+
+Se corrigieron la omisión de motivo/fecha/hora en el envío y almacenamiento de atenciones, la derivación involuntaria al guardar progreso y el contador de prioridad Baja. Las vistas clínicas y el PDF recuperan los datos nuevos; los síntomas y observaciones mantienen su almacenamiento y consulta existentes. Sin cambios de modelo, CRB-65 ni reglas de prioridad.
+
+Verificación: compilación TypeScript/Vite; nueve pruebas frontend de envío, fecha local, panel renderizado, resumen, contenido PDF, estados y permisos; ocho pruebas backend sobre PostgreSQL aislado, incluida la regresión con dos DICOM reales (normal y positivo), guardado, derivación, validación e historial. Las pruebas contrastan los datos ingresados con alta, detalle, listado e historial y comprueban la migración e idempotencia. La migración local conserva exactamente los datos previos de las nueve tablas y las diez atenciones existentes. El panel abierto en Brave muestra la categoría Baja y su conteo. Estas verificaciones corresponden a esta corrección; los hallazgos de otros criterios de la evaluación permanecen fuera de su alcance.
+
+## 14. Protección (2026-11-04)
+
+El alta aplica rangos de captura y coherencia de presión en backend. Solo admite estado inicial En proceso y calcula el CRB-65 sin aceptar un resultado impuesto por el cliente. Evaluación, carga y validación comprueban etapa/cierre; la carga exige derivación y no sustituye análisis existentes. Todas las vistas DICOM y sus predicciones se validan en temporal antes de persistir. Archivos corruptos, formatos no soportados y archivos mayores de 30 MiB se rechazan explícitamente. `/uploads` consulta permisos efectivos actuales. El cierre del paciente y diagnóstico se confirma conjuntamente. No requiere migración adicional.
+
+Reporte: `REPORTE_PROTECCION.md`, con riesgos, archivos cambiados, escenarios/HTTP esperados, cambios visibles y límites. Verificación aprobada: 15 pruebas backend en PostgreSQL aislado (siete de Protección, siete de adecuación y regresión con dos DICOM reales), nueve frontend y compilación. Incluye permisos revocados con token vigente y entrega HTTP de archivo sintético, caso validado, rangos, archivos corruptos/grandes y fallo de inferencia simulado. No se ensayó carga concurrente, fallos de disco ni despliegue TLS/cifrado; no se repitió el recorrido de navegador. Los resultados históricos de evaluaciones previas se conservan como evidencia de la versión evaluada.
