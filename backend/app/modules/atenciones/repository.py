@@ -14,6 +14,9 @@ class AtencionMedicaRepository:
         db_atencion = AtencionMedica(
             paciente_id=atencion_in.paciente_id,
             usuario_id=usuario_id,
+            fecha_atencion=atencion_in.fecha_atencion,
+            hora_atencion=atencion_in.hora_atencion,
+            motivo_consulta=atencion_in.motivo_consulta,
             temperatura=atencion_in.temperatura,
             frecuencia_cardiaca=atencion_in.frecuencia_cardiaca,
             frecuencia_respiratoria=atencion_in.frecuencia_respiratoria,
@@ -61,7 +64,7 @@ class AtencionMedicaRepository:
                 if diag:
                     val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
                     estado_atencion_especifico = val if val else "Pendiente de validación"
-                elif atencion.examen_fisico:
+                elif atencion.derivado_radiografia:
                     estado_atencion_especifico = "Derivado a radiografía"
             
             atencion_dict = atencion.__dict__.copy()
@@ -94,7 +97,7 @@ class AtencionMedicaRepository:
                 if diag:
                     val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
                     estado_atencion_especifico = val if val else "Pendiente de validación"
-                elif atencion.examen_fisico:
+                elif atencion.derivado_radiografia:
                     estado_atencion_especifico = "Derivado a radiografía"
                     
             atencion_dict = atencion.__dict__.copy()
@@ -134,7 +137,7 @@ class AtencionMedicaRepository:
             if diag:
                 val = getattr(diag.estado_validacion, 'value', str(diag.estado_validacion))
                 estado_atencion_especifico = val if val else "Pendiente de validación"
-            elif atencion.examen_fisico:
+            elif atencion.derivado_radiografia:
                 estado_atencion_especifico = "Derivado a radiografía"
 
         atencion_dict = atencion.__dict__.copy()
@@ -146,10 +149,13 @@ class AtencionMedicaRepository:
         atencion_dict["paciente_estado_clinico"] = estado_atencion_especifico
         return atencion_dict
 
-    def update_atencion_evaluacion(self, atencion: AtencionMedica, examen_fisico: str, estado_final: str = None) -> AtencionMedica:
+    def update_atencion_evaluacion(
+        self, atencion: AtencionMedica, examen_fisico: str, derivar: bool = False
+    ) -> AtencionMedica:
         atencion.examen_fisico = examen_fisico
-        if estado_final:
-            atencion.estado = estado_final
+        # Guardar notas no deriva ni revoca una derivación ya registrada.
+        if derivar:
+            atencion.derivado_radiografia = True
         self.db.commit()
         self.db.refresh(atencion)
         return atencion

@@ -1,5 +1,5 @@
 import api from "@/lib/api"
-import type { DiagnosticoResponse } from "@/types/diagnostico"
+import type { DiagnosticoResponse, Prioridad } from "@/types/diagnostico"
 
 /**
  * Sube las radiografías AP y/o PA de una atención médica.
@@ -46,12 +46,12 @@ export async function validarDiagnostico(
 }
 
 export type PrioridadesPendientesResponse = {
-  conteos: Record<string, number>
+  conteos: Record<Prioridad, number>
   casos: Array<{
     diagnostico_id: number
     atencion_medica_id: number
     paciente_nombre: string
-    prioridad_final: string
+    prioridad_final: Prioridad
     created_at: string
     crb65_puntaje?: number | null
     edad?: number | null

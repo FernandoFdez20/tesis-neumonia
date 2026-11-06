@@ -1,6 +1,7 @@
 import enum
 from sqlalchemy import (
     Column,
+    Date,
     DateTime,
     Enum as SQLAlchemyEnum,
     ForeignKey,
@@ -8,6 +9,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    Time,
     Boolean,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -38,6 +40,8 @@ class AtencionMedica(Base):
     )
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     fecha_registro = Column(DateTime, default=func.now())
+    fecha_atencion = Column(Date, nullable=True)
+    hora_atencion = Column(Time, nullable=True)
 
     temperatura = Column(Numeric(4, 2), nullable=True)
     frecuencia_cardiaca = Column(Integer, nullable=True)
@@ -48,8 +52,10 @@ class AtencionMedica(Base):
     tiempo_evolucion_dias = Column(Integer, nullable=True)
     
     # Clínico
+    motivo_consulta = Column(Text, nullable=True)
     sintomas_principales = Column(Text, nullable=True)
     examen_fisico = Column(Text, nullable=True)
+    derivado_radiografia = Column(Boolean, nullable=False, default=False, server_default="false")
     confusion = Column(Boolean, default=False)
     
     # CRB-65

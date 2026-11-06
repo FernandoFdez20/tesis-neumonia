@@ -3,6 +3,7 @@ import { ClipboardList, User } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { AtencionResponse } from "@/services/atenciones.service"
+import { obtenerFechaHoraAtencion, obtenerMotivoConsulta } from "@/lib/datos-atencion"
 
 function capitalizar(texto: string | null | undefined): string {
   if (!texto) return "—"
@@ -18,6 +19,8 @@ function fechaCorta(fecha: string | null | undefined): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(d)
 }
 
@@ -94,7 +97,7 @@ export function InfoPacienteAtencion({ atencion }: { atencion: AtencionResponse 
           <div className="text-right shrink-0">
             <Etiqueta>Ingreso</Etiqueta>
             <p className="mt-0.5 text-xs font-semibold text-foreground">
-              {fechaCorta(atencion.fecha_registro)}
+              {fechaCorta(obtenerFechaHoraAtencion(atencion))}
             </p>
           </div>
         </div>
@@ -125,7 +128,7 @@ export function InfoPacienteAtencion({ atencion }: { atencion: AtencionResponse 
           <div className="border-l-2 border-primary/20 pl-2.5">
             <Etiqueta>Motivo de consulta</Etiqueta>
             <p className="mt-1 text-xs text-foreground/80 leading-relaxed italic">
-              "{atencion.sintomas_principales || "No registrado"}"
+              "{obtenerMotivoConsulta(atencion) || "No registrado"}"
             </p>
           </div>
           <div className="border-l-2 border-primary/20 pl-2.5">
@@ -134,6 +137,12 @@ export function InfoPacienteAtencion({ atencion }: { atencion: AtencionResponse 
               {atencion.examen_fisico || "No registrado"}
             </p>
           </div>
+        </div>
+        <div className="border-l-2 border-primary/20 pl-2.5">
+          <Etiqueta>Síntomas y observaciones</Etiqueta>
+          <p className="mt-1 text-xs text-foreground/80 leading-relaxed whitespace-pre-line">
+            {atencion.sintomas_principales || "No registrados"}
+          </p>
         </div>
       </CardContent>
     </Card>

@@ -31,6 +31,10 @@ class AtencionMedicaService:
                 except ValueError:
                     pass
 
+        # El resultado calculado no se acepta desde el cliente.
+        atencion_in.crb65_puntaje = None
+        atencion_in.crb65_gravedad = None
+        atencion_in.crb65_detalle = None
         # Calcular CRB-65 si tenemos los datos necesarios
         if (atencion_in.frecuencia_respiratoria is not None and 
             atencion_in.presion_sistolica is not None and 
@@ -83,21 +87,30 @@ class AtencionMedicaService:
     def evaluar_atencion(self, atencion_id: int, examen_fisico: str, accion: str) -> dict:
         from app.modules.atenciones.models import AtencionMedica
         
-        atencion = self.repo.db.query(AtencionMedica).filter(AtencionMedica.id == atencion_id).first()
+        atencion = self.repo.db.query(AtencionMedica).filter(AtencionMedica.id == atencion_id).with_for_update().first()
         if not atencion:
             raise HTTPException(status_code=404, detail="Atención no encontrada")
+        from app.modules.atenciones.estado import exigir_atencion_abierta
+        from app.modules.diagnosticos.models import Diagnostico
+        exigir_atencion_abierta(self.repo.db, atencion)
+        if self.repo.db.query(Diagnostico).filter_by(atencion_medica_id=atencion.id).first():
+            raise HTTPException(status_code=400, detail="La evaluación ya tiene un análisis radiográfico")
             
         paciente = self.paciente_repo.get_paciente_por_id(atencion.paciente_id)
         if not paciente:
             raise HTTPException(status_code=404, detail="Paciente no encontrado")
             
-        if accion == "derivar_radiografia":
-            # Solo guarda el examen físico; la atención permanece "En proceso"
-            # hasta el alta definitiva del paciente.
-            self.repo.update_atencion_evaluacion(atencion, examen_fisico)
-        elif accion == "guardar_progreso":
-            self.repo.update_atencion_evaluacion(atencion, examen_fisico)
-        else:
+        if accion not in {"guardar_progreso", "derivar_radiografia"}:
             raise HTTPException(status_code=400, detail="Acción no válida")
+
+        if accion == "derivar_radiografia" and len(examen_fisico.strip()) < 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Ingrese un examen físico más detallado antes de derivar",
+            )
+
+        self.repo.update_atencion_evaluacion(
+            atencion, examen_fisico, derivar=accion == "derivar_radiografia"
+        )
             
         return self.get_atencion_por_id(atencion_id)

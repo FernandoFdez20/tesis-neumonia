@@ -1,4 +1,5 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerFechaHoraAtencion, obtenerMotivoConsulta } from "@/lib/datos-atencion"
 import { useEffect, useState, useMemo } from "react"
 import {
   Activity,
@@ -140,7 +141,7 @@ function AtencionCard(props: AccionesAtencion) {
       <CardContent className="space-y-4 pb-3">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground/80">
           <CalendarClock className="size-4" />
-          {formatearFecha(atencion.fecha_registro)}
+          {formatearFecha(obtenerFechaHoraAtencion(atencion))}
         </div>
 
         <div className="space-y-3">
@@ -177,7 +178,7 @@ function AtencionCard(props: AccionesAtencion) {
             Motivo de consulta
           </div>
           <p className="text-sm font-medium text-foreground/80 line-clamp-2">
-            {atencion.sintomas_principales || "Sin registrar"}
+            {obtenerMotivoConsulta(atencion) || "Sin registrar"}
           </p>
         </div>
       </CardContent>
@@ -227,7 +228,8 @@ export function AtencionesList() {
       const coincideBusqueda =
         (atencion.paciente_nombre || "").toLowerCase().includes(textoBusqueda) ||
         String(atencion.id).includes(busqueda) ||
-        (atencion.sintomas_principales || "").toLowerCase().includes(textoBusqueda)
+        (atencion.sintomas_principales || "").toLowerCase().includes(textoBusqueda) ||
+        (atencion.motivo_consulta || "").toLowerCase().includes(textoBusqueda)
       const coincideEstado =
         estadoFiltro === "todos" || atencion.estado === estadoFiltro
       const coincideSaturacion =
@@ -349,7 +351,7 @@ export function AtencionesList() {
                     <p className="whitespace-normal font-medium">{atencion.paciente_nombre || `Paciente ${atencion.paciente_id}`}</p>
                     <p className="mt-1 font-mono text-xs text-muted-foreground">AT-{String(atencion.id).padStart(4, "0")}</p>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{formatearFecha(atencion.fecha_registro)}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{formatearFecha(obtenerFechaHoraAtencion(atencion))}</TableCell>
                   <TableCell className="tabular-nums">{atencion.presion_arterial || "--"}</TableCell>
                   <TableCell className="tabular-nums">{atencion.frecuencia_cardiaca ?? "--"}</TableCell>
                   <TableCell className="tabular-nums">{atencion.frecuencia_respiratoria ?? "--"}</TableCell>

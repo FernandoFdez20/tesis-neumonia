@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 
 import { urlConToken } from "@/lib/archivos"
+import { obtenerFechaHoraAtencion, obtenerMotivoConsulta } from "@/lib/datos-atencion"
 import type { AtencionResponse } from "@/services/atenciones.service"
 import type { DiagnosticoResponse, DiagnosticoImagen } from "@/types/diagnostico"
 
@@ -25,17 +26,6 @@ function fechaLarga(fecha: string | null | undefined): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(d)
-}
-
-function fechaCorta(fecha: string | null | undefined): string {
-  if (!fecha) return "—"
-  const d = new Date(fecha)
-  if (Number.isNaN(d.getTime())) return "—"
-  return new Intl.DateTimeFormat("es-PE", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
   }).format(d)
 }
 
@@ -162,8 +152,9 @@ export async function generarReportePdf(
   ])
 
   seccion("2. Atencion y signos vitales", [
-    ["Fecha de atencion", fechaCorta(atencion?.fecha_registro)],
-    ["Motivo de consulta", atencion?.sintomas_principales ?? "—"],
+    ["Fecha y hora de atencion", atencion ? fechaLarga(obtenerFechaHoraAtencion(atencion)) : "—"],
+    ["Motivo de consulta", atencion ? obtenerMotivoConsulta(atencion) ?? "—" : "—"],
+    ["Sintomas y observaciones", atencion?.sintomas_principales ?? "—"],
     ["Temperatura", atencion?.temperatura != null ? `${atencion.temperatura} °C` : "—"],
     ["Frecuencia cardiaca", atencion?.frecuencia_cardiaca != null ? `${atencion.frecuencia_cardiaca} lpm` : "—"],
     ["Frecuencia respiratoria", atencion?.frecuencia_respiratoria != null ? `${atencion.frecuencia_respiratoria} rpm` : "—"],

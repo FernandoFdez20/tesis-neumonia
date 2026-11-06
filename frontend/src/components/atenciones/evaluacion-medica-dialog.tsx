@@ -1,4 +1,5 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerFechaHoraAtencion, obtenerMotivoConsulta } from "@/lib/datos-atencion"
 import { useEffect, useState } from "react"
 import { Activity, Thermometer, HeartPulse, Wind, Save, ArrowRight } from "lucide-react"
 
@@ -115,8 +116,16 @@ export function EvaluacionMedicaDialog({
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Motivo de consulta</h4>
             <div className="text-sm bg-muted/20 p-3 rounded-lg border border-border/50">
-              {atencion.sintomas_principales || "No se registró motivo de consulta"}
+              {obtenerMotivoConsulta(atencion) || "No se registró motivo de consulta"}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Atención: {new Date(obtenerFechaHoraAtencion(atencion)).toLocaleString("es-PE", { dateStyle: "short", timeStyle: "short" })}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Síntomas y observaciones</h4>
+            <p className="text-sm whitespace-pre-line">{atencion.sintomas_principales || "No registrados"}</p>
           </div>
 
           {/* Signos vitales */}

@@ -1,4 +1,5 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerFechaHoraAtencion } from "@/lib/datos-atencion"
 import { useEffect, useState, useMemo } from "react"
 import { CalendarClock, Search, Upload, Activity } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -58,7 +59,7 @@ function RadiografiaCard({ atencion }: { atencion: AtencionResponse }) {
       <CardContent className="space-y-4 pb-3">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground/80">
           <CalendarClock className="size-4" />
-          Derivado el: {formatearFecha(atencion.fecha_registro)}
+          Atención del: {formatearFecha(obtenerFechaHoraAtencion(atencion))}
         </div>
       </CardContent>
 

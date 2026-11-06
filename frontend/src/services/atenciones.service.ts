@@ -34,6 +34,10 @@ export type AtencionResponse = {
   paciente_estado_clinico?: string
   usuario_id: number
   fecha_registro: string
+  fecha_atencion?: string | null
+  hora_atencion?: string | null
+  motivo_consulta?: string | null
+  derivado_radiografia?: boolean
   temperatura?: number | null
   frecuencia_cardiaca?: number | null
   frecuencia_respiratoria?: number | null
@@ -55,8 +59,6 @@ export type AtencionResponse = {
 export async function registrarAtencion(
   atencion: CrearAtencionRequest
 ): Promise<AtencionResponse> {
-  console.info("Registrando atención médica en DB", atencion)
-
   // 1. Obtener paciente por DNI para sacar el paciente_id
   const pacienteRes = await api.get(`/pacientes/dni/${atencion.documento_paciente}`)
   const pacienteId = pacienteRes.data.id
@@ -64,6 +66,9 @@ export async function registrarAtencion(
   // 2. Mapear al schema del backend (AtencionMedicaCreate)
   const payload = {
     paciente_id: pacienteId,
+    fecha_atencion: atencion.fecha_atencion,
+    hora_atencion: atencion.hora_atencion,
+    motivo_consulta: atencion.motivo_consulta,
     temperatura: parseFloat(atencion.temperatura),
     frecuencia_cardiaca: parseInt(atencion.frecuencia_cardiaca),
     frecuencia_respiratoria: parseInt(atencion.frecuencia_respiratoria),

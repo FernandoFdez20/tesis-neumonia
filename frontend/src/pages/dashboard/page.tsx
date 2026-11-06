@@ -7,9 +7,10 @@ import { RecentAttentionsTable } from "@/components/dashboard/recent-attentions-
 import { PriorityCases } from "@/components/dashboard/priority-cases"
 import { getPrioridadesPendientes } from "@/services/diagnosticos.service"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
+import { PRIORIDADES, type Prioridad } from "@/types/diagnostico"
 
-const prioridadColors: Record<string, string> = {
-  "Leve": "bg-green-500/10 text-green-700 border-green-500/20",
+const prioridadColors: Record<Prioridad, string> = {
+  "Baja": "bg-green-500/10 text-green-700 border-green-500/20",
   "Moderada": "bg-amber-500/10 text-amber-700 border-amber-500/20",
   "Alta": "bg-orange-500/10 text-orange-700 border-orange-500/20",
   "Crítica": "bg-red-500/10 text-red-700 border-red-500/20",
@@ -29,7 +30,7 @@ export default function DashboardPage() {
   // (notificaciones persistentes en BD) y en la tarjeta de abajo.
   if (isLoading) return <DashboardSkeleton />
 
-  const conteos = prioridades?.conteos || { "Leve": 0, "Moderada": 0, "Alta": 0, "Crítica": 0 }
+  const conteos = prioridades?.conteos || { "Baja": 0, "Moderada": 0, "Alta": 0, "Crítica": 0 }
 
   return (
     <div className="min-w-0 space-y-6">
@@ -43,7 +44,7 @@ export default function DashboardPage() {
 
 
       <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>div]:min-w-0" delay={80}>
-        {["Leve", "Moderada", "Alta", "Crítica"].map((prio, index) => (
+        {PRIORIDADES.map((prio, index) => (
           <StaggerItem key={prio} index={index}>
             <div className={`rounded-xl border p-4 shadow-sm transition-all hover:shadow-md ${prioridadColors[prio]}`}>
               <div className="flex items-center justify-between">

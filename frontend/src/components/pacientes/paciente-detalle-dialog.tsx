@@ -1,4 +1,5 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerFechaHoraAtencion, obtenerMotivoConsulta } from "@/lib/datos-atencion"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CalendarClock, ChevronRight, User } from "lucide-react"
@@ -47,7 +48,7 @@ export function capitalizar(texto: string | null | undefined): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
-function formatearFecha(fecha: string | null | undefined): string {
+function formatearFecha(fecha: string | null | undefined, conHora = false): string {
   if (!fecha) return "—"
   const d = new Date(fecha)
   if (Number.isNaN(d.getTime())) return "—"
@@ -55,6 +56,7 @@ function formatearFecha(fecha: string | null | undefined): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    ...(conHora ? { hour: "2-digit", minute: "2-digit" } as const : {}),
   }).format(d)
 }
 
@@ -214,10 +216,10 @@ export function PacienteDetalleDialog({
                       <CalendarClock className="size-4 shrink-0 text-muted-foreground/60" />
                       <div className="min-w-0">
                         <p className="font-mono text-xs font-bold text-muted-foreground">
-                          AT-{String(a.id).padStart(4, "0")} · {formatearFecha(a.fecha_registro)}
+                          AT-{String(a.id).padStart(4, "0")} · {formatearFecha(obtenerFechaHoraAtencion(a), true)}
                         </p>
                         <p className="text-xs text-muted-foreground/80 truncate">
-                          {a.sintomas_principales || "Sin motivo registrado"}
+                          {obtenerMotivoConsulta(a) || "Sin motivo registrado"}
                         </p>
                         {dx && (
                           <div className="mt-1.5 flex flex-wrap gap-1.5">

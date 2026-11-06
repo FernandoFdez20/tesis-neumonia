@@ -1,4 +1,5 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerFechaHoraAtencion } from "@/lib/datos-atencion"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
@@ -107,7 +108,7 @@ export function RecentAttentionsTable() {
                     {attention.paciente_edad} a.
                   </TableCell>
                   <TableCell className="tabular-nums text-muted-foreground/70">
-                    {new Date(attention.fecha_registro).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {new Date(obtenerFechaHoraAtencion(attention)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell max-w-[220px] truncate text-muted-foreground/70">
                     {attention.sintomas_principales || attention.examen_fisico || "Sin evaluación"}

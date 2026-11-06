@@ -162,6 +162,8 @@ class RegresionFlujoClinico(unittest.TestCase):
                                               "frecuencia_cardiaca": 100, "frecuencia_respiratoria": 32,
                                               "saturacion_o2": 90, "presion_arterial": "85/55",
                                               "tiempo_evolucion_dias": 3, "confusion": True,
+                                              "fecha_atencion": "2026-10-22", "hora_atencion": "14:39",
+                                              "motivo_consulta": "Disnea de esfuerzo y fiebre persistente",
                                               "sintomas_principales": "Caso sintético de regresión"})
                                     aid = atencion["id"]
                                     peticion("POST", "/atenciones/", "Enfermera", esperado=400,
@@ -170,6 +172,11 @@ class RegresionFlujoClinico(unittest.TestCase):
                                     self.assertEqual(detalle["presion_arterial"], "85/55")
                                     self.assertEqual(detalle["paciente_estado_clinico"], "Pendiente de evaluación")
                                     self.assertEqual(detalle["crb65_puntaje"], 4)
+                                    progreso = peticion("PATCH", f"/atenciones/{aid}/evaluar", "Especialista",
+                                        json={"examen_fisico": "Borrador sintético para completar",
+                                              "accion": "guardar_progreso"})
+                                    self.assertEqual(progreso["paciente_estado_clinico"], "Pendiente de evaluación")
+                                    self.assertFalse(progreso["derivado_radiografia"])
                                     evaluacion = {"examen_fisico": "Examen sintético para regresión",
                                                   "accion": "derivar_radiografia"}
                                     peticion("PATCH", f"/atenciones/{aid}/evaluar", "Enfermera",
@@ -177,6 +184,7 @@ class RegresionFlujoClinico(unittest.TestCase):
                                     derivada = peticion("PATCH", f"/atenciones/{aid}/evaluar",
                                                        "Especialista", json=evaluacion)
                                     self.assertEqual(derivada["paciente_estado_clinico"], "Derivado a radiografía")
+                                    self.assertTrue(derivada["derivado_radiografia"])
                                     diagnostico = peticion("POST", f"/diagnosticos/atenciones/{aid}/radiografias",
                                         "Enfermera", files={"archivo_ap": ("prueba.dcm", muestra.read_bytes(),
                                                                           "application/dicom")})
@@ -199,6 +207,12 @@ class RegresionFlujoClinico(unittest.TestCase):
                                              esperado=400, json=validacion)
                                     cerrado = peticion("GET", f"/atenciones/{aid}", "Especialista")
                                     self.assertEqual(cerrado["estado"], "Finalizada")
+                                    for recuperada in (detalle, progreso, derivada, cerrado):
+                                        self.assertEqual(recuperada["motivo_consulta"], atencion["motivo_consulta"])
+                                        self.assertEqual(recuperada["fecha_atencion"], "2026-10-22")
+                                        self.assertEqual(recuperada["hora_atencion"], "14:39:00")
+                                        self.assertEqual(recuperada["sintomas_principales"], atencion["sintomas_principales"])
+                                        self.assertEqual(recuperada["fecha_registro"], atencion["fecha_registro"])
                                     datos = peticion("GET", f"/pacientes/{creado['id']}", "Especialista")
                                     self.assertFalse(datos["en_atencion"])
                                     self.assertIsNotNone(datos["ultima_atencion"])
@@ -209,6 +223,9 @@ class RegresionFlujoClinico(unittest.TestCase):
                                 historial = peticion("GET", f"/atenciones/paciente/{creado['id']}", "Especialista")
                                 self.assertEqual(len(historial), 2)
                                 self.assertTrue(all(a["presion_arterial"] == "85/55" for a in historial))
+                                self.assertTrue(all(a["motivo_consulta"] == "Disnea de esfuerzo y fiebre persistente"
+                                                    and a["fecha_atencion"] == "2026-10-22"
+                                                    and a["hora_atencion"] == "14:39:00" for a in historial))
                 finally:
                     app.dependency_overrides.clear()
                     transaccion.rollback()

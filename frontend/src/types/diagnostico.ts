@@ -1,3 +1,6 @@
+export const PRIORIDADES = ["Baja", "Moderada", "Alta", "Crítica"] as const
+export type Prioridad = typeof PRIORIDADES[number]
+
 export interface DiagnosticoImagen {
   id: number
   diagnostico_id: number

@@ -1,9 +1,11 @@
 import { obtenerEstiloEstadoClinico } from "@/lib/estado-clinico"
+import { obtenerMotivoConsulta } from "@/lib/datos-atencion"
 import { useState, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
 import { UploadCloud, FileImage, X, Play, ArrowLeft, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner"
+import { isAxiosError } from "axios"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -63,7 +65,7 @@ export default function CargarRadiografiaPage() {
       }
     } catch {
       if (secuenciaPreview.current[tipo] === secuencia) {
-        toast.error("No se pudo previsualizar el DICOM. Se analizará al iniciar el análisis.")
+        toast.error("No se pudo previsualizar el DICOM. Verifique que el archivo sea válido.")
       }
     } finally {
       if (secuenciaPreview.current[tipo] === secuencia) setCargando(false)
@@ -145,9 +147,8 @@ export default function CargarRadiografiaPage() {
   }, [atencionId, navigate])
 
   const validarArchivo = (file: File) => {
-    const isImage = file.type.startsWith('image/')
-    const isDicom = file.name.toLowerCase().endsWith('.dcm') || file.type === 'application/dicom'
-    if (!isImage && !isDicom) {
+    const isDicom = file.name.toLowerCase().endsWith('.dcm')
+    if (!isDicom) {
       toast.error(`Formato no válido: ${file.name}`)
       return false
     }
@@ -191,7 +192,8 @@ export default function CargarRadiografiaPage() {
       toast.success("Radiografías guardadas correctamente.")
       navigate(PATHS.RADIOGRAPHY)
     } catch (error) {
-      toast.error("Error al cargar las imágenes. Intente nuevamente.")
+      const detalle = isAxiosError(error) ? error.response?.data?.detail : null
+      toast.error(typeof detalle === "string" ? detalle : "Error al cargar las imágenes. Intente nuevamente.")
     } finally {
       setProcesando(false)
     }
@@ -222,7 +224,7 @@ export default function CargarRadiografiaPage() {
               Cargar Radiografías
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Suba las imágenes DICOM o estándar para iniciar el diagnóstico IA.
+              Suba las imágenes DICOM (.dcm) para iniciar el diagnóstico IA.
             </p>
           </div>
         </div>
@@ -263,7 +265,7 @@ export default function CargarRadiografiaPage() {
         </div>
         <div className="text-sm bg-background p-3 rounded-xl border max-w-sm w-full">
           <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground block mb-1">Motivo de consulta</span>
-          <span className="font-medium text-foreground/80 line-clamp-2">{atencion.sintomas_principales || "No registrado"}</span>
+          <span className="font-medium text-foreground/80 line-clamp-2">{obtenerMotivoConsulta(atencion) || "No registrado"}</span>
         </div>
       </div>
 
@@ -293,10 +295,10 @@ export default function CargarRadiografiaPage() {
                     : "border-primary/20 hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
                 }`}
               >
-                <input type="file" ref={inputRefAP} className="hidden" accept="image/jpeg, image/png, .dcm, application/dicom" onChange={(e) => handleFileChange(e, "AP")} disabled={procesando || ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "")} />
+                <input type="file" ref={inputRefAP} className="hidden" accept=".dcm, application/dicom" onChange={(e) => handleFileChange(e, "AP")} disabled={procesando || ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "")} />
                 <UploadCloud className="size-12 text-muted-foreground/40 mb-4" />
                 <p className="font-medium text-foreground">Seleccionar vista AP</p>
-                <p className="text-xs text-muted-foreground mt-1">DICOM, JPG o PNG</p>
+                <p className="text-xs text-muted-foreground mt-1">DICOM (.dcm)</p>
               </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center relative bg-muted/10 rounded-xl border p-4 group">
@@ -344,10 +346,10 @@ export default function CargarRadiografiaPage() {
                     : "border-primary/20 hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
                 }`}
               >
-                <input type="file" ref={inputRefPA} className="hidden" accept="image/jpeg, image/png, .dcm, application/dicom" onChange={(e) => handleFileChange(e, "PA")} disabled={procesando || ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "")} />
+                <input type="file" ref={inputRefPA} className="hidden" accept=".dcm, application/dicom" onChange={(e) => handleFileChange(e, "PA")} disabled={procesando || ["Pendiente de validación", "Validado"].includes(atencion.paciente_estado_clinico || "")} />
                 <UploadCloud className="size-12 text-muted-foreground/40 mb-4" />
                 <p className="font-medium text-foreground">Seleccionar vista PA</p>
-                <p className="text-xs text-muted-foreground mt-1">DICOM, JPG o PNG</p>
+                <p className="text-xs text-muted-foreground mt-1">DICOM (.dcm)</p>
               </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center relative bg-muted/10 rounded-xl border p-4 group">

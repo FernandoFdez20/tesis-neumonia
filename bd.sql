@@ -83,6 +83,8 @@ CREATE TABLE atenciones_medicas (
     paciente_id INTEGER NOT NULL REFERENCES pacientes(id) ON DELETE CASCADE,
     usuario_id INTEGER NOT NULL REFERENCES usuarios(id), -- ID de la enfermera
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_atencion DATE, -- Fecha y hora seleccionadas; el registro conserva su marca del sistema.
+    hora_atencion TIME,
     
     -- Signos Vitales mayormente tomados por la enfermera
     temperatura DECIMAL(4,2),
@@ -94,8 +96,10 @@ CREATE TABLE atenciones_medicas (
     tiempo_evolucion_dias INTEGER,
     
     -- Clínico
+    motivo_consulta TEXT,
     sintomas_principales TEXT,
     examen_fisico TEXT, -- Registrado por el doctor (Ej: "Se escuchan crepitantes en el pulmón derecho").
+    derivado_radiografia BOOLEAN NOT NULL DEFAULT FALSE,
     confusion BOOLEAN DEFAULT FALSE, -- Criterio CRB-65
     
     -- Resultados del Triage (Score CRB-65)
