@@ -1,0 +1,36 @@
+{
+  "cases": {
+    "CN-16": {
+      "checks": [
+        {
+          "name": "PDF interpretable con radiografía incorporada",
+          "pass": true,
+          "expected": "Dos páginas legibles y al menos una imagen",
+          "observed": {
+            "paginas": 2,
+            "imagenes": 1,
+            "bytes": 76960
+          }
+        },
+        {
+          "name": "Identidad y atención del PDF corresponden al caso",
+          "pass": true,
+          "expected": "DNI 81000014 y atención AT-0008",
+          "observed": "DNI 81000014; AT-0008"
+        },
+        {
+          "name": "PDF conserva IA gravedad y prioridad",
+          "pass": true,
+          "expected": "IA positiva, CRB-65 de 3 y prioridad Crítica",
+          "observed": "Positivo presuntivo; 3 pts Grave; Crítica"
+        },
+        {
+          "name": "PDF distingue decisión médica y advertencia presuntiva",
+          "pass": true,
+          "expected": "Clasificación Sano, Corregido y advertencia clínica",
+          "observed": "Sano; Corregido; advertencia presente"
+        }
+      ]
+    }
+  }
+}

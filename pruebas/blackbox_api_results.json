@@ -1,0 +1,2024 @@
+{
+  "started": "2026-11-05T15:43:22.137710-05:00",
+  "cases": {
+    "CN-01": {
+      "checks": [
+        {
+          "name": "Acceso de Admin",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Hash no expuesto para Admin",
+          "pass": true,
+          "expected": "Sin campo password",
+          "observed": [
+            "id",
+            "username",
+            "correo",
+            "nombre_completo",
+            "rol",
+            "estado",
+            "ultimo_login",
+            "permisos"
+          ]
+        },
+        {
+          "name": "Acceso de Enfermera",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Hash no expuesto para Enfermera",
+          "pass": true,
+          "expected": "Sin campo password",
+          "observed": [
+            "id",
+            "username",
+            "correo",
+            "nombre_completo",
+            "rol",
+            "estado",
+            "ultimo_login",
+            "permisos"
+          ]
+        },
+        {
+          "name": "Acceso de Especialista",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Hash no expuesto para Especialista",
+          "pass": true,
+          "expected": "Sin campo password",
+          "observed": [
+            "id",
+            "username",
+            "correo",
+            "nombre_completo",
+            "rol",
+            "estado",
+            "ultimo_login",
+            "permisos"
+          ]
+        },
+        {
+          "name": "Contraseña incorrecta",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Usuario o contraseña incorrectos"
+            }
+          }
+        },
+        {
+          "name": "Usuario inexistente",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Usuario o contraseña incorrectos"
+            }
+          }
+        },
+        {
+          "name": "Mensaje genérico",
+          "pass": true,
+          "expected": {
+            "detail": "Usuario o contraseña incorrectos"
+          },
+          "observed": {
+            "detail": "Usuario o contraseña incorrectos"
+          }
+        },
+        {
+          "name": "Cuenta inactiva",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "Usuario inactivo"
+            }
+          }
+        }
+      ]
+    },
+    "CN-02": {
+      "checks": [
+        {
+          "name": "Sin sesión /pacientes/",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Sin sesión /atenciones/",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Sin sesión /usuarios/",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Sin sesión /notificaciones/pendientes",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Sin sesión /diagnosticos/prioridades/pendientes",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Sin sesión /auth/me",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Not authenticated"
+            }
+          }
+        },
+        {
+          "name": "Administrador sin acceso a pacientes",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Consultar el directorio de pacientes'."
+            }
+          }
+        },
+        {
+          "name": "Enfermería sin gestión de usuarios",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Gestionar cuentas, roles y permisos'."
+            }
+          }
+        },
+        {
+          "name": "Token inválido",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No se pudieron validar las credenciales"
+            }
+          }
+        },
+        {
+          "name": "Token con firma alterada",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No se pudieron validar las credenciales"
+            }
+          }
+        }
+      ]
+    },
+    "CN-03": {
+      "checks": [
+        {
+          "name": "Registro adulto y antecedentes",
+          "pass": true,
+          "expected": "Antecedentes conservados",
+          "observed": {
+            "id": 1,
+            "dni": "81000001",
+            "nombres_apellidos": "Paciente QA con antecedentes",
+            "sexo": "Femenino",
+            "fecha_nacimiento": "1960-02-02",
+            "otros_antecedentes": "hipertensión",
+            "antecedentes_familiares": "asma, diabetes",
+            "ultima_atencion": null,
+            "en_atencion": false,
+            "created_at": "2026-11-05T15:43:22.745692",
+            "enfermedades": []
+          }
+        },
+        {
+          "name": "DNI duplicado",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "El DNI ya está registrado"
+            }
+          }
+        },
+        {
+          "name": "DNI inválido 1234567",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "string_too_short",
+                  "loc": [
+                    "body",
+                    "dni"
+                  ],
+                  "msg": "String should have at least 8 characters",
+                  "input": "1234567",
+                  "ctx": {
+                    "min_length": 8
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DNI inválido 123456789",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "string_too_long",
+                  "loc": [
+                    "body",
+                    "dni"
+                  ],
+                  "msg": "String should have at most 8 characters",
+                  "input": "123456789",
+                  "ctx": {
+                    "max_length": 8
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DNI inválido 12AB5678",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "value_error",
+                  "loc": [
+                    "body",
+                    "dni"
+                  ],
+                  "msg": "Value error, El DNI debe contener solo números",
+                  "input": "12AB5678",
+                  "ctx": {
+                    "error": {}
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Menor de edad",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "value_error",
+                  "loc": [
+                    "body",
+                    "fecha_nacimiento"
+                  ],
+                  "msg": "Value error, El paciente debe ser adulto",
+                  "input": "2009-11-05",
+                  "ctx": {
+                    "error": {}
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fecha futura",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "value_error",
+                  "loc": [
+                    "body",
+                    "fecha_nacimiento"
+                  ],
+                  "msg": "Value error, El paciente debe ser adulto",
+                  "input": "2027-11-05",
+                  "ctx": {
+                    "error": {}
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Límite adulto de 18 años",
+          "pass": true,
+          "expected": "Registro permitido",
+          "observed": "2008-11-05"
+        },
+        {
+          "name": "Recuperación por DNI",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        }
+      ]
+    },
+    "CN-04": {
+      "checks": [
+        {
+          "name": "Presión serializada y CRB-65",
+          "pass": true,
+          "expected": {
+            "presion": "120/80",
+            "crb65": 2
+          },
+          "observed": {
+            "presion": "120/80",
+            "crb65": 2
+          }
+        },
+        {
+          "name": "Atención activa duplicada",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "El paciente ya tiene una atención médica en proceso"
+            }
+          }
+        },
+        {
+          "name": "Temperatura fuera de rango",
+          "pass": true,
+          "expected": "Rechazo 400/422",
+          "observed": {
+            "status": 422,
+            "valores_recibidos": {
+              "temperatura": null
+            }
+          }
+        },
+        {
+          "name": "Saturación superior a 100",
+          "pass": true,
+          "expected": "Rechazo 400/422",
+          "observed": {
+            "status": 422,
+            "valores_recibidos": {
+              "saturacion_o2": null
+            }
+          }
+        },
+        {
+          "name": "Sistólica menor que diastólica",
+          "pass": true,
+          "expected": "Rechazo 400/422",
+          "observed": {
+            "status": 422,
+            "valores_recibidos": {
+              "presion_arterial": null
+            }
+          }
+        }
+      ]
+    },
+    "CN-05": {
+      "checks": [
+        {
+          "name": "Derivación exige permiso de especialista",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Registrar examen físico y derivación'."
+            }
+          }
+        },
+        {
+          "name": "Guardar progreso",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Guardar progreso mantiene la evaluación pendiente",
+          "pass": true,
+          "expected": "Pendiente de evaluación",
+          "observed": "Pendiente de evaluación"
+        },
+        {
+          "name": "Derivación explícita",
+          "pass": true,
+          "expected": "Derivado a radiografía",
+          "observed": "Derivado a radiografía"
+        }
+      ]
+    },
+    "CN-06": {
+      "checks": [
+        {
+          "name": "Carga AP y PA con modelo real",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Dos resultados independientes",
+          "pass": true,
+          "expected": "Dos vistas con probabilidad",
+          "observed": [
+            {
+              "tipo_vista": "AP",
+              "probabilidad_ia": 0.9998,
+              "confianza_radiografica": 99.98,
+              "hallazgo_positivo": true
+            },
+            {
+              "tipo_vista": "PA",
+              "probabilidad_ia": 0.0,
+              "confianza_radiografica": 100.0,
+              "hallazgo_positivo": false
+            }
+          ]
+        },
+        {
+          "name": "Referencia por mayor probabilidad",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Consistencia probabilidad confianza AP",
+          "pass": true,
+          "expected": "Umbral 0.50 y confianza de clase",
+          "observed": {
+            "p": 0.9998,
+            "confianza": 99.98,
+            "positivo": true
+          }
+        },
+        {
+          "name": "Consistencia probabilidad confianza PA",
+          "pass": true,
+          "expected": "Umbral 0.50 y confianza de clase",
+          "observed": {
+            "p": 0.0,
+            "confianza": 100.0,
+            "positivo": false
+          }
+        },
+        {
+          "name": "Vista previa DICOM",
+          "pass": true,
+          "expected": "PNG 200",
+          "observed": {
+            "status": 200,
+            "content_type": "image/png",
+            "bytes": 305403
+          }
+        }
+      ]
+    },
+    "CN-07": {
+      "checks": [
+        {
+          "name": "Carga sin archivos",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "Debe subir al menos una imagen AP o PA."
+            }
+          }
+        },
+        {
+          "name": "Rechazo en vista previa texto.txt",
+          "pass": true,
+          "expected": "400/422",
+          "observed": {
+            "status": 400,
+            "detail": {
+              "detail": "Solo se admiten archivos DICOM (.dcm)."
+            }
+          }
+        },
+        {
+          "name": "Rechazo en análisis texto.txt",
+          "pass": true,
+          "expected": "400/422 sin diagnóstico nuevo",
+          "observed": {
+            "status": 400,
+            "estado": null,
+            "probabilidades": []
+          }
+        },
+        {
+          "name": "Rechazo en vista previa corrupta.dcm",
+          "pass": true,
+          "expected": "400/422",
+          "observed": {
+            "status": 422,
+            "detail": {
+              "detail": "No se pudo interpretar el archivo DICOM."
+            }
+          }
+        },
+        {
+          "name": "Rechazo en análisis corrupta.dcm",
+          "pass": true,
+          "expected": "400/422 sin diagnóstico nuevo",
+          "observed": {
+            "status": 422,
+            "estado": null,
+            "probabilidades": []
+          }
+        },
+        {
+          "name": "Formato PNG excluido de la carga DICOM",
+          "pass": true,
+          "expected": "Rechazo explícito de formato PNG",
+          "observed": {
+            "status": 400,
+            "estado": null,
+            "probabilidades": []
+          }
+        },
+        {
+          "name": "Los rechazos no persisten un diagnóstico",
+          "pass": true,
+          "expected": 404,
+          "observed": {
+            "status": 404,
+            "body": {
+              "detail": "Diagnóstico no encontrado"
+            }
+          }
+        },
+        {
+          "name": "AP válida y PA corrupta se rechazan conjuntamente",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": "No se pudo interpretar el archivo DICOM PA"
+            }
+          }
+        },
+        {
+          "name": "La carga mixta no deja análisis parcial",
+          "pass": true,
+          "expected": 404,
+          "observed": {
+            "status": 404,
+            "body": {
+              "detail": "Diagnóstico no encontrado"
+            }
+          }
+        },
+        {
+          "name": "Límite de 30 MiB por archivo",
+          "pass": true,
+          "expected": 413,
+          "observed": {
+            "status": 413,
+            "body": {
+              "detail": "Archivo demasiado grande (máx. 30 MB)"
+            }
+          }
+        }
+      ]
+    },
+    "CN-08": {
+      "checks": [
+        {
+          "name": "Leve negativo",
+          "pass": true,
+          "expected": "Baja",
+          "observed": {
+            "crb65": 0,
+            "ia": false,
+            "prioridad": "Baja",
+            "probabilidad": 0.2819
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Leve0",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": false
+        },
+        {
+          "name": "Leve positivo",
+          "pass": true,
+          "expected": "Moderada",
+          "observed": {
+            "crb65": 0,
+            "ia": true,
+            "prioridad": "Moderada",
+            "probabilidad": 0.9998
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Leve1",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": true
+        },
+        {
+          "name": "Moderado negativo",
+          "pass": true,
+          "expected": "Moderada",
+          "observed": {
+            "crb65": 1,
+            "ia": false,
+            "prioridad": "Moderada",
+            "probabilidad": 0.2819
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Moderado0",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": false
+        },
+        {
+          "name": "Moderado positivo",
+          "pass": true,
+          "expected": "Alta",
+          "observed": {
+            "crb65": 1,
+            "ia": true,
+            "prioridad": "Alta",
+            "probabilidad": 0.9998
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Moderado1",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": true
+        },
+        {
+          "name": "Grave negativo",
+          "pass": true,
+          "expected": "Alta",
+          "observed": {
+            "crb65": 3,
+            "ia": false,
+            "prioridad": "Alta",
+            "probabilidad": 0.2819
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Grave0",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": false
+        },
+        {
+          "name": "Grave positivo",
+          "pass": true,
+          "expected": "Crítica",
+          "observed": {
+            "crb65": 3,
+            "ia": true,
+            "prioridad": "Crítica",
+            "probabilidad": 0.9998
+          }
+        },
+        {
+          "name": "Muestra produce clase esperada Grave1",
+          "pass": true,
+          "expected": "Clase de la muestra pública",
+          "observed": true
+        }
+      ]
+    },
+    "CN-09": {
+      "checks": [
+        {
+          "name": "Avisos para casos Alta y Crítica",
+          "pass": true,
+          "expected": [
+            5,
+            6,
+            7
+          ],
+          "observed": [
+            7,
+            6,
+            5,
+            1
+          ]
+        },
+        {
+          "name": "Orden de avisos",
+          "pass": true,
+          "expected": "Crítica primero",
+          "observed": [
+            "Crítica",
+            "Alta",
+            "Alta",
+            "Alta"
+          ]
+        },
+        {
+          "name": "Marcar aviso leído",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Cerrar aviso",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Cerrar aviso no valida el diagnóstico",
+          "pass": true,
+          "expected": "Pendiente de validación",
+          "observed": "Pendiente de validación"
+        }
+      ]
+    },
+    "CN-10": {
+      "checks": [
+        {
+          "name": "Enfermería no valida",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Validar el diagnóstico de la IA'."
+            }
+          }
+        },
+        {
+          "name": "Corrección conserva IA y registra concordancia",
+          "pass": true,
+          "expected": "IA original conservada; Sano, Corregido, Validado y fecha",
+          "observed": {
+            "enfermo": true,
+            "clasificacion_medico": "Sano",
+            "concordancia_ia": "Corregido",
+            "estado_validacion": "Validado",
+            "fecha_validacion": "2026-11-05T15:43:27.336033"
+          }
+        },
+        {
+          "name": "Doble validación rechazada",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "Este diagnóstico ya fue validado"
+            }
+          }
+        },
+        {
+          "name": "Cierre de atención y liberación del paciente",
+          "pass": true,
+          "expected": {
+            "estado": "Finalizada",
+            "en_atencion": false
+          },
+          "observed": {
+            "estado": "Finalizada",
+            "en_atencion": false
+          }
+        },
+        {
+          "name": "Cierre automático del aviso",
+          "pass": true,
+          "expected": "Sin aviso abierto del diagnóstico",
+          "observed": [
+            6,
+            1
+          ]
+        }
+      ]
+    },
+    "CN-11": {
+      "checks": [
+        {
+          "name": "Crear usuario",
+          "pass": true,
+          "expected": 201,
+          "observed": {
+            "status": 201,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Nombre de usuario duplicado",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "El nombre de usuario ya está registrado"
+            }
+          }
+        },
+        {
+          "name": "Editar datos",
+          "pass": true,
+          "expected": "Nombre actualizado",
+          "observed": "Cuenta sintética actualizada"
+        },
+        {
+          "name": "Revocar permiso",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Permiso revocado aplicado",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "body": {
+              "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Consultar el resultado del modelo'."
+            }
+          }
+        },
+        {
+          "name": "Administrador sin permisos clínicos concedibles",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "El rol Administrador no puede recibir permisos clínicos (Consultar el directorio de pacientes)."
+            }
+          }
+        },
+        {
+          "name": "Bloqueo de autosuspensión",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "No puede desactivar su propia cuenta"
+            }
+          }
+        },
+        {
+          "name": "Suspender cuenta",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Acceso suspendido",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "Usuario inactivo"
+            }
+          }
+        },
+        {
+          "name": "Reactivar cuenta",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Reasignar contraseña",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Clave anterior rechazada",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "Usuario o contraseña incorrectos"
+            }
+          }
+        },
+        {
+          "name": "Clave nueva aceptada",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        }
+      ]
+    },
+    "CN-12": {
+      "checks": [
+        {
+          "name": "Historial recuperado desde nueva sesión HTTP",
+          "pass": true,
+          "expected": [
+            9,
+            10
+          ],
+          "observed": [
+            10,
+            9
+          ]
+        },
+        {
+          "name": "Presión y estado conservados",
+          "pass": true,
+          "expected": "120/80 y Finalizada en ambos",
+          "observed": [
+            {
+              "id": 10,
+              "presion_arterial": "120/80",
+              "estado": "Finalizada"
+            },
+            {
+              "id": 9,
+              "presion_arterial": "120/80",
+              "estado": "Finalizada"
+            }
+          ]
+        }
+      ]
+    },
+    "CN-13": {
+      "checks": [
+        {
+          "name": "Archivo sin sesión",
+          "pass": true,
+          "expected": 401,
+          "observed": {
+            "status": 401,
+            "body": {
+              "detail": "No autenticado"
+            }
+          }
+        },
+        {
+          "name": "Archivo con usuario clínico",
+          "pass": true,
+          "expected": "200 y archivo no vacío",
+          "observed": {
+            "status": 200,
+            "bytes": 101466
+          }
+        },
+        {
+          "name": "Administrador no accede al archivo clínico",
+          "pass": true,
+          "expected": "403",
+          "observed": {
+            "status": 403,
+            "bytes": 63
+          }
+        },
+        {
+          "name": "Preparar consulta con historial.ver como único permiso",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Historial permite consultar archivo sin resultados.ver",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "bytes": 101466
+          }
+        },
+        {
+          "name": "Revocar los dos permisos de consulta",
+          "pass": true,
+          "expected": 200,
+          "observed": {
+            "status": 200,
+            "body": "Respuesta recibida"
+          }
+        },
+        {
+          "name": "Sin resultados.ver ni historial.ver se deniega archivo",
+          "pass": true,
+          "expected": 403,
+          "observed": {
+            "status": 403,
+            "bytes": 63
+          }
+        }
+      ]
+    },
+    "CN-14": {
+      "checks": [
+        {
+          "name": "Tampoco se reemplaza un análisis pendiente",
+          "pass": true,
+          "expected": 400,
+          "observed": {
+            "status": 400,
+            "body": {
+              "detail": "El caso ya tiene un análisis radiográfico; no se permite sustituirlo"
+            }
+          }
+        },
+        {
+          "name": "El rechazo conserva imágenes y estado pendiente",
+          "pass": true,
+          "expected": "Análisis inicial conservado",
+          "observed": {
+            "id": 2,
+            "estado_validacion": "Pendiente de validación"
+          }
+        },
+        {
+          "name": "No se reemplazan imágenes de un diagnóstico validado",
+          "pass": true,
+          "expected": "Rechazo de nueva carga sobre caso validado",
+          "observed": {
+            "status": 400,
+            "estado_anterior": "Validado",
+            "estado_posterior": null,
+            "imagen_ids_antes": [
+              4
+            ],
+            "imagen_ids_despues": []
+          }
+        }
+      ]
+    }
+  },
+  "http": [
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 200,
+      "ms": 56.49
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 200,
+      "ms": 29.95
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 200,
+      "ms": 50.08
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 401,
+      "ms": 43.22
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 401,
+      "ms": 25.35
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 400,
+      "ms": 47.67
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/",
+      "role": null,
+      "status": 401,
+      "ms": 22.96
+    },
+    {
+      "method": "GET",
+      "route": "/atenciones/",
+      "role": null,
+      "status": 401,
+      "ms": 14.89
+    },
+    {
+      "method": "GET",
+      "route": "/usuarios/",
+      "role": null,
+      "status": 401,
+      "ms": 15.17
+    },
+    {
+      "method": "GET",
+      "route": "/notificaciones/pendientes",
+      "role": null,
+      "status": 401,
+      "ms": 15.55
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/prioridades/pendientes",
+      "role": null,
+      "status": 401,
+      "ms": 30.81
+    },
+    {
+      "method": "GET",
+      "route": "/auth/me",
+      "role": null,
+      "status": 401,
+      "ms": 32.57
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/",
+      "role": "Admin",
+      "status": 403,
+      "ms": 39.26
+    },
+    {
+      "method": "GET",
+      "route": "/usuarios/",
+      "role": "Enfermera",
+      "status": 403,
+      "ms": 22.68
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/",
+      "role": null,
+      "status": 403,
+      "ms": 35.88
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/",
+      "role": null,
+      "status": 403,
+      "ms": 19.68
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 109.24
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 26.6
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 22.63
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 41.08
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 14.98
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 29.99
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 11.4
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 22.08
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/dni/81000001",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 15.1
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 46.55
+    },
+    {
+      "method": "GET",
+      "route": "/atenciones/1",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 49.59
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 35.36
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 25.24
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 36.77
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 35.77
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 38.73
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 37.37
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 19.36
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/1/evaluar",
+      "role": "Enfermera",
+      "status": 403,
+      "ms": 35.65
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/1/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 42.83
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/1/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 35.3
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/1/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 1089.27
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/radiografias/vista-previa",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 82.84
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 10.0
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 28.69
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/2/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 31.98
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 24.59
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/radiografias/vista-previa",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 5.01
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 7.68
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/radiografias/vista-previa",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 12.5
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 22.36
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 26.13
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/atenciones/2/diagnostico",
+      "role": "Enfermera",
+      "status": 404,
+      "ms": 7.62
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 422,
+      "ms": 97.03
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/atenciones/2/diagnostico",
+      "role": "Enfermera",
+      "status": 404,
+      "ms": 5.96
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/2/radiografias",
+      "role": "Enfermera",
+      "status": 413,
+      "ms": 171.87
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 18.08
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 31.15
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/3/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 36.62
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/3/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 349.92
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 29.27
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 14.82
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/4/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 32.39
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/4/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 256.87
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 8.97
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 10.49
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/5/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 32.15
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/5/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 252.03
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 8.78
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 11.04
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/6/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 10.77
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/6/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 255.45
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 9.72
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 23.04
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/7/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 11.62
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/7/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 257.94
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 9.16
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 20.22
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/8/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 33.92
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/8/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 238.45
+    },
+    {
+      "method": "GET",
+      "route": "/notificaciones/pendientes",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 16.13
+    },
+    {
+      "method": "PATCH",
+      "route": "/notificaciones/2/leer",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 8.42
+    },
+    {
+      "method": "PATCH",
+      "route": "/notificaciones/2/cerrar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 7.52
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/atenciones/6/diagnostico",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 6.46
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/7/validar",
+      "role": "Enfermera",
+      "status": 403,
+      "ms": 5.63
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/7/validar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 34.23
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/7/validar",
+      "role": "Especialista",
+      "status": 400,
+      "ms": 18.14
+    },
+    {
+      "method": "GET",
+      "route": "/pacientes/12",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 6.71
+    },
+    {
+      "method": "GET",
+      "route": "/atenciones/8",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 23.41
+    },
+    {
+      "method": "GET",
+      "route": "/notificaciones/pendientes",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 8.49
+    },
+    {
+      "method": "POST",
+      "route": "/usuarios/",
+      "role": "Admin",
+      "status": 201,
+      "ms": 37.89
+    },
+    {
+      "method": "POST",
+      "route": "/usuarios/",
+      "role": "Admin",
+      "status": 400,
+      "ms": 25.59
+    },
+    {
+      "method": "PATCH",
+      "route": "/usuarios/5",
+      "role": "Admin",
+      "status": 200,
+      "ms": 9.6
+    },
+    {
+      "method": "GET",
+      "route": "/usuarios/",
+      "role": "Admin",
+      "status": 200,
+      "ms": 29.46
+    },
+    {
+      "method": "PUT",
+      "route": "/usuarios/5/permisos",
+      "role": "Admin",
+      "status": 200,
+      "ms": 38.96
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 200,
+      "ms": 122.42
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/atenciones/1/diagnostico",
+      "role": "Restringido",
+      "status": 403,
+      "ms": 28.06
+    },
+    {
+      "method": "GET",
+      "route": "/auth/me",
+      "role": "Admin",
+      "status": 200,
+      "ms": 15.04
+    },
+    {
+      "method": "PUT",
+      "route": "/usuarios/1/permisos",
+      "role": "Admin",
+      "status": 400,
+      "ms": 29.04
+    },
+    {
+      "method": "PATCH",
+      "route": "/usuarios/1",
+      "role": "Admin",
+      "status": 400,
+      "ms": 17.46
+    },
+    {
+      "method": "PATCH",
+      "route": "/usuarios/5",
+      "role": "Admin",
+      "status": 200,
+      "ms": 28.44
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 400,
+      "ms": 76.94
+    },
+    {
+      "method": "PATCH",
+      "route": "/usuarios/5",
+      "role": "Admin",
+      "status": 200,
+      "ms": 29.67
+    },
+    {
+      "method": "PATCH",
+      "route": "/usuarios/5/password",
+      "role": "Admin",
+      "status": 200,
+      "ms": 54.7
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 401,
+      "ms": 43.65
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "role": null,
+      "status": 200,
+      "ms": 27.61
+    },
+    {
+      "method": "POST",
+      "route": "/pacientes/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 26.18
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 32.8
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/9/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 34.21
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/9/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 302.68
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/8/validar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 12.76
+    },
+    {
+      "method": "POST",
+      "route": "/atenciones/",
+      "role": "Enfermera",
+      "status": 201,
+      "ms": 10.43
+    },
+    {
+      "method": "PATCH",
+      "route": "/atenciones/10/evaluar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 10.34
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/10/radiografias",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 267.23
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/9/validar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 35.41
+    },
+    {
+      "method": "GET",
+      "route": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm",
+      "role": null,
+      "status": 401,
+      "ms": 23.18
+    },
+    {
+      "method": "GET",
+      "route": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm?token=[omitido]",
+      "role": null,
+      "status": 200,
+      "ms": 657.84
+    },
+    {
+      "method": "GET",
+      "route": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm?token=[omitido]",
+      "role": null,
+      "status": 403,
+      "ms": 4.15
+    },
+    {
+      "method": "PUT",
+      "route": "/usuarios/5/permisos",
+      "role": "Admin",
+      "status": 200,
+      "ms": 33.22
+    },
+    {
+      "method": "GET",
+      "route": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm?token=[omitido]",
+      "role": null,
+      "status": 200,
+      "ms": 7.96
+    },
+    {
+      "method": "PUT",
+      "route": "/usuarios/5/permisos",
+      "role": "Admin",
+      "status": 200,
+      "ms": 31.57
+    },
+    {
+      "method": "GET",
+      "route": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm?token=[omitido]",
+      "role": null,
+      "status": 403,
+      "ms": 4.23
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/3/radiografias",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 37.42
+    },
+    {
+      "method": "GET",
+      "route": "/diagnosticos/atenciones/3/diagnostico",
+      "role": "Enfermera",
+      "status": 200,
+      "ms": 11.65
+    },
+    {
+      "method": "PATCH",
+      "route": "/diagnosticos/3/validar",
+      "role": "Especialista",
+      "status": 200,
+      "ms": 23.23
+    },
+    {
+      "method": "POST",
+      "route": "/diagnosticos/atenciones/4/radiografias",
+      "role": "Enfermera",
+      "status": 400,
+      "ms": 31.47
+    }
+  ],
+  "finished": "2026-11-05T15:43:29.828790-05:00"
+}

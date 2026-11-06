@@ -1,0 +1,178 @@
+[
+  {
+    "file": "ui_01_acceso_rechazado.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "7a2a4bca210b98acd47031c25415becd0546211bd44eb91cb2af4f0e34058034"
+  },
+  {
+    "file": "ui_02_panel_enfermeria.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "8f433dd6042c53101832a7fcf7b686240ff0cd6ee5b0313b248f80113d2e9fae"
+  },
+  {
+    "file": "ui_03_busqueda_secciones.png",
+    "size": [
+      464,
+      147
+    ],
+    "sha256": "4829b0f4a72cd8cbaaf21e0c5202f904ba2d5bd549c5c3ec11dc9754d3d4e96c"
+  },
+  {
+    "file": "ui_04_registro_paciente.png",
+    "size": [
+      696,
+      509
+    ],
+    "sha256": "dc3517ef789e17601896d5442dd9ede7a7fb1a3c92eb39718b6fdf15518906f2"
+  },
+  {
+    "file": "ui_05_directorio_paciente.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "23fe8639b1fecd74f98624a383d74f26b50415e7322602888db194c05d3d71f2"
+  },
+  {
+    "file": "ui_06_validacion_presion.png",
+    "size": [
+      776,
+      959
+    ],
+    "sha256": "d39c68dfcace713368a856f36278ccb5d9968039985ecd09ff32c4f7d8bd222c"
+  },
+  {
+    "file": "ui_07_atenciones_tarjetas.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "f47c431474f8403ab9c94413ac36fa02037ccba31a49dc317383a96013607a16"
+  },
+  {
+    "file": "ui_08_atenciones_tabla.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "1234cec48b02e4d7e96ac3c6d674adb30c75fe6ff51caa80e1dc38166c4f1be8"
+  },
+  {
+    "file": "ui_08a_evaluacion_medica.png",
+    "size": [
+      616,
+      891
+    ],
+    "sha256": "ae293314263f0e3f8b645f56ae3acd7de31c5890c7a0d66193aa6172f96c52a4"
+  },
+  {
+    "file": "ui_08b_progreso_sin_derivar.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "f116f9ddbd29dab26d92ab41dff92d4b3ce6241a3bf0803ba591aca932eebbd4"
+  },
+  {
+    "file": "ui_08c_derivacion_confirmada.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "f8624fe7b76754009009e5a315c931331f4456467ad7a4b9f5d6d702973c60eb"
+  },
+  {
+    "file": "ui_09_archivo_invalido.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "b34804379e7638256ac56541484e12df7f4c9abaf94db599de60bcc49eb79ea8"
+  },
+  {
+    "file": "ui_10_dicom_previsualizado.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "3e1f5621441aa771741290365d4a04e9cec38d2e8914733f73c4a2b75a3b5a02"
+  },
+  {
+    "file": "ui_10a_resultado_pendiente.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "5ce9707b264db6f81f73c65778749864563d188ab3a6f0f604b64077b5e8be9d"
+  },
+  {
+    "file": "ui_10b_formulario_validacion.png",
+    "size": [
+      576,
+      424
+    ],
+    "sha256": "4768822f97f4122f3a5dd6b2054869a637ca0297096264e44140d8940c4c2637"
+  },
+  {
+    "file": "ui_10c_validacion_registrada.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "35be7fd5123bbe5653c26991064d3cef9334046e6210e90ecd9b4dd45ffc6c38"
+  },
+  {
+    "file": "ui_11_resultado_validado.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "75fcfb2cba71acedee7dd5d15942b0f7827242e172ab24d4bbc007c561d3986a"
+  },
+  {
+    "file": "ui_12_alerta_antes_validacion.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "a1a342839e9315525f7e09c8fc9a65bba1ee92e6ff9680eb0aeac9b59d70f837"
+  },
+  {
+    "file": "ui_13_alerta_despues_validacion.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "3ec532c922a15c6acc420821862ec13822fc816d3ab43601245ff9473b7357c1"
+  },
+  {
+    "file": "ui_14_administracion.png",
+    "size": [
+      1440,
+      1024
+    ],
+    "sha256": "4955abc5bb878f9a61bf56dab07c59ba0679de6d3a6bacc518139a3ec64db4cc"
+  },
+  {
+    "file": "ui_16_frontera_edad.png",
+    "size": [
+      696,
+      509
+    ],
+    "sha256": "7f7f0fe094db3554dac15fb3303f2b15c01fca60cdfc250eb84c787acda120b4"
+  },
+  {
+    "file": "ui_17_rechazo_servidor_edad.png",
+    "size": [
+      696,
+      509
+    ],
+    "sha256": "12396e9e201c273d0da3c53cd0edc77fbdc4e538d5f2853442a812cf30563bd5"
+  }
+]

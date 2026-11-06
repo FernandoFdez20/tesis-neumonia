@@ -1,0 +1,471 @@
+{
+  "cases": {
+    "CN-15": {
+      "checks": [
+        {
+          "name": "Error de acceso visible",
+          "pass": true,
+          "expected": "Mensaje de credenciales",
+          "observed": "Usuario o contraseña incorrectos"
+        },
+        {
+          "name": "Enfermería sin menú de usuarios",
+          "pass": true,
+          "expected": "Sin acceso administrativo visible",
+          "observed": 0
+        },
+        {
+          "name": "Buscador navega al historial",
+          "pass": true,
+          "expected": "/historial",
+          "observed": "/historial"
+        },
+        {
+          "name": "Registro de paciente desde formulario",
+          "pass": true,
+          "expected": 201,
+          "observed": 201
+        },
+        {
+          "name": "Atención incompleta no se envía",
+          "pass": true,
+          "expected": "Botón deshabilitado",
+          "observed": "Deshabilitado"
+        },
+        {
+          "name": "Presión invertida impide guardar",
+          "pass": true,
+          "expected": "Deshabilitado",
+          "observed": true
+        },
+        {
+          "name": "Atención válida enviada",
+          "pass": true,
+          "expected": 201,
+          "observed": 201
+        },
+        {
+          "name": "Motivo de consulta conservado",
+          "pass": true,
+          "expected": "Motivo recuperable en el registro",
+          "observed": {
+            "campos_enviados": [
+              "paciente_id",
+              "fecha_atencion",
+              "hora_atencion",
+              "motivo_consulta",
+              "temperatura",
+              "frecuencia_cardiaca",
+              "frecuencia_respiratoria",
+              "saturacion_o2",
+              "presion_arterial",
+              "tiempo_evolucion_dias",
+              "sintomas_principales",
+              "confusion",
+              "examen_fisico",
+              "estado"
+            ],
+            "motivo_guardado": "Motivo QA trazabilidad de captura",
+            "sintomas_guardados": "Tos sintética de interfaz QA | Obs: Observación sintética QA"
+          }
+        },
+        {
+          "name": "Fecha y hora seleccionadas conservadas",
+          "pass": true,
+          "expected": "2026-11-03 09:15",
+          "observed": {
+            "fecha_atencion": "2026-11-03",
+            "hora_atencion": "09:15:00",
+            "fecha_registro": "2026-11-05T15:45:19.535290"
+          }
+        },
+        {
+          "name": "Cambio a vista Tarjetas",
+          "pass": true,
+          "expected": "Tarjetas activa",
+          "observed": "true"
+        },
+        {
+          "name": "Selector rechaza texto",
+          "pass": true,
+          "expected": "Archivo rechazado y análisis deshabilitado",
+          "observed": "Rechazado"
+        },
+        {
+          "name": "Análisis iniciado desde interfaz",
+          "pass": true,
+          "expected": 200,
+          "observed": 200
+        },
+        {
+          "name": "Administrador accede a Usuarios",
+          "pass": true,
+          "expected": "/usuarios",
+          "observed": "/usuarios"
+        },
+        {
+          "name": "Sin excepciones JavaScript no controladas",
+          "pass": true,
+          "expected": [],
+          "observed": []
+        }
+      ]
+    },
+    "CN-05": {
+      "checks": [
+        {
+          "name": "Guardar progreso desde interfaz mantiene etapa pendiente",
+          "pass": true,
+          "expected": "200 y Pendiente de evaluación",
+          "observed": {
+            "status": 200,
+            "estado": "Pendiente de evaluación"
+          }
+        },
+        {
+          "name": "Notas guardadas recuperadas en la interfaz",
+          "pass": true,
+          "expected": "Examen sintético de interfaz para comprobar guardado y derivación.",
+          "observed": "Examen sintético de interfaz para comprobar guardado y derivación."
+        },
+        {
+          "name": "Derivación explícita desde interfaz",
+          "pass": true,
+          "expected": "200 y Derivado a radiografía",
+          "observed": {
+            "status": 200,
+            "estado": "Derivado a radiografía"
+          }
+        }
+      ]
+    },
+    "CN-10": {
+      "checks": [
+        {
+          "name": "Validación médica desde interfaz",
+          "pass": true,
+          "expected": "200 Validado y Neumonía",
+          "observed": {
+            "status": 200,
+            "estado": "Validado",
+            "clasificacion": "Neumonía"
+          }
+        },
+        {
+          "name": "La validación de interfaz conserva la IA",
+          "pass": true,
+          "expected": true,
+          "observed": true
+        }
+      ]
+    },
+    "CN-16": {
+      "checks": [
+        {
+          "name": "Descarga efectiva del PDF",
+          "pass": true,
+          "expected": "PDF no vacío",
+          "observed": {
+            "archivo": "Reporte_AT-0008_81000014.pdf",
+            "bytes": 76960
+          }
+        }
+      ]
+    },
+    "CN-17": {
+      "checks": [
+        {
+          "name": "Contador inferior corresponde a Baja",
+          "pass": true,
+          "expected": {
+            "Baja_API": 1
+          },
+          "observed": {
+            "rotulo": "Prioridad Baja",
+            "contador": 1
+          }
+        },
+        {
+          "name": "Caso validado desaparece sin recargar",
+          "pass": true,
+          "expected": "Retiro automático en un ciclo de consulta",
+          "observed": {
+            "ms": 28795,
+            "validacion": 200
+          }
+        }
+      ]
+    },
+    "CN-18": {
+      "checks": [
+        {
+          "name": "Interfaz bloquea a menor por un día",
+          "pass": false,
+          "expected": "Guardar registro deshabilitado",
+          "observed": {
+            "deshabilitado": false,
+            "nacimiento": "2008-11-06",
+            "fecha_controlada": "2026-11-05",
+            "zona": "America/Bogota"
+          }
+        },
+        {
+          "name": "Servidor rechaza el registro menor por un día",
+          "pass": true,
+          "expected": 422,
+          "observed": {
+            "status": 422,
+            "body": {
+              "detail": [
+                {
+                  "type": "value_error",
+                  "loc": [
+                    "body",
+                    "fecha_nacimiento"
+                  ],
+                  "msg": "Value error, El paciente debe ser adulto",
+                  "input": "2008-11-06",
+                  "ctx": {
+                    "error": {}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "screenshots": [
+    {
+      "name": "ui_01_acceso_rechazado",
+      "path": "pruebas/evidence/ui_01_acceso_rechazado.png"
+    },
+    {
+      "name": "ui_02_panel_enfermeria",
+      "path": "pruebas/evidence/ui_02_panel_enfermeria.png"
+    },
+    {
+      "name": "ui_03_busqueda_secciones",
+      "path": "pruebas/evidence/ui_03_busqueda_secciones.png"
+    },
+    {
+      "name": "ui_04_registro_paciente",
+      "path": "pruebas/evidence/ui_04_registro_paciente.png"
+    },
+    {
+      "name": "ui_05_directorio_paciente",
+      "path": "pruebas/evidence/ui_05_directorio_paciente.png"
+    },
+    {
+      "name": "ui_06_validacion_presion",
+      "path": "pruebas/evidence/ui_06_validacion_presion.png"
+    },
+    {
+      "name": "ui_07_atenciones_tarjetas",
+      "path": "pruebas/evidence/ui_07_atenciones_tarjetas.png"
+    },
+    {
+      "name": "ui_08_atenciones_tabla",
+      "path": "pruebas/evidence/ui_08_atenciones_tabla.png"
+    },
+    {
+      "name": "ui_08a_evaluacion_medica",
+      "path": "pruebas/evidence/ui_08a_evaluacion_medica.png"
+    },
+    {
+      "name": "ui_08b_progreso_sin_derivar",
+      "path": "pruebas/evidence/ui_08b_progreso_sin_derivar.png"
+    },
+    {
+      "name": "ui_08c_derivacion_confirmada",
+      "path": "pruebas/evidence/ui_08c_derivacion_confirmada.png"
+    },
+    {
+      "name": "ui_09_archivo_invalido",
+      "path": "pruebas/evidence/ui_09_archivo_invalido.png"
+    },
+    {
+      "name": "ui_10_dicom_previsualizado",
+      "path": "pruebas/evidence/ui_10_dicom_previsualizado.png"
+    },
+    {
+      "name": "ui_10a_resultado_pendiente",
+      "path": "pruebas/evidence/ui_10a_resultado_pendiente.png"
+    },
+    {
+      "name": "ui_10b_formulario_validacion",
+      "path": "pruebas/evidence/ui_10b_formulario_validacion.png"
+    },
+    {
+      "name": "ui_10c_validacion_registrada",
+      "path": "pruebas/evidence/ui_10c_validacion_registrada.png"
+    },
+    {
+      "name": "ui_11_resultado_validado",
+      "path": "pruebas/evidence/ui_11_resultado_validado.png"
+    },
+    {
+      "name": "ui_12_alerta_antes_validacion",
+      "path": "pruebas/evidence/ui_12_alerta_antes_validacion.png"
+    },
+    {
+      "name": "ui_13_alerta_despues_validacion",
+      "path": "pruebas/evidence/ui_13_alerta_despues_validacion.png"
+    },
+    {
+      "name": "ui_14_administracion",
+      "path": "pruebas/evidence/ui_14_administracion.png"
+    },
+    {
+      "name": "ui_16_frontera_edad",
+      "path": "pruebas/evidence/ui_16_frontera_edad.png"
+    },
+    {
+      "name": "ui_17_rechazo_servidor_edad",
+      "path": "pruebas/evidence/ui_17_rechazo_servidor_edad.png"
+    }
+  ],
+  "errors": [],
+  "environment": {
+    "browser": "Brave Chromium",
+    "viewport": "1440 x 1024",
+    "timezone": "America/Bogota",
+    "browser_version": "156.0.8078.80",
+    "age_boundary_clock": "2026-11-05T12:00:00-05:00"
+  },
+  "ui_patient_dni": "82023189",
+  "ui_attention": {
+    "paciente_id": 14,
+    "fecha_atencion": "2026-11-03",
+    "hora_atencion": "09:15:00",
+    "motivo_consulta": "Motivo QA trazabilidad de captura",
+    "temperatura": 37,
+    "frecuencia_cardiaca": 80,
+    "frecuencia_respiratoria": 20,
+    "saturacion_o2": 97,
+    "presion_sistolica": 120,
+    "presion_diastolica": 80,
+    "tiempo_evolucion_dias": 3,
+    "sintomas_principales": "Tos sintética de interfaz QA | Obs: Observación sintética QA",
+    "examen_fisico": null,
+    "confusion": false,
+    "crb65_puntaje": 0,
+    "crb65_gravedad": "Leve",
+    "crb65_detalle": {
+      "edad": {
+        "valor": 46,
+        "puntos": 0,
+        "descripcion": "Edad < 65 años"
+      },
+      "presion": {
+        "valor": "120/80",
+        "puntos": 0,
+        "descripcion": "Presión arterial normal (>90/60)"
+      },
+      "confusion": {
+        "valor": false,
+        "puntos": 0,
+        "descripcion": "Confusión ausente"
+      },
+      "respiracion": {
+        "valor": 20,
+        "puntos": 0,
+        "descripcion": "Frecuencia respiratoria < 30"
+      }
+    },
+    "estado": "En proceso",
+    "id": 11,
+    "usuario_id": 2,
+    "fecha_registro": "2026-11-05T15:45:19.535290",
+    "derivado_radiografia": false,
+    "presion_arterial": "120/80"
+  },
+  "ui_attention_request": {
+    "paciente_id": 14,
+    "fecha_atencion": "2026-11-03",
+    "hora_atencion": "09:15",
+    "motivo_consulta": "Motivo QA trazabilidad de captura",
+    "temperatura": 37,
+    "frecuencia_cardiaca": 80,
+    "frecuencia_respiratoria": 20,
+    "saturacion_o2": 97,
+    "presion_arterial": "120/80",
+    "tiempo_evolucion_dias": 3,
+    "sintomas_principales": "Tos sintética de interfaz QA | Obs: Observación sintética QA",
+    "confusion": false,
+    "examen_fisico": null,
+    "estado": "En proceso"
+  },
+  "ui_analysis": {
+    "id": 10,
+    "atencion_medica_id": 11,
+    "enfermo": true,
+    "prioridad_final": "Moderada",
+    "prioridad_detalle": {
+      "resultado_ia": "Positivo",
+      "crb65_puntaje": 0,
+      "crb65_gravedad": "Leve",
+      "regla_aplicada": "Leve + Positivo → Moderada",
+      "confianza_ia_maxima": 99.98
+    },
+    "imagen_referencia_id": 11,
+    "estado_validacion": "Pendiente de validación",
+    "clasificacion_medico": null,
+    "diagnostico_final_medico": null,
+    "concordancia_ia": null,
+    "diagnostico_descripcion": null,
+    "validado_por_id": null,
+    "fecha_validacion": null,
+    "updated_at": "2026-11-05T15:45:37.314529",
+    "imagenes": [
+      {
+        "id": 11,
+        "diagnostico_id": 10,
+        "imagen_url": "/uploads/radiografias/11/bf098dfacbb34458ab8abee7b811a7f2.dcm",
+        "orden": 1,
+        "tipo_vista": "AP",
+        "probabilidad_ia": 0.9998,
+        "confianza_radiografica": 99.98,
+        "hallazgo_positivo": true,
+        "created_at": "2026-11-05T15:45:37.314529"
+      }
+    ]
+  },
+  "ui_validation": {
+    "id": 10,
+    "atencion_medica_id": 11,
+    "enfermo": true,
+    "prioridad_final": "Moderada",
+    "prioridad_detalle": {
+      "resultado_ia": "Positivo",
+      "crb65_puntaje": 0,
+      "crb65_gravedad": "Leve",
+      "regla_aplicada": "Leve + Positivo → Moderada",
+      "confianza_ia_maxima": 99.98
+    },
+    "imagen_referencia_id": 11,
+    "estado_validacion": "Validado",
+    "clasificacion_medico": "Neumonía",
+    "diagnostico_final_medico": true,
+    "concordancia_ia": "Confirmado",
+    "diagnostico_descripcion": "Conclusión sintética para comprobar la validación mediante la interfaz.",
+    "validado_por_id": 3,
+    "fecha_validacion": "2026-11-05T15:45:43.943059",
+    "updated_at": "2026-11-05T15:45:43.937261",
+    "imagenes": [
+      {
+        "id": 11,
+        "diagnostico_id": 10,
+        "imagen_url": "/uploads/radiografias/11/bf098dfacbb34458ab8abee7b811a7f2.dcm",
+        "orden": 1,
+        "tipo_vista": "AP",
+        "probabilidad_ia": 0.9998,
+        "confianza_radiografica": 99.98,
+        "hallazgo_positivo": true,
+        "created_at": "2026-11-05T15:45:37.314529"
+      }
+    ]
+  },
+  "downloaded_pdf": "pruebas/evidence/Reporte_evaluacion.pdf"
+}

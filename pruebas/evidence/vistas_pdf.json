@@ -1,0 +1,9 @@
+{
+  "origen": "Reporte_evaluacion.pdf",
+  "sha256_pdf": "a3c23911ee7a1227775a5d4001d4680375fcdbac0eecf46676cd81065b228968",
+  "proceso": "Renderizado de las dos páginas originales para incorporarlas como figuras; sin reconstrucción ni edición del contenido.",
+  "paginas": [
+    "reporte_pagina_1.png",
+    "reporte_pagina_2.png"
+  ]
+}

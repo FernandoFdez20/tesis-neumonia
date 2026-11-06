@@ -1,0 +1,20 @@
+{
+  "cases": {
+    "CN-14": {
+      "checks": [
+        {
+          "name": "Consulta posterior confirma integridad del análisis validado",
+          "pass": true,
+          "expected": "Mismo diagnóstico e imágenes, estado Validado",
+          "observed": {
+            "id": 3,
+            "estado": "Validado",
+            "imagenes": [
+              4
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

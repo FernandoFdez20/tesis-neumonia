@@ -1,0 +1,50 @@
+[
+  {
+    "archivo": "qa_server.py",
+    "sha256_original": "ffe485f105d04947e269d8a47459f9a1905cbf508f925a85e48af0a54bb10fde",
+    "sha256_referencia": "b4b9a10fe0c5d1a3ff70f7367434b66db9fc839e161c2ffaba8ad35534f3489a",
+    "adaptacion": "Resolución de rutas o dependencia Playwright; condiciones de prueba conservadas"
+  },
+  {
+    "archivo": "blackbox_api.py",
+    "sha256_original": "b7da8b15ff5088a229ae445677043112ef4419a4dd3a5d018eda8d65ec469724",
+    "sha256_referencia": "b7da8b15ff5088a229ae445677043112ef4419a4dd3a5d018eda8d65ec469724",
+    "adaptacion": "Solo normalización de codificación y saltos de línea"
+  },
+  {
+    "archivo": "blackbox_ui.cjs",
+    "sha256_original": "2ca150dfb7d604e709c2c15869c5b9181b121dc9e647dff4c66133827e495ff6",
+    "sha256_referencia": "d29345110d5f3b3a5e6a9f8f4079fbdb42f860829a9695ca1ea65a5e3bd32bc5",
+    "adaptacion": "Resolución de rutas o dependencia Playwright; condiciones de prueba conservadas"
+  },
+  {
+    "archivo": "whitebox_python.py",
+    "sha256_original": "e2887745e5eeb9957ee6aaef7f4fcecc4991d663dae35f51ba87edfc6e4c5ca3",
+    "sha256_referencia": "15938aedfc05e81e7ca785668456294a9dc6142bb0431896e091b70074cf38f7",
+    "adaptacion": "Resolución de rutas o dependencia Playwright; condiciones de prueba conservadas"
+  },
+  {
+    "archivo": "whitebox_frontend.cjs",
+    "sha256_original": "4eba3ee6f305fbafa87a73d172337609bf86e30b361aa192fd3addf228c6e1bd",
+    "sha256_referencia": "ebf214503e5cc81fa094298625668be2c49b9f1544787843fadce79513623169",
+    "adaptacion": "Resolución de rutas o dependencia Playwright; condiciones de prueba conservadas"
+  },
+  {
+    "archivo": "finish_verification.py",
+    "sha256_original": "332bcbfbfbb89c412b8e91564acb582f44f0b0e2af1728489e8140c7cb3cc54f",
+    "sha256_referencia": "b61bf81ed65679e65da8eceb23b668032cc4f7b7a82d03428fdbc7786d2e3990",
+    "adaptacion": "Solo normalización de codificación y saltos de línea"
+  },
+  {
+    "archivo": "consolidate_results.py",
+    "sha256_original": "06f4f4ca4d671de9808919cef106650f25218f34b0f733e18b2cf45ea3e97d78",
+    "sha256_referencia": "29ceeee354351b46784b26288fb2ee10397f9d55423eab9a237fe77655a2fc55",
+    "adaptacion": "Solo normalización de codificación y saltos de línea"
+  },
+  {
+    "archivo": "cleanup_verify.py",
+    "sha256_original": "1b3d84476f31fedf6478058586898ce0fdb6b979fd0a99f450c6a26bd3594274",
+    "sha256_referencia": "666cfcc0f59855bcf41166036d42ff9eb9a1ccef9174d504f9d152046027b067",
+    "adaptacion": "Resolución de rutas o dependencia Playwright; condiciones de prueba conservadas"
+  }
+]

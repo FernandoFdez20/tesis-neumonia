@@ -1,0 +1,25 @@
+{
+  "public_data_unchanged": true,
+  "public_counts": {
+    "atenciones_medicas": 10,
+    "diagnostico_imagenes": 10,
+    "diagnosticos": 5,
+    "enfermedades": 10,
+    "notificaciones": 4,
+    "paciente_enfermedades": 2,
+    "pacientes": 7,
+    "usuario_permisos_override": 0,
+    "usuarios": 4
+  },
+  "temporary_records_removed": {
+    "usuarios": 5,
+    "pacientes": 14,
+    "atenciones_medicas": 11,
+    "diagnosticos": 10,
+    "diagnostico_imagenes": 11,
+    "notificaciones": 4
+  },
+  "temporary_schema_removed": true,
+  "application_files_verified": 145,
+  "application_files_changed": []
+}

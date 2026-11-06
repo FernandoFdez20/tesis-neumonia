@@ -1,0 +1,1301 @@
+{
+  "cases": {
+    "CB-01": {
+      "checks": [
+        {
+          "name": "Contraseña correcta",
+          "pass": true,
+          "expected": true,
+          "observed": true
+        },
+        {
+          "name": "Contraseña errada",
+          "pass": true,
+          "expected": false,
+          "observed": false
+        },
+        {
+          "name": "Sal distinta por hash",
+          "pass": true,
+          "expected": "Hashes diferentes",
+          "observed": true
+        },
+        {
+          "name": "Esquema de almacenamiento",
+          "pass": true,
+          "expected": "PBKDF2-SHA256",
+          "observed": "pbkdf2-sha256"
+        },
+        {
+          "name": "Usuario inexistente",
+          "pass": true,
+          "expected": 401,
+          "observed": 401
+        },
+        {
+          "name": "Usuario con contraseña incorrecta",
+          "pass": true,
+          "expected": 401,
+          "observed": 401
+        },
+        {
+          "name": "Usuario inactivo",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Rama de acceso correcto",
+          "pass": true,
+          "expected": "Token y actualización del acceso",
+          "observed": "Ambos ejecutados"
+        }
+      ]
+    },
+    "CB-02": {
+      "checks": [
+        {
+          "name": "Token válido resuelve la cuenta",
+          "pass": true,
+          "expected": 3,
+          "observed": 3
+        },
+        {
+          "name": "Token inválido",
+          "pass": true,
+          "expected": 403,
+          "observed": 403
+        },
+        {
+          "name": "Token expirado",
+          "pass": true,
+          "expected": 403,
+          "observed": 403
+        },
+        {
+          "name": "Cuenta inexistente",
+          "pass": true,
+          "expected": 404,
+          "observed": 404
+        },
+        {
+          "name": "Cuenta inactiva",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        }
+      ]
+    },
+    "CB-03": {
+      "checks": [
+        {
+          "name": "Base del rol Admin",
+          "pass": true,
+          "expected": [
+            "usuarios.gestionar"
+          ],
+          "observed": [
+            "usuarios.gestionar"
+          ]
+        },
+        {
+          "name": "Base del rol Enfermera",
+          "pass": true,
+          "expected": [
+            "alertas.ver",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar",
+            "resultados.ver"
+          ],
+          "observed": [
+            "alertas.ver",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar",
+            "resultados.ver"
+          ]
+        },
+        {
+          "name": "Base del rol Especialista",
+          "pass": true,
+          "expected": [
+            "alertas.ver",
+            "atenciones.examen_fisico",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "diagnostico.validar",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar",
+            "reporte.pdf",
+            "resultados.ver"
+          ],
+          "observed": [
+            "alertas.ver",
+            "atenciones.examen_fisico",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "diagnostico.validar",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar",
+            "reporte.pdf",
+            "resultados.ver"
+          ]
+        },
+        {
+          "name": "Conceder y revocar",
+          "pass": true,
+          "expected": {
+            "presente": "diagnostico.validar",
+            "ausente": "resultados.ver"
+          },
+          "observed": [
+            "alertas.ver",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "diagnostico.validar",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar"
+          ]
+        },
+        {
+          "name": "Admin excluye permiso clínico concedido",
+          "pass": true,
+          "expected": {
+            "presente": "usuarios.gestionar",
+            "ausente": "pacientes.ver"
+          },
+          "observed": [
+            "usuarios.gestionar"
+          ]
+        },
+        {
+          "name": "Clave desconocida ignorada",
+          "pass": true,
+          "expected": {
+            "presente": "pacientes.ver",
+            "ausente": "clave.inexistente"
+          },
+          "observed": [
+            "alertas.ver",
+            "atenciones.registrar",
+            "atenciones.ver",
+            "dashboard.ver",
+            "historial.ver",
+            "pacientes.registrar",
+            "pacientes.ver",
+            "radiografias.cargar",
+            "resultados.ver"
+          ]
+        },
+        {
+          "name": "Catálogo rechaza permiso inexistente",
+          "pass": true,
+          "expected": "ValueError",
+          "observed": "ValueError"
+        },
+        {
+          "name": "Guarda requiere al menos una clave",
+          "pass": true,
+          "expected": "ValueError",
+          "observed": "ValueError"
+        },
+        {
+          "name": "Guarda permite especialista",
+          "pass": true,
+          "expected": "Permitido",
+          "observed": "Permitido"
+        },
+        {
+          "name": "Guarda deniega enfermería",
+          "pass": true,
+          "expected": 403,
+          "observed": 403
+        }
+      ]
+    },
+    "CB-04": {
+      "checks": [
+        {
+          "name": "Limpieza de texto",
+          "pass": true,
+          "expected": "Texto sin espacios extremos",
+          "observed": {
+            "dni": "12345678",
+            "nombre": "Paciente de prueba"
+          }
+        },
+        {
+          "name": "DNI '1234567'",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "DNI '123456789'",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "DNI '1234ABCD'",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "DNI ''",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "18 años exactos",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "2008-11-05"
+        },
+        {
+          "name": "Menor por un día",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "Adulto por un día",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "2008-11-04"
+        },
+        {
+          "name": "Fecha futura",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "Campo requerido vacío nombres_apellidos",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        },
+        {
+          "name": "Campo requerido vacío sexo",
+          "pass": true,
+          "expected": "ValidationError",
+          "observed": "ValidationError"
+        }
+      ]
+    },
+    "CB-06": {
+      "checks": [
+        {
+          "name": "Combinación 0000",
+          "pass": true,
+          "expected": {
+            "puntaje": 0,
+            "gravedad": "Leve"
+          },
+          "observed": {
+            "puntaje": 0,
+            "gravedad": "Leve"
+          }
+        },
+        {
+          "name": "Combinación 0001",
+          "pass": true,
+          "expected": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0010",
+          "pass": true,
+          "expected": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0011",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0100",
+          "pass": true,
+          "expected": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0101",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0110",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 0111",
+          "pass": true,
+          "expected": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          },
+          "observed": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          }
+        },
+        {
+          "name": "Combinación 1000",
+          "pass": true,
+          "expected": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 1,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 1001",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 1010",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 1011",
+          "pass": true,
+          "expected": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          },
+          "observed": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          }
+        },
+        {
+          "name": "Combinación 1100",
+          "pass": true,
+          "expected": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          },
+          "observed": {
+            "puntaje": 2,
+            "gravedad": "Moderado"
+          }
+        },
+        {
+          "name": "Combinación 1101",
+          "pass": true,
+          "expected": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          },
+          "observed": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          }
+        },
+        {
+          "name": "Combinación 1110",
+          "pass": true,
+          "expected": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          },
+          "observed": {
+            "puntaje": 3,
+            "gravedad": "Grave"
+          }
+        },
+        {
+          "name": "Combinación 1111",
+          "pass": true,
+          "expected": {
+            "puntaje": 4,
+            "gravedad": "Grave"
+          },
+          "observed": {
+            "puntaje": 4,
+            "gravedad": "Grave"
+          }
+        },
+        {
+          "name": "Frontera de presión 90/61",
+          "pass": true,
+          "expected": 0,
+          "observed": 0
+        },
+        {
+          "name": "Frontera de presión 90/60",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Frontera de presión 89/61",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Frontera de presión 89/60",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Edad inyectada desde paciente",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Ausencia de ambas edades",
+          "pass": true,
+          "expected": "ValueError",
+          "observed": "ValueError"
+        }
+      ]
+    },
+    "CB-07": {
+      "checks": [
+        {
+          "name": "MONOCHROME2",
+          "pass": true,
+          "expected": [
+            [
+              0,
+              64
+            ],
+            [
+              128,
+              255
+            ]
+          ],
+          "observed": [
+            [
+              0,
+              64
+            ],
+            [
+              128,
+              255
+            ]
+          ]
+        },
+        {
+          "name": "MONOCHROME1",
+          "pass": true,
+          "expected": [
+            [
+              255,
+              191
+            ],
+            [
+              127,
+              0
+            ]
+          ],
+          "observed": [
+            [
+              255,
+              191
+            ],
+            [
+              127,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "Escalado de 16 bits",
+          "pass": true,
+          "expected": "Extremos 0 y 255",
+          "observed": [
+            0,
+            255
+          ]
+        },
+        {
+          "name": "Forma y tipo de entrada",
+          "pass": true,
+          "expected": "(3,224,224), float32 y finito",
+          "observed": {
+            "shape": [
+              3,
+              224,
+              224
+            ],
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "Replicación de gris",
+          "pass": true,
+          "expected": "Tres canales iguales antes de normalizar",
+          "observed": "Iguales"
+        },
+        {
+          "name": "Normalización ImageNet",
+          "pass": true,
+          "expected": "Media y desviación de ImageNet",
+          "observed": "Coincidente"
+        },
+        {
+          "name": "Umbral 0",
+          "pass": true,
+          "expected": 0,
+          "observed": 0
+        },
+        {
+          "name": "Umbral 0.499999",
+          "pass": true,
+          "expected": 0,
+          "observed": 0
+        },
+        {
+          "name": "Umbral 0.5",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Umbral 0.500001",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Umbral 1",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        },
+        {
+          "name": "Sigmoide del logit cero",
+          "pass": true,
+          "expected": 0.5,
+          "observed": 0.5
+        },
+        {
+          "name": "Fallos independientes AP y PA",
+          "pass": true,
+          "expected": "Diccionario sin resultados",
+          "observed": {}
+        }
+      ]
+    },
+    "CB-08": {
+      "checks": [
+        {
+          "name": "Leve negativo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Baja",
+            "referencia": "PA",
+            "probabilidad": 0.2
+          },
+          "observed": {
+            "priority": "Baja",
+            "vista": "PA",
+            "probabilidad": 0.2,
+            "confianza": 80.0
+          }
+        },
+        {
+          "name": "Leve positivo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Moderada",
+            "referencia": "PA",
+            "probabilidad": 0.9
+          },
+          "observed": {
+            "priority": "Moderada",
+            "vista": "PA",
+            "probabilidad": 0.9,
+            "confianza": 90.0
+          }
+        },
+        {
+          "name": "Moderado negativo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Moderada",
+            "referencia": "PA",
+            "probabilidad": 0.2
+          },
+          "observed": {
+            "priority": "Moderada",
+            "vista": "PA",
+            "probabilidad": 0.2,
+            "confianza": 80.0
+          }
+        },
+        {
+          "name": "Moderado positivo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Alta",
+            "referencia": "PA",
+            "probabilidad": 0.9
+          },
+          "observed": {
+            "priority": "Alta",
+            "vista": "PA",
+            "probabilidad": 0.9,
+            "confianza": 90.0
+          }
+        },
+        {
+          "name": "Grave negativo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Alta",
+            "referencia": "PA",
+            "probabilidad": 0.2
+          },
+          "observed": {
+            "priority": "Alta",
+            "vista": "PA",
+            "probabilidad": 0.2,
+            "confianza": 80.0
+          }
+        },
+        {
+          "name": "Grave positivo",
+          "pass": true,
+          "expected": {
+            "prioridad": "Crítica",
+            "referencia": "PA",
+            "probabilidad": 0.9
+          },
+          "observed": {
+            "priority": "Crítica",
+            "vista": "PA",
+            "probabilidad": 0.9,
+            "confianza": 90.0
+          }
+        },
+        {
+          "name": "Ausencia de archivos",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Atención inexistente",
+          "pass": true,
+          "expected": 404,
+          "observed": 404
+        }
+      ]
+    },
+    "CB-09": {
+      "checks": [
+        {
+          "name": "False y Neumonía",
+          "pass": true,
+          "expected": {
+            "IA": false,
+            "concordancia": "Corregido",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": false,
+            "concordancia": "Corregido",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "False y Sano",
+          "pass": true,
+          "expected": {
+            "IA": false,
+            "concordancia": "Confirmado",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": false,
+            "concordancia": "Confirmado",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "False y Otro diagnóstico",
+          "pass": true,
+          "expected": {
+            "IA": false,
+            "concordancia": "Confirmado",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": false,
+            "concordancia": "Confirmado",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "True y Neumonía",
+          "pass": true,
+          "expected": {
+            "IA": true,
+            "concordancia": "Confirmado",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": true,
+            "concordancia": "Confirmado",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "True y Sano",
+          "pass": true,
+          "expected": {
+            "IA": true,
+            "concordancia": "Corregido",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": true,
+            "concordancia": "Corregido",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "True y Otro diagnóstico",
+          "pass": true,
+          "expected": {
+            "IA": true,
+            "concordancia": "Corregido",
+            "atención": "Finalizada"
+          },
+          "observed": {
+            "IA": true,
+            "concordancia": "Corregido",
+            "atención": "EstadoAtencion.Finalizada"
+          }
+        },
+        {
+          "name": "Segunda validación",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Validación sin permiso",
+          "pass": true,
+          "expected": 403,
+          "observed": 403
+        },
+        {
+          "name": "Diagnóstico inexistente",
+          "pass": true,
+          "expected": 404,
+          "observed": 404
+        }
+      ]
+    },
+    "CB-10": {
+      "checks": [
+        {
+          "name": "Nueva Alta",
+          "pass": true,
+          "expected": [
+            "crear"
+          ],
+          "observed": [
+            "crear"
+          ]
+        },
+        {
+          "name": "Nueva Crítica",
+          "pass": true,
+          "expected": [
+            "crear"
+          ],
+          "observed": [
+            "crear"
+          ]
+        },
+        {
+          "name": "Baja sin aviso",
+          "pass": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "name": "Moderada sin aviso",
+          "pass": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "name": "Reabrir cierre manual",
+          "pass": true,
+          "expected": [
+            "reabrir"
+          ],
+          "observed": [
+            "reabrir"
+          ]
+        },
+        {
+          "name": "Conservar cierre validado",
+          "pass": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "name": "Actualizar prioridad",
+          "pass": true,
+          "expected": [
+            "guardar"
+          ],
+          "observed": [
+            "guardar"
+          ]
+        },
+        {
+          "name": "No duplicar prioridad",
+          "pass": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "name": "Cerrar por disminución",
+          "pass": true,
+          "expected": [
+            "cerrar"
+          ],
+          "observed": [
+            "cerrar"
+          ]
+        },
+        {
+          "name": "Fallo de alertas no interrumpe el caso",
+          "pass": true,
+          "expected": "Sin excepción propagada",
+          "observed": "Sin excepción"
+        },
+        {
+          "name": "Cierre validación None",
+          "pass": true,
+          "expected": false,
+          "observed": false
+        },
+        {
+          "name": "Cierre validación namespace(cerrada=True)",
+          "pass": true,
+          "expected": false,
+          "observed": false
+        },
+        {
+          "name": "Cierre validación namespace(cerrada=False)",
+          "pass": true,
+          "expected": true,
+          "observed": true
+        }
+      ]
+    },
+    "CB-11": {
+      "checks": [
+        {
+          "name": "No cambiar el propio rol",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "No suspender la propia cuenta",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Conservar el último administrador activo",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Usuario de actualización inexistente",
+          "pass": true,
+          "expected": 404,
+          "observed": 404
+        },
+        {
+          "name": "Permiso fuera del catálogo",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Permisos clínicos bloqueados a Admin",
+          "pass": true,
+          "expected": 400,
+          "observed": 400
+        },
+        {
+          "name": "Reasignación a cuenta inexistente",
+          "pass": true,
+          "expected": 404,
+          "observed": 404
+        },
+        {
+          "name": "Edición sin cambios",
+          "pass": true,
+          "expected": 1,
+          "observed": 1
+        }
+      ]
+    }
+  },
+  "coverage": [
+    {
+      "function": "get_password_hash",
+      "file": "backend/app/core/security.py",
+      "line": 14,
+      "eligible_lines": 1,
+      "executed_lines": 1,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "verify_password",
+      "file": "backend/app/core/security.py",
+      "line": 10,
+      "eligible_lines": 1,
+      "executed_lines": 1,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "create_access_token",
+      "file": "backend/app/core/security.py",
+      "line": 18,
+      "eligible_lines": 8,
+      "executed_lines": 8,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "AuthService.login",
+      "file": "backend/app/modules/auth/service.py",
+      "line": 22,
+      "eligible_lines": 15,
+      "executed_lines": 15,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "resolver_permisos",
+      "file": "backend/app/core/permisos.py",
+      "line": 92,
+      "eligible_lines": 15,
+      "executed_lines": 15,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "requiere_permiso",
+      "file": "backend/app/api/deps.py",
+      "line": 51,
+      "eligible_lines": 10,
+      "executed_lines": 10,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "get_usuario_actual",
+      "file": "backend/app/api/deps.py",
+      "line": 19,
+      "eligible_lines": 18,
+      "executed_lines": 15,
+      "percent": 83.33,
+      "not_executed": [
+        28,
+        29,
+        30
+      ]
+    },
+    {
+      "function": "PacienteBase.validar_dni",
+      "file": "backend/app/modules/pacientes/schemas.py",
+      "line": 27,
+      "eligible_lines": 4,
+      "executed_lines": 4,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "PacienteBase.validar_paciente_adulto",
+      "file": "backend/app/modules/pacientes/schemas.py",
+      "line": 52,
+      "eligible_lines": 6,
+      "executed_lines": 6,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "calcular_crb65",
+      "file": "backend/app/modules/diagnosticos/crb65_service.py",
+      "line": 16,
+      "eligible_lines": 34,
+      "executed_lines": 34,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "leer_dicom_como_gris",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 21,
+      "eligible_lines": 9,
+      "executed_lines": 9,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "redimensionar",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 34,
+      "eligible_lines": 2,
+      "executed_lines": 2,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "gris_a_rgb",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 40,
+      "eligible_lines": 2,
+      "executed_lines": 2,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "normalizar_imagenet",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 46,
+      "eligible_lines": 1,
+      "executed_lines": 1,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "preprocesar_imagen",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 51,
+      "eligible_lines": 2,
+      "executed_lines": 2,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "etiqueta_de",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 71,
+      "eligible_lines": 1,
+      "executed_lines": 1,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "predecir",
+      "file": "backend/app/ml/inferencia.py",
+      "line": 61,
+      "eligible_lines": 6,
+      "executed_lines": 6,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "_ejecutar_inferencia",
+      "file": "backend/app/modules/diagnosticos/service.py",
+      "line": 91,
+      "eligible_lines": 21,
+      "executed_lines": 13,
+      "percent": 61.9,
+      "not_executed": [
+        102,
+        103,
+        104,
+        105,
+        112,
+        113,
+        114,
+        115
+      ]
+    },
+    {
+      "function": "DiagnosticoService.cargar_radiografias",
+      "file": "backend/app/modules/diagnosticos/service.py",
+      "line": 128,
+      "eligible_lines": 115,
+      "executed_lines": 110,
+      "percent": 95.65,
+      "not_executed": [
+        156,
+        159,
+        178,
+        179,
+        180
+      ]
+    },
+    {
+      "function": "DiagnosticoService.validar_diagnostico",
+      "file": "backend/app/modules/diagnosticos/service.py",
+      "line": 307,
+      "eligible_lines": 53,
+      "executed_lines": 48,
+      "percent": 90.57,
+      "not_executed": [
+        337,
+        341,
+        375,
+        376,
+        377
+      ]
+    },
+    {
+      "function": "NotificacionService.asegurar_para_diagnostico",
+      "file": "backend/app/modules/notificaciones/service.py",
+      "line": 81,
+      "eligible_lines": 17,
+      "executed_lines": 17,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "NotificacionService.cerrar_por_validacion",
+      "file": "backend/app/modules/notificaciones/service.py",
+      "line": 106,
+      "eligible_lines": 7,
+      "executed_lines": 7,
+      "percent": 100.0,
+      "not_executed": []
+    },
+    {
+      "function": "UsuarioService.actualizar",
+      "file": "backend/app/modules/usuarios/service.py",
+      "line": 123,
+      "eligible_lines": 37,
+      "executed_lines": 29,
+      "percent": 78.38,
+      "not_executed": [
+        131,
+        134,
+        135,
+        136,
+        137,
+        139,
+        157,
+        175
+      ]
+    },
+    {
+      "function": "UsuarioService.asignar_permisos",
+      "file": "backend/app/modules/usuarios/service.py",
+      "line": 188,
+      "eligible_lines": 34,
+      "executed_lines": 25,
+      "percent": 73.53,
+      "not_executed": [
+        191,
+        212,
+        232,
+        233,
+        234,
+        235,
+        238,
+        239,
+        240
+      ]
+    }
+  ],
+  "limitations": [
+    "Cobertura de líneas limitada a las funciones Python seleccionadas.",
+    "Las probabilidades controladas de CB-08 prueban la regla de fusión, no el rendimiento clínico del modelo.",
+    "Los dobles de CB-01, CB-03 y CB-10 sustituyen repositorios o fallos de almacenamiento para recorrer sus decisiones."
+  ]
+}

@@ -1,0 +1,1120 @@
+{
+  "patient": {
+    "id": 1,
+    "dni": "81000001",
+    "nombres_apellidos": "Paciente QA con antecedentes",
+    "sexo": "Femenino",
+    "fecha_nacimiento": "1960-02-02",
+    "otros_antecedentes": "hipertensión",
+    "antecedentes_familiares": "asma, diabetes",
+    "ultima_atencion": null,
+    "en_atencion": false,
+    "created_at": "2026-11-05T15:43:22.745692",
+    "enfermedades": []
+  },
+  "initial_attention": {
+    "paciente_id": 1,
+    "fecha_atencion": null,
+    "hora_atencion": null,
+    "motivo_consulta": null,
+    "temperatura": 37.0,
+    "frecuencia_cardiaca": 80,
+    "frecuencia_respiratoria": 32,
+    "saturacion_o2": 97,
+    "presion_sistolica": 120,
+    "presion_diastolica": 80,
+    "tiempo_evolucion_dias": 3,
+    "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+    "examen_fisico": null,
+    "confusion": false,
+    "crb65_puntaje": 2,
+    "crb65_gravedad": "Moderado",
+    "crb65_detalle": {
+      "edad": {
+        "valor": 66,
+        "puntos": 1,
+        "descripcion": "Edad ≥ 65 años"
+      },
+      "presion": {
+        "valor": "120/80",
+        "puntos": 0,
+        "descripcion": "Presión arterial normal (>90/60)"
+      },
+      "confusion": {
+        "valor": false,
+        "puntos": 0,
+        "descripcion": "Confusión ausente"
+      },
+      "respiracion": {
+        "valor": 32,
+        "puntos": 1,
+        "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+      }
+    },
+    "estado": "En proceso",
+    "id": 1,
+    "usuario_id": 2,
+    "fecha_registro": "2026-11-05T15:43:23.090452",
+    "derivado_radiografia": false,
+    "presion_arterial": "120/80"
+  },
+  "two_view_diagnosis": {
+    "id": 1,
+    "atencion_medica_id": 1,
+    "enfermo": true,
+    "prioridad_final": "Alta",
+    "prioridad_detalle": {
+      "resultado_ia": "Positivo",
+      "crb65_puntaje": 2,
+      "crb65_gravedad": "Moderado",
+      "regla_aplicada": "Moderado + Positivo → Alta",
+      "confianza_ia_maxima": 99.98
+    },
+    "imagen_referencia_id": 1,
+    "estado_validacion": "Pendiente de validación",
+    "clasificacion_medico": null,
+    "diagnostico_final_medico": null,
+    "concordancia_ia": null,
+    "diagnostico_descripcion": null,
+    "validado_por_id": null,
+    "fecha_validacion": null,
+    "updated_at": "2026-11-05T15:43:23.617050",
+    "imagenes": [
+      {
+        "id": 1,
+        "diagnostico_id": 1,
+        "imagen_url": "/uploads/radiografias/1/dcbfc72a9eb44bbd97c7e4d529acc231.dcm",
+        "orden": 1,
+        "tipo_vista": "AP",
+        "probabilidad_ia": 0.9998,
+        "confianza_radiografica": 99.98,
+        "hallazgo_positivo": true,
+        "created_at": "2026-11-05T15:43:23.617050"
+      },
+      {
+        "id": 2,
+        "diagnostico_id": 1,
+        "imagen_url": "/uploads/radiografias/1/3d88c30de8b744b08a934fa23042f420.dcm",
+        "orden": 2,
+        "tipo_vista": "PA",
+        "probabilidad_ia": 0.0,
+        "confianza_radiografica": 100.0,
+        "hallazgo_positivo": false,
+        "created_at": "2026-11-05T15:43:23.617050"
+      }
+    ]
+  },
+  "inference_ms": [
+    1089.27
+  ],
+  "priority_matrix": [
+    {
+      "patient": {
+        "id": 7,
+        "dni": "81000009",
+        "nombres_apellidos": "Paciente QA matriz Leve negativo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:25.259807",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 7,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 20,
+        "saturacion_o2": 97,
+        "presion_sistolica": 120,
+        "presion_diastolica": 80,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": false,
+        "crb65_puntaje": 0,
+        "crb65_gravedad": "Leve",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "120/80",
+            "puntos": 0,
+            "descripcion": "Presión arterial normal (>90/60)"
+          },
+          "confusion": {
+            "valor": false,
+            "puntos": 0,
+            "descripcion": "Confusión ausente"
+          },
+          "respiracion": {
+            "valor": 20,
+            "puntos": 0,
+            "descripcion": "Frecuencia respiratoria < 30"
+          }
+        },
+        "estado": "En proceso",
+        "id": 3,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:25.301397",
+        "derivado_radiografia": false,
+        "presion_arterial": "120/80"
+      },
+      "diagnosis": {
+        "id": 2,
+        "atencion_medica_id": 3,
+        "enfermo": false,
+        "prioridad_final": "Baja",
+        "prioridad_detalle": {
+          "resultado_ia": "Negativo",
+          "crb65_puntaje": 0,
+          "crb65_gravedad": "Leve",
+          "regla_aplicada": "Leve + Negativo → Baja",
+          "confianza_ia_maxima": 71.81
+        },
+        "imagen_referencia_id": 3,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:25.382566",
+        "imagenes": [
+          {
+            "id": 3,
+            "diagnostico_id": 2,
+            "imagen_url": "/uploads/radiografias/3/9b7bb59c0dca49f4a6713130aec089f8.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.2819,
+            "confianza_radiografica": 71.81,
+            "hallazgo_positivo": false,
+            "created_at": "2026-11-05T15:43:25.382566"
+          }
+        ]
+      }
+    },
+    {
+      "patient": {
+        "id": 8,
+        "dni": "81000010",
+        "nombres_apellidos": "Paciente QA matriz Leve positivo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:25.732677",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 8,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 20,
+        "saturacion_o2": 97,
+        "presion_sistolica": 120,
+        "presion_diastolica": 80,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": false,
+        "crb65_puntaje": 0,
+        "crb65_gravedad": "Leve",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "120/80",
+            "puntos": 0,
+            "descripcion": "Presión arterial normal (>90/60)"
+          },
+          "confusion": {
+            "valor": false,
+            "puntos": 0,
+            "descripcion": "Confusión ausente"
+          },
+          "respiracion": {
+            "valor": 20,
+            "puntos": 0,
+            "descripcion": "Frecuencia respiratoria < 30"
+          }
+        },
+        "estado": "En proceso",
+        "id": 4,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:25.749674",
+        "derivado_radiografia": false,
+        "presion_arterial": "120/80"
+      },
+      "diagnosis": {
+        "id": 3,
+        "atencion_medica_id": 4,
+        "enfermo": true,
+        "prioridad_final": "Moderada",
+        "prioridad_detalle": {
+          "resultado_ia": "Positivo",
+          "crb65_puntaje": 0,
+          "crb65_gravedad": "Leve",
+          "regla_aplicada": "Leve + Positivo → Moderada",
+          "confianza_ia_maxima": 99.98
+        },
+        "imagen_referencia_id": 4,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:25.790859",
+        "imagenes": [
+          {
+            "id": 4,
+            "diagnostico_id": 3,
+            "imagen_url": "/uploads/radiografias/4/5f5198f3c4a3430dbb09b9f36e05092f.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.9998,
+            "confianza_radiografica": 99.98,
+            "hallazgo_positivo": true,
+            "created_at": "2026-11-05T15:43:25.790859"
+          }
+        ]
+      }
+    },
+    {
+      "patient": {
+        "id": 9,
+        "dni": "81000011",
+        "nombres_apellidos": "Paciente QA matriz Moderado negativo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:26.050258",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 9,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 32,
+        "saturacion_o2": 97,
+        "presion_sistolica": 120,
+        "presion_diastolica": 80,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": false,
+        "crb65_puntaje": 1,
+        "crb65_gravedad": "Moderado",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "120/80",
+            "puntos": 0,
+            "descripcion": "Presión arterial normal (>90/60)"
+          },
+          "confusion": {
+            "valor": false,
+            "puntos": 0,
+            "descripcion": "Confusión ausente"
+          },
+          "respiracion": {
+            "valor": 32,
+            "puntos": 1,
+            "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+          }
+        },
+        "estado": "En proceso",
+        "id": 5,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:26.063543",
+        "derivado_radiografia": false,
+        "presion_arterial": "120/80"
+      },
+      "diagnosis": {
+        "id": 4,
+        "atencion_medica_id": 5,
+        "enfermo": false,
+        "prioridad_final": "Moderada",
+        "prioridad_detalle": {
+          "resultado_ia": "Negativo",
+          "crb65_puntaje": 1,
+          "crb65_gravedad": "Moderado",
+          "regla_aplicada": "Moderado + Negativo → Moderada",
+          "confianza_ia_maxima": 71.81
+        },
+        "imagen_referencia_id": 5,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:26.123781",
+        "imagenes": [
+          {
+            "id": 5,
+            "diagnostico_id": 4,
+            "imagen_url": "/uploads/radiografias/5/a417c0ded68e46c5a88fed06f99b9476.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.2819,
+            "confianza_radiografica": 71.81,
+            "hallazgo_positivo": false,
+            "created_at": "2026-11-05T15:43:26.123781"
+          }
+        ]
+      }
+    },
+    {
+      "patient": {
+        "id": 10,
+        "dni": "81000012",
+        "nombres_apellidos": "Paciente QA matriz Moderado positivo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:26.357733",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 10,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 32,
+        "saturacion_o2": 97,
+        "presion_sistolica": 120,
+        "presion_diastolica": 80,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": false,
+        "crb65_puntaje": 1,
+        "crb65_gravedad": "Moderado",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "120/80",
+            "puntos": 0,
+            "descripcion": "Presión arterial normal (>90/60)"
+          },
+          "confusion": {
+            "valor": false,
+            "puntos": 0,
+            "descripcion": "Confusión ausente"
+          },
+          "respiracion": {
+            "valor": 32,
+            "puntos": 1,
+            "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+          }
+        },
+        "estado": "En proceso",
+        "id": 6,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:26.371026",
+        "derivado_radiografia": false,
+        "presion_arterial": "120/80"
+      },
+      "diagnosis": {
+        "id": 5,
+        "atencion_medica_id": 6,
+        "enfermo": true,
+        "prioridad_final": "Alta",
+        "prioridad_detalle": {
+          "resultado_ia": "Positivo",
+          "crb65_puntaje": 1,
+          "crb65_gravedad": "Moderado",
+          "regla_aplicada": "Moderado + Positivo → Alta",
+          "confianza_ia_maxima": 99.98
+        },
+        "imagen_referencia_id": 6,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:26.389110",
+        "imagenes": [
+          {
+            "id": 6,
+            "diagnostico_id": 5,
+            "imagen_url": "/uploads/radiografias/6/25d1971742fc4e5fae80a80db8f32a89.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.9998,
+            "confianza_radiografica": 99.98,
+            "hallazgo_positivo": true,
+            "created_at": "2026-11-05T15:43:26.389110"
+          }
+        ]
+      }
+    },
+    {
+      "patient": {
+        "id": 11,
+        "dni": "81000013",
+        "nombres_apellidos": "Paciente QA matriz Grave negativo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:26.647398",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 11,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 32,
+        "saturacion_o2": 97,
+        "presion_sistolica": 85,
+        "presion_diastolica": 55,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": true,
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "85/55",
+            "puntos": 1,
+            "descripcion": "PAS < 90 mmHg o PAD ≤ 60 mmHg"
+          },
+          "confusion": {
+            "valor": true,
+            "puntos": 1,
+            "descripcion": "Presencia de confusión mental de aparición nueva"
+          },
+          "respiracion": {
+            "valor": 32,
+            "puntos": 1,
+            "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+          }
+        },
+        "estado": "En proceso",
+        "id": 7,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:26.674250",
+        "derivado_radiografia": false,
+        "presion_arterial": "85/55"
+      },
+      "diagnosis": {
+        "id": 6,
+        "atencion_medica_id": 7,
+        "enfermo": false,
+        "prioridad_final": "Alta",
+        "prioridad_detalle": {
+          "resultado_ia": "Negativo",
+          "crb65_puntaje": 3,
+          "crb65_gravedad": "Grave",
+          "regla_aplicada": "Grave + Negativo → Alta",
+          "confianza_ia_maxima": 71.81
+        },
+        "imagen_referencia_id": 7,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:26.702375",
+        "imagenes": [
+          {
+            "id": 7,
+            "diagnostico_id": 6,
+            "imagen_url": "/uploads/radiografias/7/775ad3bcb69f44068d385cd73be61d3a.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.2819,
+            "confianza_radiografica": 71.81,
+            "hallazgo_positivo": false,
+            "created_at": "2026-11-05T15:43:26.702375"
+          }
+        ]
+      }
+    },
+    {
+      "patient": {
+        "id": 12,
+        "dni": "81000014",
+        "nombres_apellidos": "Paciente QA matriz Grave positivo",
+        "sexo": "Femenino",
+        "fecha_nacimiento": "1980-01-01",
+        "otros_antecedentes": null,
+        "antecedentes_familiares": null,
+        "ultima_atencion": null,
+        "en_atencion": false,
+        "created_at": "2026-11-05T15:43:26.953796",
+        "enfermedades": []
+      },
+      "attention": {
+        "paciente_id": 12,
+        "fecha_atencion": null,
+        "hora_atencion": null,
+        "motivo_consulta": null,
+        "temperatura": 37.0,
+        "frecuencia_cardiaca": 80,
+        "frecuencia_respiratoria": 32,
+        "saturacion_o2": 97,
+        "presion_sistolica": 85,
+        "presion_diastolica": 55,
+        "tiempo_evolucion_dias": 3,
+        "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+        "examen_fisico": null,
+        "confusion": true,
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "crb65_detalle": {
+          "edad": {
+            "valor": 46,
+            "puntos": 0,
+            "descripcion": "Edad < 65 años"
+          },
+          "presion": {
+            "valor": "85/55",
+            "puntos": 1,
+            "descripcion": "PAS < 90 mmHg o PAD ≤ 60 mmHg"
+          },
+          "confusion": {
+            "valor": true,
+            "puntos": 1,
+            "descripcion": "Presencia de confusión mental de aparición nueva"
+          },
+          "respiracion": {
+            "valor": 32,
+            "puntos": 1,
+            "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+          }
+        },
+        "estado": "En proceso",
+        "id": 8,
+        "usuario_id": 2,
+        "fecha_registro": "2026-11-05T15:43:26.976659",
+        "derivado_radiografia": false,
+        "presion_arterial": "85/55"
+      },
+      "diagnosis": {
+        "id": 7,
+        "atencion_medica_id": 8,
+        "enfermo": true,
+        "prioridad_final": "Crítica",
+        "prioridad_detalle": {
+          "resultado_ia": "Positivo",
+          "crb65_puntaje": 3,
+          "crb65_gravedad": "Grave",
+          "regla_aplicada": "Grave + Positivo → Crítica",
+          "confianza_ia_maxima": 99.98
+        },
+        "imagen_referencia_id": 8,
+        "estado_validacion": "Pendiente de validación",
+        "clasificacion_medico": null,
+        "diagnostico_final_medico": null,
+        "concordancia_ia": null,
+        "diagnostico_descripcion": null,
+        "validado_por_id": null,
+        "fecha_validacion": null,
+        "updated_at": "2026-11-05T15:43:27.017726",
+        "imagenes": [
+          {
+            "id": 8,
+            "diagnostico_id": 7,
+            "imagen_url": "/uploads/radiografias/8/2318cf6c064f4b2dbb4cf97c17a762e4.dcm",
+            "orden": 1,
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.9998,
+            "confianza_radiografica": 99.98,
+            "hallazgo_positivo": true,
+            "created_at": "2026-11-05T15:43:27.017726"
+          }
+        ]
+      }
+    }
+  ],
+  "ui_positive": {
+    "patient": {
+      "id": 12,
+      "dni": "81000014",
+      "nombres_apellidos": "Paciente QA matriz Grave positivo",
+      "sexo": "Femenino",
+      "fecha_nacimiento": "1980-01-01",
+      "otros_antecedentes": null,
+      "antecedentes_familiares": null,
+      "ultima_atencion": null,
+      "en_atencion": false,
+      "created_at": "2026-11-05T15:43:26.953796",
+      "enfermedades": []
+    },
+    "attention": {
+      "paciente_id": 12,
+      "fecha_atencion": null,
+      "hora_atencion": null,
+      "motivo_consulta": null,
+      "temperatura": 37.0,
+      "frecuencia_cardiaca": 80,
+      "frecuencia_respiratoria": 32,
+      "saturacion_o2": 97,
+      "presion_sistolica": 85,
+      "presion_diastolica": 55,
+      "tiempo_evolucion_dias": 3,
+      "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+      "examen_fisico": null,
+      "confusion": true,
+      "crb65_puntaje": 3,
+      "crb65_gravedad": "Grave",
+      "crb65_detalle": {
+        "edad": {
+          "valor": 46,
+          "puntos": 0,
+          "descripcion": "Edad < 65 años"
+        },
+        "presion": {
+          "valor": "85/55",
+          "puntos": 1,
+          "descripcion": "PAS < 90 mmHg o PAD ≤ 60 mmHg"
+        },
+        "confusion": {
+          "valor": true,
+          "puntos": 1,
+          "descripcion": "Presencia de confusión mental de aparición nueva"
+        },
+        "respiracion": {
+          "valor": 32,
+          "puntos": 1,
+          "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+        }
+      },
+      "estado": "En proceso",
+      "id": 8,
+      "usuario_id": 2,
+      "fecha_registro": "2026-11-05T15:43:26.976659",
+      "derivado_radiografia": false,
+      "presion_arterial": "85/55"
+    },
+    "diagnosis": {
+      "id": 7,
+      "atencion_medica_id": 8,
+      "enfermo": true,
+      "prioridad_final": "Crítica",
+      "prioridad_detalle": {
+        "resultado_ia": "Positivo",
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "regla_aplicada": "Grave + Positivo → Crítica",
+        "confianza_ia_maxima": 99.98
+      },
+      "imagen_referencia_id": 8,
+      "estado_validacion": "Pendiente de validación",
+      "clasificacion_medico": null,
+      "diagnostico_final_medico": null,
+      "concordancia_ia": null,
+      "diagnostico_descripcion": null,
+      "validado_por_id": null,
+      "fecha_validacion": null,
+      "updated_at": "2026-11-05T15:43:27.017726",
+      "imagenes": [
+        {
+          "id": 8,
+          "diagnostico_id": 7,
+          "imagen_url": "/uploads/radiografias/8/2318cf6c064f4b2dbb4cf97c17a762e4.dcm",
+          "orden": 1,
+          "tipo_vista": "AP",
+          "probabilidad_ia": 0.9998,
+          "confianza_radiografica": 99.98,
+          "hallazgo_positivo": true,
+          "created_at": "2026-11-05T15:43:27.017726"
+        }
+      ]
+    }
+  },
+  "ui_negative": {
+    "patient": {
+      "id": 7,
+      "dni": "81000009",
+      "nombres_apellidos": "Paciente QA matriz Leve negativo",
+      "sexo": "Femenino",
+      "fecha_nacimiento": "1980-01-01",
+      "otros_antecedentes": null,
+      "antecedentes_familiares": null,
+      "ultima_atencion": null,
+      "en_atencion": false,
+      "created_at": "2026-11-05T15:43:25.259807",
+      "enfermedades": []
+    },
+    "attention": {
+      "paciente_id": 7,
+      "fecha_atencion": null,
+      "hora_atencion": null,
+      "motivo_consulta": null,
+      "temperatura": 37.0,
+      "frecuencia_cardiaca": 80,
+      "frecuencia_respiratoria": 20,
+      "saturacion_o2": 97,
+      "presion_sistolica": 120,
+      "presion_diastolica": 80,
+      "tiempo_evolucion_dias": 3,
+      "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+      "examen_fisico": null,
+      "confusion": false,
+      "crb65_puntaje": 0,
+      "crb65_gravedad": "Leve",
+      "crb65_detalle": {
+        "edad": {
+          "valor": 46,
+          "puntos": 0,
+          "descripcion": "Edad < 65 años"
+        },
+        "presion": {
+          "valor": "120/80",
+          "puntos": 0,
+          "descripcion": "Presión arterial normal (>90/60)"
+        },
+        "confusion": {
+          "valor": false,
+          "puntos": 0,
+          "descripcion": "Confusión ausente"
+        },
+        "respiracion": {
+          "valor": 20,
+          "puntos": 0,
+          "descripcion": "Frecuencia respiratoria < 30"
+        }
+      },
+      "estado": "En proceso",
+      "id": 3,
+      "usuario_id": 2,
+      "fecha_registro": "2026-11-05T15:43:25.301397",
+      "derivado_radiografia": false,
+      "presion_arterial": "120/80"
+    },
+    "diagnosis": {
+      "id": 2,
+      "atencion_medica_id": 3,
+      "enfermo": false,
+      "prioridad_final": "Baja",
+      "prioridad_detalle": {
+        "resultado_ia": "Negativo",
+        "crb65_puntaje": 0,
+        "crb65_gravedad": "Leve",
+        "regla_aplicada": "Leve + Negativo → Baja",
+        "confianza_ia_maxima": 71.81
+      },
+      "imagen_referencia_id": 3,
+      "estado_validacion": "Pendiente de validación",
+      "clasificacion_medico": null,
+      "diagnostico_final_medico": null,
+      "concordancia_ia": null,
+      "diagnostico_descripcion": null,
+      "validado_por_id": null,
+      "fecha_validacion": null,
+      "updated_at": "2026-11-05T15:43:25.382566",
+      "imagenes": [
+        {
+          "id": 3,
+          "diagnostico_id": 2,
+          "imagen_url": "/uploads/radiografias/3/9b7bb59c0dca49f4a6713130aec089f8.dcm",
+          "orden": 1,
+          "tipo_vista": "AP",
+          "probabilidad_ia": 0.2819,
+          "confianza_radiografica": 71.81,
+          "hallazgo_positivo": false,
+          "created_at": "2026-11-05T15:43:25.382566"
+        }
+      ]
+    }
+  },
+  "ui_pending": {
+    "patient": {
+      "id": 11,
+      "dni": "81000013",
+      "nombres_apellidos": "Paciente QA matriz Grave negativo",
+      "sexo": "Femenino",
+      "fecha_nacimiento": "1980-01-01",
+      "otros_antecedentes": null,
+      "antecedentes_familiares": null,
+      "ultima_atencion": null,
+      "en_atencion": false,
+      "created_at": "2026-11-05T15:43:26.647398",
+      "enfermedades": []
+    },
+    "attention": {
+      "paciente_id": 11,
+      "fecha_atencion": null,
+      "hora_atencion": null,
+      "motivo_consulta": null,
+      "temperatura": 37.0,
+      "frecuencia_cardiaca": 80,
+      "frecuencia_respiratoria": 32,
+      "saturacion_o2": 97,
+      "presion_sistolica": 85,
+      "presion_diastolica": 55,
+      "tiempo_evolucion_dias": 3,
+      "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+      "examen_fisico": null,
+      "confusion": true,
+      "crb65_puntaje": 3,
+      "crb65_gravedad": "Grave",
+      "crb65_detalle": {
+        "edad": {
+          "valor": 46,
+          "puntos": 0,
+          "descripcion": "Edad < 65 años"
+        },
+        "presion": {
+          "valor": "85/55",
+          "puntos": 1,
+          "descripcion": "PAS < 90 mmHg o PAD ≤ 60 mmHg"
+        },
+        "confusion": {
+          "valor": true,
+          "puntos": 1,
+          "descripcion": "Presencia de confusión mental de aparición nueva"
+        },
+        "respiracion": {
+          "valor": 32,
+          "puntos": 1,
+          "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+        }
+      },
+      "estado": "En proceso",
+      "id": 7,
+      "usuario_id": 2,
+      "fecha_registro": "2026-11-05T15:43:26.674250",
+      "derivado_radiografia": false,
+      "presion_arterial": "85/55"
+    },
+    "diagnosis": {
+      "id": 6,
+      "atencion_medica_id": 7,
+      "enfermo": false,
+      "prioridad_final": "Alta",
+      "prioridad_detalle": {
+        "resultado_ia": "Negativo",
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "regla_aplicada": "Grave + Negativo → Alta",
+        "confianza_ia_maxima": 71.81
+      },
+      "imagen_referencia_id": 7,
+      "estado_validacion": "Pendiente de validación",
+      "clasificacion_medico": null,
+      "diagnostico_final_medico": null,
+      "concordancia_ia": null,
+      "diagnostico_descripcion": null,
+      "validado_por_id": null,
+      "fecha_validacion": null,
+      "updated_at": "2026-11-05T15:43:26.702375",
+      "imagenes": [
+        {
+          "id": 7,
+          "diagnostico_id": 6,
+          "imagen_url": "/uploads/radiografias/7/775ad3bcb69f44068d385cd73be61d3a.dcm",
+          "orden": 1,
+          "tipo_vista": "AP",
+          "probabilidad_ia": 0.2819,
+          "confianza_radiografica": 71.81,
+          "hallazgo_positivo": false,
+          "created_at": "2026-11-05T15:43:26.702375"
+        }
+      ]
+    }
+  },
+  "validated_positive": {
+    "patient": {
+      "id": 12,
+      "dni": "81000014",
+      "nombres_apellidos": "Paciente QA matriz Grave positivo",
+      "sexo": "Femenino",
+      "fecha_nacimiento": "1980-01-01",
+      "otros_antecedentes": null,
+      "antecedentes_familiares": null,
+      "ultima_atencion": null,
+      "en_atencion": false,
+      "created_at": "2026-11-05T15:43:26.953796",
+      "enfermedades": []
+    },
+    "attention": {
+      "paciente_id": 12,
+      "fecha_atencion": null,
+      "hora_atencion": null,
+      "motivo_consulta": null,
+      "temperatura": 37.0,
+      "frecuencia_cardiaca": 80,
+      "frecuencia_respiratoria": 32,
+      "saturacion_o2": 97,
+      "presion_sistolica": 85,
+      "presion_diastolica": 55,
+      "tiempo_evolucion_dias": 3,
+      "sintomas_principales": "Evaluación sintética sin identidad clínica real",
+      "examen_fisico": null,
+      "confusion": true,
+      "crb65_puntaje": 3,
+      "crb65_gravedad": "Grave",
+      "crb65_detalle": {
+        "edad": {
+          "valor": 46,
+          "puntos": 0,
+          "descripcion": "Edad < 65 años"
+        },
+        "presion": {
+          "valor": "85/55",
+          "puntos": 1,
+          "descripcion": "PAS < 90 mmHg o PAD ≤ 60 mmHg"
+        },
+        "confusion": {
+          "valor": true,
+          "puntos": 1,
+          "descripcion": "Presencia de confusión mental de aparición nueva"
+        },
+        "respiracion": {
+          "valor": 32,
+          "puntos": 1,
+          "descripcion": "Frecuencia respiratoria ≥ 30 rpm"
+        }
+      },
+      "estado": "En proceso",
+      "id": 8,
+      "usuario_id": 2,
+      "fecha_registro": "2026-11-05T15:43:26.976659",
+      "derivado_radiografia": false,
+      "presion_arterial": "85/55"
+    },
+    "diagnosis": {
+      "id": 7,
+      "atencion_medica_id": 8,
+      "enfermo": true,
+      "prioridad_final": "Crítica",
+      "prioridad_detalle": {
+        "resultado_ia": "Positivo",
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "regla_aplicada": "Grave + Positivo → Crítica",
+        "confianza_ia_maxima": 99.98
+      },
+      "imagen_referencia_id": 8,
+      "estado_validacion": "Pendiente de validación",
+      "clasificacion_medico": null,
+      "diagnostico_final_medico": null,
+      "concordancia_ia": null,
+      "diagnostico_descripcion": null,
+      "validado_por_id": null,
+      "fecha_validacion": null,
+      "updated_at": "2026-11-05T15:43:27.017726",
+      "imagenes": [
+        {
+          "id": 8,
+          "diagnostico_id": 7,
+          "imagen_url": "/uploads/radiografias/8/2318cf6c064f4b2dbb4cf97c17a762e4.dcm",
+          "orden": 1,
+          "tipo_vista": "AP",
+          "probabilidad_ia": 0.9998,
+          "confianza_radiografica": 99.98,
+          "hallazgo_positivo": true,
+          "created_at": "2026-11-05T15:43:27.017726"
+        }
+      ]
+    },
+    "final": {
+      "id": 7,
+      "atencion_medica_id": 8,
+      "enfermo": true,
+      "prioridad_final": "Crítica",
+      "prioridad_detalle": {
+        "resultado_ia": "Positivo",
+        "crb65_puntaje": 3,
+        "crb65_gravedad": "Grave",
+        "regla_aplicada": "Grave + Positivo → Crítica",
+        "confianza_ia_maxima": 99.98
+      },
+      "imagen_referencia_id": 8,
+      "estado_validacion": "Validado",
+      "clasificacion_medico": "Sano",
+      "diagnostico_final_medico": false,
+      "concordancia_ia": "Corregido",
+      "diagnostico_descripcion": "Conclusión sintética registrada únicamente para pruebas.",
+      "validado_por_id": 3,
+      "fecha_validacion": "2026-11-05T15:43:27.336033",
+      "updated_at": "2026-11-05T15:43:27.330766",
+      "imagenes": [
+        {
+          "id": 8,
+          "diagnostico_id": 7,
+          "imagen_url": "/uploads/radiografias/8/2318cf6c064f4b2dbb4cf97c17a762e4.dcm",
+          "orden": 1,
+          "tipo_vista": "AP",
+          "probabilidad_ia": 0.9998,
+          "confianza_radiografica": 99.98,
+          "hallazgo_positivo": true,
+          "created_at": "2026-11-05T15:43:27.017726"
+        }
+      ]
+    }
+  },
+  "history_patient": {
+    "id": 13,
+    "dni": "81000015",
+    "nombres_apellidos": "Paciente QA historial multiepisodio",
+    "sexo": "Femenino",
+    "fecha_nacimiento": "1980-01-01",
+    "otros_antecedentes": null,
+    "antecedentes_familiares": null,
+    "ultima_atencion": null,
+    "en_atencion": false,
+    "created_at": "2026-11-05T15:43:28.092931",
+    "enfermedades": []
+  }
+}

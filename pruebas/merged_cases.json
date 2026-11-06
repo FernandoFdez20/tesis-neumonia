@@ -1,0 +1,3097 @@
+{
+  "CB-01": {
+    "checks": [
+      {
+        "name": "Contraseña correcta",
+        "pass": true,
+        "expected": true,
+        "observed": true
+      },
+      {
+        "name": "Contraseña errada",
+        "pass": true,
+        "expected": false,
+        "observed": false
+      },
+      {
+        "name": "Sal distinta por hash",
+        "pass": true,
+        "expected": "Hashes diferentes",
+        "observed": true
+      },
+      {
+        "name": "Esquema de almacenamiento",
+        "pass": true,
+        "expected": "PBKDF2-SHA256",
+        "observed": "pbkdf2-sha256"
+      },
+      {
+        "name": "Usuario inexistente",
+        "pass": true,
+        "expected": 401,
+        "observed": 401
+      },
+      {
+        "name": "Usuario con contraseña incorrecta",
+        "pass": true,
+        "expected": 401,
+        "observed": 401
+      },
+      {
+        "name": "Usuario inactivo",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Rama de acceso correcto",
+        "pass": true,
+        "expected": "Token y actualización del acceso",
+        "observed": "Ambos ejecutados"
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-02": {
+    "checks": [
+      {
+        "name": "Token válido resuelve la cuenta",
+        "pass": true,
+        "expected": 3,
+        "observed": 3
+      },
+      {
+        "name": "Token inválido",
+        "pass": true,
+        "expected": 403,
+        "observed": 403
+      },
+      {
+        "name": "Token expirado",
+        "pass": true,
+        "expected": 403,
+        "observed": 403
+      },
+      {
+        "name": "Cuenta inexistente",
+        "pass": true,
+        "expected": 404,
+        "observed": 404
+      },
+      {
+        "name": "Cuenta inactiva",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-03": {
+    "checks": [
+      {
+        "name": "Base del rol Admin",
+        "pass": true,
+        "expected": [
+          "usuarios.gestionar"
+        ],
+        "observed": [
+          "usuarios.gestionar"
+        ]
+      },
+      {
+        "name": "Base del rol Enfermera",
+        "pass": true,
+        "expected": [
+          "alertas.ver",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar",
+          "resultados.ver"
+        ],
+        "observed": [
+          "alertas.ver",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar",
+          "resultados.ver"
+        ]
+      },
+      {
+        "name": "Base del rol Especialista",
+        "pass": true,
+        "expected": [
+          "alertas.ver",
+          "atenciones.examen_fisico",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "diagnostico.validar",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar",
+          "reporte.pdf",
+          "resultados.ver"
+        ],
+        "observed": [
+          "alertas.ver",
+          "atenciones.examen_fisico",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "diagnostico.validar",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar",
+          "reporte.pdf",
+          "resultados.ver"
+        ]
+      },
+      {
+        "name": "Conceder y revocar",
+        "pass": true,
+        "expected": {
+          "presente": "diagnostico.validar",
+          "ausente": "resultados.ver"
+        },
+        "observed": [
+          "alertas.ver",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "diagnostico.validar",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar"
+        ]
+      },
+      {
+        "name": "Admin excluye permiso clínico concedido",
+        "pass": true,
+        "expected": {
+          "presente": "usuarios.gestionar",
+          "ausente": "pacientes.ver"
+        },
+        "observed": [
+          "usuarios.gestionar"
+        ]
+      },
+      {
+        "name": "Clave desconocida ignorada",
+        "pass": true,
+        "expected": {
+          "presente": "pacientes.ver",
+          "ausente": "clave.inexistente"
+        },
+        "observed": [
+          "alertas.ver",
+          "atenciones.registrar",
+          "atenciones.ver",
+          "dashboard.ver",
+          "historial.ver",
+          "pacientes.registrar",
+          "pacientes.ver",
+          "radiografias.cargar",
+          "resultados.ver"
+        ]
+      },
+      {
+        "name": "Catálogo rechaza permiso inexistente",
+        "pass": true,
+        "expected": "ValueError",
+        "observed": "ValueError"
+      },
+      {
+        "name": "Guarda requiere al menos una clave",
+        "pass": true,
+        "expected": "ValueError",
+        "observed": "ValueError"
+      },
+      {
+        "name": "Guarda permite especialista",
+        "pass": true,
+        "expected": "Permitido",
+        "observed": "Permitido"
+      },
+      {
+        "name": "Guarda deniega enfermería",
+        "pass": true,
+        "expected": 403,
+        "observed": 403
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-04": {
+    "checks": [
+      {
+        "name": "Limpieza de texto",
+        "pass": true,
+        "expected": "Texto sin espacios extremos",
+        "observed": {
+          "dni": "12345678",
+          "nombre": "Paciente de prueba"
+        }
+      },
+      {
+        "name": "DNI '1234567'",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "DNI '123456789'",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "DNI '1234ABCD'",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "DNI ''",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "18 años exactos",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "2008-11-05"
+      },
+      {
+        "name": "Menor por un día",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "Adulto por un día",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "2008-11-04"
+      },
+      {
+        "name": "Fecha futura",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "Campo requerido vacío nombres_apellidos",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      },
+      {
+        "name": "Campo requerido vacío sexo",
+        "pass": true,
+        "expected": "ValidationError",
+        "observed": "ValidationError"
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-05": {
+    "checks": [
+      {
+        "name": "Formulario clínico válido",
+        "pass": true,
+        "expected": "Sin errores",
+        "observed": {}
+      },
+      {
+        "name": "temperatura = 30",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "temperatura = 45",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "temperatura = 29",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 30 y 45 °C."
+      },
+      {
+        "name": "temperatura = 46",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 30 y 45 °C."
+      },
+      {
+        "name": "temperatura = abc",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe ser un número válido."
+      },
+      {
+        "name": "frecuenciaCardiaca = 20",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "frecuenciaCardiaca = 240",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "frecuenciaCardiaca = 19",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 20 y 240 lpm."
+      },
+      {
+        "name": "frecuenciaCardiaca = 241",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 20 y 240 lpm."
+      },
+      {
+        "name": "frecuenciaCardiaca = abc",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe ser un número válido."
+      },
+      {
+        "name": "frecuenciaRespiratoria = 5",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "frecuenciaRespiratoria = 80",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "frecuenciaRespiratoria = 4",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 5 y 80 rpm."
+      },
+      {
+        "name": "frecuenciaRespiratoria = 81",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 5 y 80 rpm."
+      },
+      {
+        "name": "frecuenciaRespiratoria = abc",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe ser un número válido."
+      },
+      {
+        "name": "saturacionOxigeno = 50",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "saturacionOxigeno = 100",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "saturacionOxigeno = 49",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 50 y 100 %."
+      },
+      {
+        "name": "saturacionOxigeno = 101",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 50 y 100 %."
+      },
+      {
+        "name": "saturacionOxigeno = abc",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe ser un número válido."
+      },
+      {
+        "name": "tiempoEvolucionDias = 0",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "tiempoEvolucionDias = 90",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "tiempoEvolucionDias = -1",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 0 y 90 días."
+      },
+      {
+        "name": "tiempoEvolucionDias = 91",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe estar entre 0 y 90 días."
+      },
+      {
+        "name": "tiempoEvolucionDias = abc",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe ser un número válido."
+      },
+      {
+        "name": "Presión 120/80",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Presión 50/30",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Presión 300/200",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Presión 49/30",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "Sistólica fuera de rango (50–300)."
+      },
+      {
+        "name": "Presión 301/80",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "Sistólica fuera de rango (50–300)."
+      },
+      {
+        "name": "Presión 120/29",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "Diastólica fuera de rango (30–200)."
+      },
+      {
+        "name": "Presión 250/201",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "Diastólica fuera de rango (30–200)."
+      },
+      {
+        "name": "Presión 80/120",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "La sistólica debe ser mayor que la diastólica."
+      },
+      {
+        "name": "Presión 80/80",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "La sistólica debe ser mayor que la diastólica."
+      },
+      {
+        "name": "Presión 120-80",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "Formato SYS/DIA, ej. 120/80."
+      },
+      {
+        "name": "Presión 120 / 80",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Documento 12345678",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": "Aceptado"
+      },
+      {
+        "name": "Documento 1234567",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe tener 8 dígitos (lleva 7)."
+      },
+      {
+        "name": "Documento 123456789",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Debe tener 8 dígitos (lleva 9)."
+      },
+      {
+        "name": "Documento 1234ABCD",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": "Solo se admiten números."
+      },
+      {
+        "name": "Fecha 2026-11-05",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Fecha 2026-11-06",
+        "pass": true,
+        "expected": "Rechazada",
+        "observed": "La fecha no puede ser futura."
+      },
+      {
+        "name": "Fecha 2026-11-04",
+        "pass": true,
+        "expected": "Aceptada",
+        "observed": "Aceptada"
+      },
+      {
+        "name": "Edad desde fecha 2008-11-05",
+        "pass": true,
+        "expected": true,
+        "observed": true
+      },
+      {
+        "name": "Edad desde fecha 2008-11-06",
+        "pass": false,
+        "expected": false,
+        "observed": true
+      },
+      {
+        "name": "Edad desde fecha 2008-11-04",
+        "pass": true,
+        "expected": true,
+        "observed": true
+      },
+      {
+        "name": "Edad desde fecha 2030-01-01",
+        "pass": true,
+        "expected": false,
+        "observed": false
+      },
+      {
+        "name": "Usuario válido",
+        "pass": true,
+        "expected": "Aceptado",
+        "observed": {}
+      },
+      {
+        "name": "Clave con siete caracteres",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": {
+          "password": "Mínimo 8 caracteres"
+        }
+      },
+      {
+        "name": "Nombre de usuario corto",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": {
+          "username": "Mínimo 3 caracteres"
+        }
+      },
+      {
+        "name": "Correo inválido",
+        "pass": true,
+        "expected": "Rechazado",
+        "observed": {
+          "correo": "Correo no válido"
+        }
+      }
+    ],
+    "sources": [
+      "whitebox_frontend_results.json"
+    ],
+    "total": 52,
+    "passed": 51,
+    "failed": 1,
+    "status": "Fallido"
+  },
+  "CB-06": {
+    "checks": [
+      {
+        "name": "Combinación 0000",
+        "pass": true,
+        "expected": {
+          "puntaje": 0,
+          "gravedad": "Leve"
+        },
+        "observed": {
+          "puntaje": 0,
+          "gravedad": "Leve"
+        }
+      },
+      {
+        "name": "Combinación 0001",
+        "pass": true,
+        "expected": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0010",
+        "pass": true,
+        "expected": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0011",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0100",
+        "pass": true,
+        "expected": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0101",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0110",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 0111",
+        "pass": true,
+        "expected": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        },
+        "observed": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        }
+      },
+      {
+        "name": "Combinación 1000",
+        "pass": true,
+        "expected": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 1,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 1001",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 1010",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 1011",
+        "pass": true,
+        "expected": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        },
+        "observed": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        }
+      },
+      {
+        "name": "Combinación 1100",
+        "pass": true,
+        "expected": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        },
+        "observed": {
+          "puntaje": 2,
+          "gravedad": "Moderado"
+        }
+      },
+      {
+        "name": "Combinación 1101",
+        "pass": true,
+        "expected": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        },
+        "observed": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        }
+      },
+      {
+        "name": "Combinación 1110",
+        "pass": true,
+        "expected": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        },
+        "observed": {
+          "puntaje": 3,
+          "gravedad": "Grave"
+        }
+      },
+      {
+        "name": "Combinación 1111",
+        "pass": true,
+        "expected": {
+          "puntaje": 4,
+          "gravedad": "Grave"
+        },
+        "observed": {
+          "puntaje": 4,
+          "gravedad": "Grave"
+        }
+      },
+      {
+        "name": "Frontera de presión 90/61",
+        "pass": true,
+        "expected": 0,
+        "observed": 0
+      },
+      {
+        "name": "Frontera de presión 90/60",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Frontera de presión 89/61",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Frontera de presión 89/60",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Edad inyectada desde paciente",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Ausencia de ambas edades",
+        "pass": true,
+        "expected": "ValueError",
+        "observed": "ValueError"
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 22,
+    "passed": 22,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-07": {
+    "checks": [
+      {
+        "name": "MONOCHROME2",
+        "pass": true,
+        "expected": [
+          [
+            0,
+            64
+          ],
+          [
+            128,
+            255
+          ]
+        ],
+        "observed": [
+          [
+            0,
+            64
+          ],
+          [
+            128,
+            255
+          ]
+        ]
+      },
+      {
+        "name": "MONOCHROME1",
+        "pass": true,
+        "expected": [
+          [
+            255,
+            191
+          ],
+          [
+            127,
+            0
+          ]
+        ],
+        "observed": [
+          [
+            255,
+            191
+          ],
+          [
+            127,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "Escalado de 16 bits",
+        "pass": true,
+        "expected": "Extremos 0 y 255",
+        "observed": [
+          0,
+          255
+        ]
+      },
+      {
+        "name": "Forma y tipo de entrada",
+        "pass": true,
+        "expected": "(3,224,224), float32 y finito",
+        "observed": {
+          "shape": [
+            3,
+            224,
+            224
+          ],
+          "dtype": "float32"
+        }
+      },
+      {
+        "name": "Replicación de gris",
+        "pass": true,
+        "expected": "Tres canales iguales antes de normalizar",
+        "observed": "Iguales"
+      },
+      {
+        "name": "Normalización ImageNet",
+        "pass": true,
+        "expected": "Media y desviación de ImageNet",
+        "observed": "Coincidente"
+      },
+      {
+        "name": "Umbral 0",
+        "pass": true,
+        "expected": 0,
+        "observed": 0
+      },
+      {
+        "name": "Umbral 0.499999",
+        "pass": true,
+        "expected": 0,
+        "observed": 0
+      },
+      {
+        "name": "Umbral 0.5",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Umbral 0.500001",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Umbral 1",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Sigmoide del logit cero",
+        "pass": true,
+        "expected": 0.5,
+        "observed": 0.5
+      },
+      {
+        "name": "Fallos independientes AP y PA",
+        "pass": true,
+        "expected": "Diccionario sin resultados",
+        "observed": {}
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-08": {
+    "checks": [
+      {
+        "name": "Leve negativo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Baja",
+          "referencia": "PA",
+          "probabilidad": 0.2
+        },
+        "observed": {
+          "priority": "Baja",
+          "vista": "PA",
+          "probabilidad": 0.2,
+          "confianza": 80.0
+        }
+      },
+      {
+        "name": "Leve positivo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Moderada",
+          "referencia": "PA",
+          "probabilidad": 0.9
+        },
+        "observed": {
+          "priority": "Moderada",
+          "vista": "PA",
+          "probabilidad": 0.9,
+          "confianza": 90.0
+        }
+      },
+      {
+        "name": "Moderado negativo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Moderada",
+          "referencia": "PA",
+          "probabilidad": 0.2
+        },
+        "observed": {
+          "priority": "Moderada",
+          "vista": "PA",
+          "probabilidad": 0.2,
+          "confianza": 80.0
+        }
+      },
+      {
+        "name": "Moderado positivo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Alta",
+          "referencia": "PA",
+          "probabilidad": 0.9
+        },
+        "observed": {
+          "priority": "Alta",
+          "vista": "PA",
+          "probabilidad": 0.9,
+          "confianza": 90.0
+        }
+      },
+      {
+        "name": "Grave negativo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Alta",
+          "referencia": "PA",
+          "probabilidad": 0.2
+        },
+        "observed": {
+          "priority": "Alta",
+          "vista": "PA",
+          "probabilidad": 0.2,
+          "confianza": 80.0
+        }
+      },
+      {
+        "name": "Grave positivo",
+        "pass": true,
+        "expected": {
+          "prioridad": "Crítica",
+          "referencia": "PA",
+          "probabilidad": 0.9
+        },
+        "observed": {
+          "priority": "Crítica",
+          "vista": "PA",
+          "probabilidad": 0.9,
+          "confianza": 90.0
+        }
+      },
+      {
+        "name": "Ausencia de archivos",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Atención inexistente",
+        "pass": true,
+        "expected": 404,
+        "observed": 404
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-09": {
+    "checks": [
+      {
+        "name": "False y Neumonía",
+        "pass": true,
+        "expected": {
+          "IA": false,
+          "concordancia": "Corregido",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": false,
+          "concordancia": "Corregido",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "False y Sano",
+        "pass": true,
+        "expected": {
+          "IA": false,
+          "concordancia": "Confirmado",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": false,
+          "concordancia": "Confirmado",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "False y Otro diagnóstico",
+        "pass": true,
+        "expected": {
+          "IA": false,
+          "concordancia": "Confirmado",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": false,
+          "concordancia": "Confirmado",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "True y Neumonía",
+        "pass": true,
+        "expected": {
+          "IA": true,
+          "concordancia": "Confirmado",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": true,
+          "concordancia": "Confirmado",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "True y Sano",
+        "pass": true,
+        "expected": {
+          "IA": true,
+          "concordancia": "Corregido",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": true,
+          "concordancia": "Corregido",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "True y Otro diagnóstico",
+        "pass": true,
+        "expected": {
+          "IA": true,
+          "concordancia": "Corregido",
+          "atención": "Finalizada"
+        },
+        "observed": {
+          "IA": true,
+          "concordancia": "Corregido",
+          "atención": "EstadoAtencion.Finalizada"
+        }
+      },
+      {
+        "name": "Segunda validación",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Validación sin permiso",
+        "pass": true,
+        "expected": 403,
+        "observed": 403
+      },
+      {
+        "name": "Diagnóstico inexistente",
+        "pass": true,
+        "expected": 404,
+        "observed": 404
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-10": {
+    "checks": [
+      {
+        "name": "Nueva Alta",
+        "pass": true,
+        "expected": [
+          "crear"
+        ],
+        "observed": [
+          "crear"
+        ]
+      },
+      {
+        "name": "Nueva Crítica",
+        "pass": true,
+        "expected": [
+          "crear"
+        ],
+        "observed": [
+          "crear"
+        ]
+      },
+      {
+        "name": "Baja sin aviso",
+        "pass": true,
+        "expected": [],
+        "observed": []
+      },
+      {
+        "name": "Moderada sin aviso",
+        "pass": true,
+        "expected": [],
+        "observed": []
+      },
+      {
+        "name": "Reabrir cierre manual",
+        "pass": true,
+        "expected": [
+          "reabrir"
+        ],
+        "observed": [
+          "reabrir"
+        ]
+      },
+      {
+        "name": "Conservar cierre validado",
+        "pass": true,
+        "expected": [],
+        "observed": []
+      },
+      {
+        "name": "Actualizar prioridad",
+        "pass": true,
+        "expected": [
+          "guardar"
+        ],
+        "observed": [
+          "guardar"
+        ]
+      },
+      {
+        "name": "No duplicar prioridad",
+        "pass": true,
+        "expected": [],
+        "observed": []
+      },
+      {
+        "name": "Cerrar por disminución",
+        "pass": true,
+        "expected": [
+          "cerrar"
+        ],
+        "observed": [
+          "cerrar"
+        ]
+      },
+      {
+        "name": "Fallo de alertas no interrumpe el caso",
+        "pass": true,
+        "expected": "Sin excepción propagada",
+        "observed": "Sin excepción"
+      },
+      {
+        "name": "Cierre validación None",
+        "pass": true,
+        "expected": false,
+        "observed": false
+      },
+      {
+        "name": "Cierre validación namespace(cerrada=True)",
+        "pass": true,
+        "expected": false,
+        "observed": false
+      },
+      {
+        "name": "Cierre validación namespace(cerrada=False)",
+        "pass": true,
+        "expected": true,
+        "observed": true
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-11": {
+    "checks": [
+      {
+        "name": "No cambiar el propio rol",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "No suspender la propia cuenta",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Conservar el último administrador activo",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Usuario de actualización inexistente",
+        "pass": true,
+        "expected": 404,
+        "observed": 404
+      },
+      {
+        "name": "Permiso fuera del catálogo",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Permisos clínicos bloqueados a Admin",
+        "pass": true,
+        "expected": 400,
+        "observed": 400
+      },
+      {
+        "name": "Reasignación a cuenta inexistente",
+        "pass": true,
+        "expected": 404,
+        "observed": 404
+      },
+      {
+        "name": "Edición sin cambios",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      }
+    ],
+    "sources": [
+      "whitebox_python_results.json"
+    ],
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CB-12": {
+    "checks": [
+      {
+        "name": "Permisos completos y estado Pendiente de evaluación",
+        "pass": true,
+        "expected": "Evaluar atención",
+        "observed": "Evaluar atención"
+      },
+      {
+        "name": "Sin permiso y estado Pendiente de evaluación",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Derivado a radiografía",
+        "pass": true,
+        "expected": "Cargar radiografía",
+        "observed": "Cargar radiografía"
+      },
+      {
+        "name": "Sin permiso y estado Derivado a radiografía",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Diagnostico pendiente",
+        "pass": true,
+        "expected": "Cargar radiografía",
+        "observed": "Cargar radiografía"
+      },
+      {
+        "name": "Sin permiso y estado Diagnostico pendiente",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Pendiente de validación",
+        "pass": true,
+        "expected": "Revisar y validar",
+        "observed": "Revisar y validar"
+      },
+      {
+        "name": "Sin permiso y estado Pendiente de validación",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Validado",
+        "pass": true,
+        "expected": "Ver diagnóstico y reporte",
+        "observed": "Ver diagnóstico y reporte"
+      },
+      {
+        "name": "Sin permiso y estado Validado",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Sin atención pendiente",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Sin permiso y estado Sin atención pendiente",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Permisos completos y estado Estado desconocido",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Sin permiso y estado Estado desconocido",
+        "pass": true,
+        "expected": null,
+        "observed": null
+      },
+      {
+        "name": "Solo consulta Pendiente de validación",
+        "pass": true,
+        "expected": "Ver resultado",
+        "observed": "Ver resultado"
+      },
+      {
+        "name": "Solo consulta Validado",
+        "pass": true,
+        "expected": "Ver diagnóstico",
+        "observed": "Ver diagnóstico"
+      }
+    ],
+    "sources": [
+      "whitebox_frontend_results.json"
+    ],
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-01": {
+    "checks": [
+      {
+        "name": "Acceso de Admin",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Hash no expuesto para Admin",
+        "pass": true,
+        "expected": "Sin campo password",
+        "observed": [
+          "id",
+          "username",
+          "correo",
+          "nombre_completo",
+          "rol",
+          "estado",
+          "ultimo_login",
+          "permisos"
+        ]
+      },
+      {
+        "name": "Acceso de Enfermera",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Hash no expuesto para Enfermera",
+        "pass": true,
+        "expected": "Sin campo password",
+        "observed": [
+          "id",
+          "username",
+          "correo",
+          "nombre_completo",
+          "rol",
+          "estado",
+          "ultimo_login",
+          "permisos"
+        ]
+      },
+      {
+        "name": "Acceso de Especialista",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Hash no expuesto para Especialista",
+        "pass": true,
+        "expected": "Sin campo password",
+        "observed": [
+          "id",
+          "username",
+          "correo",
+          "nombre_completo",
+          "rol",
+          "estado",
+          "ultimo_login",
+          "permisos"
+        ]
+      },
+      {
+        "name": "Contraseña incorrecta",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Usuario o contraseña incorrectos"
+          }
+        }
+      },
+      {
+        "name": "Usuario inexistente",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Usuario o contraseña incorrectos"
+          }
+        }
+      },
+      {
+        "name": "Mensaje genérico",
+        "pass": true,
+        "expected": {
+          "detail": "Usuario o contraseña incorrectos"
+        },
+        "observed": {
+          "detail": "Usuario o contraseña incorrectos"
+        }
+      },
+      {
+        "name": "Cuenta inactiva",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "Usuario inactivo"
+          }
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-02": {
+    "checks": [
+      {
+        "name": "Sin sesión /pacientes/",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Sin sesión /atenciones/",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Sin sesión /usuarios/",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Sin sesión /notificaciones/pendientes",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Sin sesión /diagnosticos/prioridades/pendientes",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Sin sesión /auth/me",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Not authenticated"
+          }
+        }
+      },
+      {
+        "name": "Administrador sin acceso a pacientes",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Consultar el directorio de pacientes'."
+          }
+        }
+      },
+      {
+        "name": "Enfermería sin gestión de usuarios",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Gestionar cuentas, roles y permisos'."
+          }
+        }
+      },
+      {
+        "name": "Token inválido",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No se pudieron validar las credenciales"
+          }
+        }
+      },
+      {
+        "name": "Token con firma alterada",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No se pudieron validar las credenciales"
+          }
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-03": {
+    "checks": [
+      {
+        "name": "Registro adulto y antecedentes",
+        "pass": true,
+        "expected": "Antecedentes conservados",
+        "observed": {
+          "id": 1,
+          "dni": "81000001",
+          "nombres_apellidos": "Paciente QA con antecedentes",
+          "sexo": "Femenino",
+          "fecha_nacimiento": "1960-02-02",
+          "otros_antecedentes": "hipertensión",
+          "antecedentes_familiares": "asma, diabetes",
+          "ultima_atencion": null,
+          "en_atencion": false,
+          "created_at": "2026-11-05T15:43:22.745692",
+          "enfermedades": []
+        }
+      },
+      {
+        "name": "DNI duplicado",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "El DNI ya está registrado"
+          }
+        }
+      },
+      {
+        "name": "DNI inválido 1234567",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "string_too_short",
+                "loc": [
+                  "body",
+                  "dni"
+                ],
+                "msg": "String should have at least 8 characters",
+                "input": "1234567",
+                "ctx": {
+                  "min_length": 8
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "DNI inválido 123456789",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "string_too_long",
+                "loc": [
+                  "body",
+                  "dni"
+                ],
+                "msg": "String should have at most 8 characters",
+                "input": "123456789",
+                "ctx": {
+                  "max_length": 8
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "DNI inválido 12AB5678",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "value_error",
+                "loc": [
+                  "body",
+                  "dni"
+                ],
+                "msg": "Value error, El DNI debe contener solo números",
+                "input": "12AB5678",
+                "ctx": {
+                  "error": {}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Menor de edad",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "value_error",
+                "loc": [
+                  "body",
+                  "fecha_nacimiento"
+                ],
+                "msg": "Value error, El paciente debe ser adulto",
+                "input": "2009-11-05",
+                "ctx": {
+                  "error": {}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Fecha futura",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "value_error",
+                "loc": [
+                  "body",
+                  "fecha_nacimiento"
+                ],
+                "msg": "Value error, El paciente debe ser adulto",
+                "input": "2027-11-05",
+                "ctx": {
+                  "error": {}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Límite adulto de 18 años",
+        "pass": true,
+        "expected": "Registro permitido",
+        "observed": "2008-11-05"
+      },
+      {
+        "name": "Recuperación por DNI",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-04": {
+    "checks": [
+      {
+        "name": "Presión serializada y CRB-65",
+        "pass": true,
+        "expected": {
+          "presion": "120/80",
+          "crb65": 2
+        },
+        "observed": {
+          "presion": "120/80",
+          "crb65": 2
+        }
+      },
+      {
+        "name": "Atención activa duplicada",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "El paciente ya tiene una atención médica en proceso"
+          }
+        }
+      },
+      {
+        "name": "Temperatura fuera de rango",
+        "pass": true,
+        "expected": "Rechazo 400/422",
+        "observed": {
+          "status": 422,
+          "valores_recibidos": {
+            "temperatura": null
+          }
+        }
+      },
+      {
+        "name": "Saturación superior a 100",
+        "pass": true,
+        "expected": "Rechazo 400/422",
+        "observed": {
+          "status": 422,
+          "valores_recibidos": {
+            "saturacion_o2": null
+          }
+        }
+      },
+      {
+        "name": "Sistólica menor que diastólica",
+        "pass": true,
+        "expected": "Rechazo 400/422",
+        "observed": {
+          "status": 422,
+          "valores_recibidos": {
+            "presion_arterial": null
+          }
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-05": {
+    "checks": [
+      {
+        "name": "Derivación exige permiso de especialista",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Registrar examen físico y derivación'."
+          }
+        }
+      },
+      {
+        "name": "Guardar progreso",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Guardar progreso mantiene la evaluación pendiente",
+        "pass": true,
+        "expected": "Pendiente de evaluación",
+        "observed": "Pendiente de evaluación"
+      },
+      {
+        "name": "Derivación explícita",
+        "pass": true,
+        "expected": "Derivado a radiografía",
+        "observed": "Derivado a radiografía"
+      },
+      {
+        "name": "Guardar progreso desde interfaz mantiene etapa pendiente",
+        "pass": true,
+        "expected": "200 y Pendiente de evaluación",
+        "observed": {
+          "status": 200,
+          "estado": "Pendiente de evaluación"
+        }
+      },
+      {
+        "name": "Notas guardadas recuperadas en la interfaz",
+        "pass": true,
+        "expected": "Examen sintético de interfaz para comprobar guardado y derivación.",
+        "observed": "Examen sintético de interfaz para comprobar guardado y derivación."
+      },
+      {
+        "name": "Derivación explícita desde interfaz",
+        "pass": true,
+        "expected": "200 y Derivado a radiografía",
+        "observed": {
+          "status": 200,
+          "estado": "Derivado a radiografía"
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json",
+      "blackbox_ui_results.json"
+    ],
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-06": {
+    "checks": [
+      {
+        "name": "Carga AP y PA con modelo real",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Dos resultados independientes",
+        "pass": true,
+        "expected": "Dos vistas con probabilidad",
+        "observed": [
+          {
+            "tipo_vista": "AP",
+            "probabilidad_ia": 0.9998,
+            "confianza_radiografica": 99.98,
+            "hallazgo_positivo": true
+          },
+          {
+            "tipo_vista": "PA",
+            "probabilidad_ia": 0.0,
+            "confianza_radiografica": 100.0,
+            "hallazgo_positivo": false
+          }
+        ]
+      },
+      {
+        "name": "Referencia por mayor probabilidad",
+        "pass": true,
+        "expected": 1,
+        "observed": 1
+      },
+      {
+        "name": "Consistencia probabilidad confianza AP",
+        "pass": true,
+        "expected": "Umbral 0.50 y confianza de clase",
+        "observed": {
+          "p": 0.9998,
+          "confianza": 99.98,
+          "positivo": true
+        }
+      },
+      {
+        "name": "Consistencia probabilidad confianza PA",
+        "pass": true,
+        "expected": "Umbral 0.50 y confianza de clase",
+        "observed": {
+          "p": 0.0,
+          "confianza": 100.0,
+          "positivo": false
+        }
+      },
+      {
+        "name": "Vista previa DICOM",
+        "pass": true,
+        "expected": "PNG 200",
+        "observed": {
+          "status": 200,
+          "content_type": "image/png",
+          "bytes": 305403
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-07": {
+    "checks": [
+      {
+        "name": "Carga sin archivos",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "Debe subir al menos una imagen AP o PA."
+          }
+        }
+      },
+      {
+        "name": "Rechazo en vista previa texto.txt",
+        "pass": true,
+        "expected": "400/422",
+        "observed": {
+          "status": 400,
+          "detail": {
+            "detail": "Solo se admiten archivos DICOM (.dcm)."
+          }
+        }
+      },
+      {
+        "name": "Rechazo en análisis texto.txt",
+        "pass": true,
+        "expected": "400/422 sin diagnóstico nuevo",
+        "observed": {
+          "status": 400,
+          "estado": null,
+          "probabilidades": []
+        }
+      },
+      {
+        "name": "Rechazo en vista previa corrupta.dcm",
+        "pass": true,
+        "expected": "400/422",
+        "observed": {
+          "status": 422,
+          "detail": {
+            "detail": "No se pudo interpretar el archivo DICOM."
+          }
+        }
+      },
+      {
+        "name": "Rechazo en análisis corrupta.dcm",
+        "pass": true,
+        "expected": "400/422 sin diagnóstico nuevo",
+        "observed": {
+          "status": 422,
+          "estado": null,
+          "probabilidades": []
+        }
+      },
+      {
+        "name": "Formato PNG excluido de la carga DICOM",
+        "pass": true,
+        "expected": "Rechazo explícito de formato PNG",
+        "observed": {
+          "status": 400,
+          "estado": null,
+          "probabilidades": []
+        }
+      },
+      {
+        "name": "Los rechazos no persisten un diagnóstico",
+        "pass": true,
+        "expected": 404,
+        "observed": {
+          "status": 404,
+          "body": {
+            "detail": "Diagnóstico no encontrado"
+          }
+        }
+      },
+      {
+        "name": "AP válida y PA corrupta se rechazan conjuntamente",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": "No se pudo interpretar el archivo DICOM PA"
+          }
+        }
+      },
+      {
+        "name": "La carga mixta no deja análisis parcial",
+        "pass": true,
+        "expected": 404,
+        "observed": {
+          "status": 404,
+          "body": {
+            "detail": "Diagnóstico no encontrado"
+          }
+        }
+      },
+      {
+        "name": "Límite de 30 MiB por archivo",
+        "pass": true,
+        "expected": 413,
+        "observed": {
+          "status": 413,
+          "body": {
+            "detail": "Archivo demasiado grande (máx. 30 MB)"
+          }
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-08": {
+    "checks": [
+      {
+        "name": "Leve negativo",
+        "pass": true,
+        "expected": "Baja",
+        "observed": {
+          "crb65": 0,
+          "ia": false,
+          "prioridad": "Baja",
+          "probabilidad": 0.2819
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Leve0",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": false
+      },
+      {
+        "name": "Leve positivo",
+        "pass": true,
+        "expected": "Moderada",
+        "observed": {
+          "crb65": 0,
+          "ia": true,
+          "prioridad": "Moderada",
+          "probabilidad": 0.9998
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Leve1",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": true
+      },
+      {
+        "name": "Moderado negativo",
+        "pass": true,
+        "expected": "Moderada",
+        "observed": {
+          "crb65": 1,
+          "ia": false,
+          "prioridad": "Moderada",
+          "probabilidad": 0.2819
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Moderado0",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": false
+      },
+      {
+        "name": "Moderado positivo",
+        "pass": true,
+        "expected": "Alta",
+        "observed": {
+          "crb65": 1,
+          "ia": true,
+          "prioridad": "Alta",
+          "probabilidad": 0.9998
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Moderado1",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": true
+      },
+      {
+        "name": "Grave negativo",
+        "pass": true,
+        "expected": "Alta",
+        "observed": {
+          "crb65": 3,
+          "ia": false,
+          "prioridad": "Alta",
+          "probabilidad": 0.2819
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Grave0",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": false
+      },
+      {
+        "name": "Grave positivo",
+        "pass": true,
+        "expected": "Crítica",
+        "observed": {
+          "crb65": 3,
+          "ia": true,
+          "prioridad": "Crítica",
+          "probabilidad": 0.9998
+        }
+      },
+      {
+        "name": "Muestra produce clase esperada Grave1",
+        "pass": true,
+        "expected": "Clase de la muestra pública",
+        "observed": true
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-09": {
+    "checks": [
+      {
+        "name": "Avisos para casos Alta y Crítica",
+        "pass": true,
+        "expected": [
+          5,
+          6,
+          7
+        ],
+        "observed": [
+          7,
+          6,
+          5,
+          1
+        ]
+      },
+      {
+        "name": "Orden de avisos",
+        "pass": true,
+        "expected": "Crítica primero",
+        "observed": [
+          "Crítica",
+          "Alta",
+          "Alta",
+          "Alta"
+        ]
+      },
+      {
+        "name": "Marcar aviso leído",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Cerrar aviso",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Cerrar aviso no valida el diagnóstico",
+        "pass": true,
+        "expected": "Pendiente de validación",
+        "observed": "Pendiente de validación"
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-10": {
+    "checks": [
+      {
+        "name": "Enfermería no valida",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Validar el diagnóstico de la IA'."
+          }
+        }
+      },
+      {
+        "name": "Corrección conserva IA y registra concordancia",
+        "pass": true,
+        "expected": "IA original conservada; Sano, Corregido, Validado y fecha",
+        "observed": {
+          "enfermo": true,
+          "clasificacion_medico": "Sano",
+          "concordancia_ia": "Corregido",
+          "estado_validacion": "Validado",
+          "fecha_validacion": "2026-11-05T15:43:27.336033"
+        }
+      },
+      {
+        "name": "Doble validación rechazada",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "Este diagnóstico ya fue validado"
+          }
+        }
+      },
+      {
+        "name": "Cierre de atención y liberación del paciente",
+        "pass": true,
+        "expected": {
+          "estado": "Finalizada",
+          "en_atencion": false
+        },
+        "observed": {
+          "estado": "Finalizada",
+          "en_atencion": false
+        }
+      },
+      {
+        "name": "Cierre automático del aviso",
+        "pass": true,
+        "expected": "Sin aviso abierto del diagnóstico",
+        "observed": [
+          6,
+          1
+        ]
+      },
+      {
+        "name": "Validación médica desde interfaz",
+        "pass": true,
+        "expected": "200 Validado y Neumonía",
+        "observed": {
+          "status": 200,
+          "estado": "Validado",
+          "clasificacion": "Neumonía"
+        }
+      },
+      {
+        "name": "La validación de interfaz conserva la IA",
+        "pass": true,
+        "expected": true,
+        "observed": true
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json",
+      "blackbox_ui_results.json"
+    ],
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-11": {
+    "checks": [
+      {
+        "name": "Crear usuario",
+        "pass": true,
+        "expected": 201,
+        "observed": {
+          "status": 201,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Nombre de usuario duplicado",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "El nombre de usuario ya está registrado"
+          }
+        }
+      },
+      {
+        "name": "Editar datos",
+        "pass": true,
+        "expected": "Nombre actualizado",
+        "observed": "Cuenta sintética actualizada"
+      },
+      {
+        "name": "Revocar permiso",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Permiso revocado aplicado",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "body": {
+            "detail": "No tiene permisos para esta acción. Se requiere alguno de: 'Consultar el resultado del modelo'."
+          }
+        }
+      },
+      {
+        "name": "Administrador sin permisos clínicos concedibles",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "El rol Administrador no puede recibir permisos clínicos (Consultar el directorio de pacientes)."
+          }
+        }
+      },
+      {
+        "name": "Bloqueo de autosuspensión",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "No puede desactivar su propia cuenta"
+          }
+        }
+      },
+      {
+        "name": "Suspender cuenta",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Acceso suspendido",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "Usuario inactivo"
+          }
+        }
+      },
+      {
+        "name": "Reactivar cuenta",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Reasignar contraseña",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Clave anterior rechazada",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "Usuario o contraseña incorrectos"
+          }
+        }
+      },
+      {
+        "name": "Clave nueva aceptada",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-12": {
+    "checks": [
+      {
+        "name": "Historial recuperado desde nueva sesión HTTP",
+        "pass": true,
+        "expected": [
+          9,
+          10
+        ],
+        "observed": [
+          10,
+          9
+        ]
+      },
+      {
+        "name": "Presión y estado conservados",
+        "pass": true,
+        "expected": "120/80 y Finalizada en ambos",
+        "observed": [
+          {
+            "id": 10,
+            "presion_arterial": "120/80",
+            "estado": "Finalizada"
+          },
+          {
+            "id": 9,
+            "presion_arterial": "120/80",
+            "estado": "Finalizada"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-13": {
+    "checks": [
+      {
+        "name": "Archivo sin sesión",
+        "pass": true,
+        "expected": 401,
+        "observed": {
+          "status": 401,
+          "body": {
+            "detail": "No autenticado"
+          }
+        }
+      },
+      {
+        "name": "Archivo con usuario clínico",
+        "pass": true,
+        "expected": "200 y archivo no vacío",
+        "observed": {
+          "status": 200,
+          "bytes": 101466
+        }
+      },
+      {
+        "name": "Administrador no accede al archivo clínico",
+        "pass": true,
+        "expected": "403",
+        "observed": {
+          "status": 403,
+          "bytes": 63
+        }
+      },
+      {
+        "name": "Preparar consulta con historial.ver como único permiso",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Historial permite consultar archivo sin resultados.ver",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "bytes": 101466
+        }
+      },
+      {
+        "name": "Revocar los dos permisos de consulta",
+        "pass": true,
+        "expected": 200,
+        "observed": {
+          "status": 200,
+          "body": "Respuesta recibida"
+        }
+      },
+      {
+        "name": "Sin resultados.ver ni historial.ver se deniega archivo",
+        "pass": true,
+        "expected": 403,
+        "observed": {
+          "status": 403,
+          "bytes": 63
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json"
+    ],
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-14": {
+    "checks": [
+      {
+        "name": "Tampoco se reemplaza un análisis pendiente",
+        "pass": true,
+        "expected": 400,
+        "observed": {
+          "status": 400,
+          "body": {
+            "detail": "El caso ya tiene un análisis radiográfico; no se permite sustituirlo"
+          }
+        }
+      },
+      {
+        "name": "El rechazo conserva imágenes y estado pendiente",
+        "pass": true,
+        "expected": "Análisis inicial conservado",
+        "observed": {
+          "id": 2,
+          "estado_validacion": "Pendiente de validación"
+        }
+      },
+      {
+        "name": "No se reemplazan imágenes de un diagnóstico validado",
+        "pass": true,
+        "expected": "Rechazo de nueva carga sobre caso validado",
+        "observed": {
+          "status": 400,
+          "estado_anterior": "Validado",
+          "estado_posterior": null,
+          "imagen_ids_antes": [
+            4
+          ],
+          "imagen_ids_despues": []
+        }
+      },
+      {
+        "name": "Consulta posterior confirma integridad del análisis validado",
+        "pass": true,
+        "expected": "Mismo diagnóstico e imágenes, estado Validado",
+        "observed": {
+          "id": 3,
+          "estado": "Validado",
+          "imagenes": [
+            4
+          ]
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_api_results.json",
+      "supplement_api_results.json"
+    ],
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-15": {
+    "checks": [
+      {
+        "name": "Error de acceso visible",
+        "pass": true,
+        "expected": "Mensaje de credenciales",
+        "observed": "Usuario o contraseña incorrectos"
+      },
+      {
+        "name": "Enfermería sin menú de usuarios",
+        "pass": true,
+        "expected": "Sin acceso administrativo visible",
+        "observed": 0
+      },
+      {
+        "name": "Buscador navega al historial",
+        "pass": true,
+        "expected": "/historial",
+        "observed": "/historial"
+      },
+      {
+        "name": "Registro de paciente desde formulario",
+        "pass": true,
+        "expected": 201,
+        "observed": 201
+      },
+      {
+        "name": "Atención incompleta no se envía",
+        "pass": true,
+        "expected": "Botón deshabilitado",
+        "observed": "Deshabilitado"
+      },
+      {
+        "name": "Presión invertida impide guardar",
+        "pass": true,
+        "expected": "Deshabilitado",
+        "observed": true
+      },
+      {
+        "name": "Atención válida enviada",
+        "pass": true,
+        "expected": 201,
+        "observed": 201
+      },
+      {
+        "name": "Motivo de consulta conservado",
+        "pass": true,
+        "expected": "Motivo recuperable en el registro",
+        "observed": {
+          "campos_enviados": [
+            "paciente_id",
+            "fecha_atencion",
+            "hora_atencion",
+            "motivo_consulta",
+            "temperatura",
+            "frecuencia_cardiaca",
+            "frecuencia_respiratoria",
+            "saturacion_o2",
+            "presion_arterial",
+            "tiempo_evolucion_dias",
+            "sintomas_principales",
+            "confusion",
+            "examen_fisico",
+            "estado"
+          ],
+          "motivo_guardado": "Motivo QA trazabilidad de captura",
+          "sintomas_guardados": "Tos sintética de interfaz QA | Obs: Observación sintética QA"
+        }
+      },
+      {
+        "name": "Fecha y hora seleccionadas conservadas",
+        "pass": true,
+        "expected": "2026-11-03 09:15",
+        "observed": {
+          "fecha_atencion": "2026-11-03",
+          "hora_atencion": "09:15:00",
+          "fecha_registro": "2026-11-05T15:45:19.535290"
+        }
+      },
+      {
+        "name": "Cambio a vista Tarjetas",
+        "pass": true,
+        "expected": "Tarjetas activa",
+        "observed": "true"
+      },
+      {
+        "name": "Selector rechaza texto",
+        "pass": true,
+        "expected": "Archivo rechazado y análisis deshabilitado",
+        "observed": "Rechazado"
+      },
+      {
+        "name": "Análisis iniciado desde interfaz",
+        "pass": true,
+        "expected": 200,
+        "observed": 200
+      },
+      {
+        "name": "Administrador accede a Usuarios",
+        "pass": true,
+        "expected": "/usuarios",
+        "observed": "/usuarios"
+      },
+      {
+        "name": "Sin excepciones JavaScript no controladas",
+        "pass": true,
+        "expected": [],
+        "observed": []
+      }
+    ],
+    "sources": [
+      "blackbox_ui_results.json"
+    ],
+    "total": 14,
+    "passed": 14,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-16": {
+    "checks": [
+      {
+        "name": "Descarga efectiva del PDF",
+        "pass": true,
+        "expected": "PDF no vacío",
+        "observed": {
+          "archivo": "Reporte_AT-0008_81000014.pdf",
+          "bytes": 76960
+        }
+      },
+      {
+        "name": "PDF interpretable con radiografía incorporada",
+        "pass": true,
+        "expected": "Dos páginas legibles y al menos una imagen",
+        "observed": {
+          "paginas": 2,
+          "imagenes": 1,
+          "bytes": 76960
+        }
+      },
+      {
+        "name": "Identidad y atención del PDF corresponden al caso",
+        "pass": true,
+        "expected": "DNI 81000014 y atención AT-0008",
+        "observed": "DNI 81000014; AT-0008"
+      },
+      {
+        "name": "PDF conserva IA gravedad y prioridad",
+        "pass": true,
+        "expected": "IA positiva, CRB-65 de 3 y prioridad Crítica",
+        "observed": "Positivo presuntivo; 3 pts Grave; Crítica"
+      },
+      {
+        "name": "PDF distingue decisión médica y advertencia presuntiva",
+        "pass": true,
+        "expected": "Clasificación Sano, Corregido y advertencia clínica",
+        "observed": "Sano; Corregido; advertencia presente"
+      }
+    ],
+    "sources": [
+      "blackbox_ui_results.json",
+      "supplement_pdf_results.json"
+    ],
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-17": {
+    "checks": [
+      {
+        "name": "Contador inferior corresponde a Baja",
+        "pass": true,
+        "expected": {
+          "Baja_API": 1
+        },
+        "observed": {
+          "rotulo": "Prioridad Baja",
+          "contador": 1
+        }
+      },
+      {
+        "name": "Caso validado desaparece sin recargar",
+        "pass": true,
+        "expected": "Retiro automático en un ciclo de consulta",
+        "observed": {
+          "ms": 28795,
+          "validacion": 200
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_ui_results.json"
+    ],
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "status": "Aprobado"
+  },
+  "CN-18": {
+    "checks": [
+      {
+        "name": "Interfaz bloquea a menor por un día",
+        "pass": false,
+        "expected": "Guardar registro deshabilitado",
+        "observed": {
+          "deshabilitado": false,
+          "nacimiento": "2008-11-06",
+          "fecha_controlada": "2026-11-05",
+          "zona": "America/Bogota"
+        }
+      },
+      {
+        "name": "Servidor rechaza el registro menor por un día",
+        "pass": true,
+        "expected": 422,
+        "observed": {
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "value_error",
+                "loc": [
+                  "body",
+                  "fecha_nacimiento"
+                ],
+                "msg": "Value error, El paciente debe ser adulto",
+                "input": "2008-11-06",
+                "ctx": {
+                  "error": {}
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "sources": [
+      "blackbox_ui_results.json"
+    ],
+    "total": 2,
+    "passed": 1,
+    "failed": 1,
+    "status": "Fallido"
+  }
+}

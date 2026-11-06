@@ -1,0 +1,14 @@
+{
+  "CN": {
+    "cases": 18,
+    "approved_cases": 17,
+    "checks": 130,
+    "passed_checks": 129
+  },
+  "CB": {
+    "cases": 12,
+    "approved_cases": 11,
+    "checks": 175,
+    "passed_checks": 174
+  }
+}

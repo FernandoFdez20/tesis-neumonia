@@ -1,0 +1,431 @@
+{
+  "cases": {
+    "CB-05": {
+      "checks": [
+        {
+          "name": "Formulario clínico válido",
+          "pass": true,
+          "expected": "Sin errores",
+          "observed": {}
+        },
+        {
+          "name": "temperatura = 30",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "temperatura = 45",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "temperatura = 29",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 30 y 45 °C."
+        },
+        {
+          "name": "temperatura = 46",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 30 y 45 °C."
+        },
+        {
+          "name": "temperatura = abc",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe ser un número válido."
+        },
+        {
+          "name": "frecuenciaCardiaca = 20",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "frecuenciaCardiaca = 240",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "frecuenciaCardiaca = 19",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 20 y 240 lpm."
+        },
+        {
+          "name": "frecuenciaCardiaca = 241",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 20 y 240 lpm."
+        },
+        {
+          "name": "frecuenciaCardiaca = abc",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe ser un número válido."
+        },
+        {
+          "name": "frecuenciaRespiratoria = 5",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "frecuenciaRespiratoria = 80",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "frecuenciaRespiratoria = 4",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 5 y 80 rpm."
+        },
+        {
+          "name": "frecuenciaRespiratoria = 81",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 5 y 80 rpm."
+        },
+        {
+          "name": "frecuenciaRespiratoria = abc",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe ser un número válido."
+        },
+        {
+          "name": "saturacionOxigeno = 50",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "saturacionOxigeno = 100",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "saturacionOxigeno = 49",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 50 y 100 %."
+        },
+        {
+          "name": "saturacionOxigeno = 101",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 50 y 100 %."
+        },
+        {
+          "name": "saturacionOxigeno = abc",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe ser un número válido."
+        },
+        {
+          "name": "tiempoEvolucionDias = 0",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "tiempoEvolucionDias = 90",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "tiempoEvolucionDias = -1",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 0 y 90 días."
+        },
+        {
+          "name": "tiempoEvolucionDias = 91",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe estar entre 0 y 90 días."
+        },
+        {
+          "name": "tiempoEvolucionDias = abc",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe ser un número válido."
+        },
+        {
+          "name": "Presión 120/80",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Presión 50/30",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Presión 300/200",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Presión 49/30",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "Sistólica fuera de rango (50–300)."
+        },
+        {
+          "name": "Presión 301/80",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "Sistólica fuera de rango (50–300)."
+        },
+        {
+          "name": "Presión 120/29",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "Diastólica fuera de rango (30–200)."
+        },
+        {
+          "name": "Presión 250/201",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "Diastólica fuera de rango (30–200)."
+        },
+        {
+          "name": "Presión 80/120",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "La sistólica debe ser mayor que la diastólica."
+        },
+        {
+          "name": "Presión 80/80",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "La sistólica debe ser mayor que la diastólica."
+        },
+        {
+          "name": "Presión 120-80",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "Formato SYS/DIA, ej. 120/80."
+        },
+        {
+          "name": "Presión 120 / 80",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Documento 12345678",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": "Aceptado"
+        },
+        {
+          "name": "Documento 1234567",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe tener 8 dígitos (lleva 7)."
+        },
+        {
+          "name": "Documento 123456789",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Debe tener 8 dígitos (lleva 9)."
+        },
+        {
+          "name": "Documento 1234ABCD",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": "Solo se admiten números."
+        },
+        {
+          "name": "Fecha 2026-11-05",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Fecha 2026-11-06",
+          "pass": true,
+          "expected": "Rechazada",
+          "observed": "La fecha no puede ser futura."
+        },
+        {
+          "name": "Fecha 2026-11-04",
+          "pass": true,
+          "expected": "Aceptada",
+          "observed": "Aceptada"
+        },
+        {
+          "name": "Edad desde fecha 2008-11-05",
+          "pass": true,
+          "expected": true,
+          "observed": true
+        },
+        {
+          "name": "Edad desde fecha 2008-11-06",
+          "pass": false,
+          "expected": false,
+          "observed": true
+        },
+        {
+          "name": "Edad desde fecha 2008-11-04",
+          "pass": true,
+          "expected": true,
+          "observed": true
+        },
+        {
+          "name": "Edad desde fecha 2030-01-01",
+          "pass": true,
+          "expected": false,
+          "observed": false
+        },
+        {
+          "name": "Usuario válido",
+          "pass": true,
+          "expected": "Aceptado",
+          "observed": {}
+        },
+        {
+          "name": "Clave con siete caracteres",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": {
+            "password": "Mínimo 8 caracteres"
+          }
+        },
+        {
+          "name": "Nombre de usuario corto",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": {
+            "username": "Mínimo 3 caracteres"
+          }
+        },
+        {
+          "name": "Correo inválido",
+          "pass": true,
+          "expected": "Rechazado",
+          "observed": {
+            "correo": "Correo no válido"
+          }
+        }
+      ]
+    },
+    "CB-12": {
+      "checks": [
+        {
+          "name": "Permisos completos y estado Pendiente de evaluación",
+          "pass": true,
+          "expected": "Evaluar atención",
+          "observed": "Evaluar atención"
+        },
+        {
+          "name": "Sin permiso y estado Pendiente de evaluación",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Derivado a radiografía",
+          "pass": true,
+          "expected": "Cargar radiografía",
+          "observed": "Cargar radiografía"
+        },
+        {
+          "name": "Sin permiso y estado Derivado a radiografía",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Diagnostico pendiente",
+          "pass": true,
+          "expected": "Cargar radiografía",
+          "observed": "Cargar radiografía"
+        },
+        {
+          "name": "Sin permiso y estado Diagnostico pendiente",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Pendiente de validación",
+          "pass": true,
+          "expected": "Revisar y validar",
+          "observed": "Revisar y validar"
+        },
+        {
+          "name": "Sin permiso y estado Pendiente de validación",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Validado",
+          "pass": true,
+          "expected": "Ver diagnóstico y reporte",
+          "observed": "Ver diagnóstico y reporte"
+        },
+        {
+          "name": "Sin permiso y estado Validado",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Sin atención pendiente",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Sin permiso y estado Sin atención pendiente",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Permisos completos y estado Estado desconocido",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Sin permiso y estado Estado desconocido",
+          "pass": true,
+          "expected": null,
+          "observed": null
+        },
+        {
+          "name": "Solo consulta Pendiente de validación",
+          "pass": true,
+          "expected": "Ver resultado",
+          "observed": "Ver resultado"
+        },
+        {
+          "name": "Solo consulta Validado",
+          "pass": true,
+          "expected": "Ver diagnóstico",
+          "observed": "Ver diagnóstico"
+        }
+      ]
+    }
+  },
+  "environment": {
+    "date": "2026-11-05",
+    "timezone": "America/Bogota",
+    "node": "v24.22.1"
+  }
+}

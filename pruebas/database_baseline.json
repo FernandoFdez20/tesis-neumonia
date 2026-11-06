@@ -1,0 +1,38 @@
+{
+  "atenciones_medicas": {
+    "count": 10,
+    "sha256": "3d55dee8c3831c9afd298bc4bf4736de602a23af9f03b3adbc3fd6afad930458"
+  },
+  "diagnostico_imagenes": {
+    "count": 10,
+    "sha256": "a610349693d32fb2757c576277e5b02c079068b5523dcbe8e67ab1463769387b"
+  },
+  "diagnosticos": {
+    "count": 5,
+    "sha256": "776331047abafd7d9dce0b595e03a7bc0ec10aadd728a587a7a762dc19e4e269"
+  },
+  "enfermedades": {
+    "count": 10,
+    "sha256": "e19c2aa8a7d459d31332c133524061a9c03cca22444dde14ac3041713a52016d"
+  },
+  "notificaciones": {
+    "count": 4,
+    "sha256": "953041a388027c8970997f11ed0312d8d4d3189c1a6baf814ed910d1f58819c8"
+  },
+  "paciente_enfermedades": {
+    "count": 2,
+    "sha256": "17e9cd8443413b25a0183c5ffca3a77d51120f1b9a52d988707dedd2859c8240"
+  },
+  "pacientes": {
+    "count": 7,
+    "sha256": "e265347a8afab2d0f6ac38d6dfefcda9d5dcf88ebaa58eee732b138715200308"
+  },
+  "usuario_permisos_override": {
+    "count": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "usuarios": {
+    "count": 4,
+    "sha256": "e3183046d42adb7b6208e48ae30552051b983667d4d816e050e9cb3b58586974"
+  }
+}

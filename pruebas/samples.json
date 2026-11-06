@@ -1,0 +1,26 @@
+{
+  "0_AP": {
+    "file": "pruebas/muestras/S01.dcm",
+    "label": 0,
+    "view": "AP",
+    "age": 39
+  },
+  "1_AP": {
+    "file": "pruebas/muestras/S02.dcm",
+    "label": 1,
+    "view": "AP",
+    "age": 25
+  },
+  "0_PA": {
+    "file": "pruebas/muestras/S03.dcm",
+    "label": 0,
+    "view": "PA",
+    "age": 56
+  },
+  "1_PA": {
+    "file": "pruebas/muestras/S04.dcm",
+    "label": 1,
+    "view": "PA",
+    "age": 58
+  }
+}
